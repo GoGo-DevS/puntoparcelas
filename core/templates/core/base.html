@@ -68,23 +68,26 @@
       border-bottom: 1px solid var(--pp-border);
     }
     .pp-logo-wrap {
-      display: flex; align-items: center; gap: .7rem;
+      display: flex; align-items: center; gap: .75rem;
       text-decoration: none;
     }
-    .pp-logo-icon {
-      width: 38px; height: 38px; flex-shrink: 0;
+    .pp-logo-icon { width: 42px; height: 42px; flex-shrink: 0; }
+    .pp-logo-sep {
+      width: 1px; height: 36px;
+      background: linear-gradient(to bottom, transparent, #D4AF37, transparent);
+      flex-shrink: 0; opacity: .55;
     }
-    .pp-logo-text { line-height: 1.15; }
+    .pp-logo-text { line-height: 1.2; }
     .pp-logo-name {
       font-family: 'Montserrat', sans-serif;
       font-weight: 900; font-size: 1.05rem;
-      color: var(--pp-text); letter-spacing: .01em;
-      display: block;
+      color: var(--pp-text); letter-spacing: .04em;
+      display: block; text-transform: uppercase;
     }
     .pp-logo-sub {
       font-family: 'Montserrat', sans-serif;
-      font-weight: 600; font-size: .62rem;
-      color: var(--pp-gold); letter-spacing: .12em;
+      font-weight: 500; font-size: .58rem;
+      color: var(--pp-gold); letter-spacing: .18em;
       text-transform: uppercase; display: block;
     }
     .pp-nav .nav-link {
@@ -318,7 +321,7 @@
       box-shadow: 0 0 0 3px rgba(212,175,55,.12);
     }
     .form-control::placeholder { color: var(--pp-muted); }
-    .form-select option { background: var(--pp-surface; }
+    .form-select option { background: var(--pp-surface); }
     .form-label {
       font-size: .72rem; font-weight: 700; letter-spacing: .08em;
       text-transform: uppercase; color: var(--pp-muted);
@@ -346,14 +349,39 @@
   <div class="container d-flex align-items-center gap-3">
     <!-- Logo with isotipo SVG -->
     <a href="{% url 'core:home' %}" class="pp-logo-wrap me-auto">
-      <svg class="pp-logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="20" cy="20" r="19" stroke="#D4AF37" stroke-width="1.5"/>
-        <path d="M8 29 L14 19 L19 25 L25 13 L32 29 Z" fill="#D4AF37" opacity=".9"/>
-        <line x1="7" y1="29" x2="33" y2="29" stroke="#D4AF37" stroke-width="1" stroke-linecap="round"/>
+      <svg class="pp-logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ppgn" gradientUnits="userSpaceOnUse" x1="5" y1="10" x2="95" y2="95">
+            <stop offset="0%"   stop-color="#F5E070"/>
+            <stop offset="45%"  stop-color="#D4AF37"/>
+            <stop offset="100%" stop-color="#9A7618"/>
+          </linearGradient>
+          <clipPath id="ppcn"><circle cx="50" cy="50" r="44"/></clipPath>
+        </defs>
+        <circle cx="50" cy="50" r="47.5" fill="none" stroke="url(#ppgn)" stroke-width="2.5"/>
+        <circle cx="50" cy="50" r="43"   fill="none" stroke="#D4AF37"    stroke-width=".5" opacity=".35"/>
+        <g clip-path="url(#ppcn)">
+          <!-- Left mountain (tallest) -->
+          <path d="M7 74 L30 14 L55 74 Z" fill="url(#ppgn)"/>
+          <path d="M30 14 L43 42 L55 74 Z" fill="#000" opacity=".18"/>
+          <!-- Right mountain -->
+          <path d="M44 74 L63 30 L80 74 Z" fill="url(#ppgn)" opacity=".82"/>
+          <path d="M63 30 L72 52 L80 74 Z" fill="#000" opacity=".14"/>
+          <!-- Pine tree (right) -->
+          <rect x="82" y="62" width="4" height="12" rx="1" fill="#D4AF37"/>
+          <path d="M77 65 L84 46 L91 65 Z" fill="url(#ppgn)"/>
+          <path d="M78 57 L84 39 L90 57 Z" fill="url(#ppgn)"/>
+          <path d="M79.5 50 L84 33 L88.5 50 Z" fill="url(#ppgn)"/>
+          <!-- Field rows -->
+          <path d="M5 76 Q50 68 95 76" fill="none" stroke="url(#ppgn)" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M4 83 Q50 74 96 83" fill="none" stroke="url(#ppgn)" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M5 89 Q50 80 95 89" fill="none" stroke="url(#ppgn)" stroke-width="3"   stroke-linecap="round"/>
+        </g>
       </svg>
+      <div class="pp-logo-sep"></div>
       <div class="pp-logo-text">
-        <span class="pp-logo-name">PUNTO PARCELAS</span>
-        <span class="pp-logo-sub">Leonardo Valencia</span>
+        <span class="pp-logo-name">Punto Parcelas</span>
+        <span class="pp-logo-sub">Leonardo · Valencia</span>
       </div>
     </a>
 
@@ -405,14 +433,35 @@
       <!-- Brand + Social -->
       <div class="col-lg-4">
         <a href="{% url 'core:home' %}" class="pp-logo-wrap mb-3" style="text-decoration:none;">
-          <svg style="width:32px;height:32px;flex-shrink:0;" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="19" stroke="#D4AF37" stroke-width="1.5"/>
-            <path d="M8 29 L14 19 L19 25 L25 13 L32 29 Z" fill="#D4AF37" opacity=".9"/>
-            <line x1="7" y1="29" x2="33" y2="29" stroke="#D4AF37" stroke-width="1"/>
+          <svg style="width:40px;height:40px;flex-shrink:0;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ppgf" gradientUnits="userSpaceOnUse" x1="5" y1="10" x2="95" y2="95">
+                <stop offset="0%"   stop-color="#F5E070"/>
+                <stop offset="45%"  stop-color="#D4AF37"/>
+                <stop offset="100%" stop-color="#9A7618"/>
+              </linearGradient>
+              <clipPath id="ppcf"><circle cx="50" cy="50" r="44"/></clipPath>
+            </defs>
+            <circle cx="50" cy="50" r="47.5" fill="none" stroke="url(#ppgf)" stroke-width="2.5"/>
+            <circle cx="50" cy="50" r="43"   fill="none" stroke="#D4AF37"    stroke-width=".5" opacity=".35"/>
+            <g clip-path="url(#ppcf)">
+              <path d="M7 74 L30 14 L55 74 Z" fill="url(#ppgf)"/>
+              <path d="M30 14 L43 42 L55 74 Z" fill="#000" opacity=".18"/>
+              <path d="M44 74 L63 30 L80 74 Z" fill="url(#ppgf)" opacity=".82"/>
+              <path d="M63 30 L72 52 L80 74 Z" fill="#000" opacity=".14"/>
+              <rect x="82" y="62" width="4" height="12" rx="1" fill="#D4AF37"/>
+              <path d="M77 65 L84 46 L91 65 Z" fill="url(#ppgf)"/>
+              <path d="M78 57 L84 39 L90 57 Z" fill="url(#ppgf)"/>
+              <path d="M79.5 50 L84 33 L88.5 50 Z" fill="url(#ppgf)"/>
+              <path d="M5 76 Q50 68 95 76" fill="none" stroke="url(#ppgf)" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M4 83 Q50 74 96 83" fill="none" stroke="url(#ppgf)" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M5 89 Q50 80 95 89" fill="none" stroke="url(#ppgf)" stroke-width="3"   stroke-linecap="round"/>
+            </g>
           </svg>
+          <div class="pp-logo-sep" style="height:32px;"></div>
           <div class="pp-logo-text">
-            <span class="pp-logo-name" style="font-size:.95rem;">PUNTO PARCELAS</span>
-            <span class="pp-logo-sub">Leonardo Valencia</span>
+            <span class="pp-logo-name" style="font-size:.9rem;">Punto Parcelas</span>
+            <span class="pp-logo-sub">Leonardo · Valencia</span>
           </div>
         </a>
         <p style="color:var(--pp-muted); font-size:.88rem; max-width:270px; margin-bottom:1.1rem;">{{ SLOGAN }}</p>
