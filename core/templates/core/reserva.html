@@ -1,44 +1,87 @@
 {% extends "core/base.html" %}
-{% block title %}Contacto y consultas — Punto Parcelas{% endblock %}
+{% block title %}Agenda tu visita — Punto Parcelas{% endblock %}
+{% block meta_desc %}Reserva una asesoría con Leonardo Valencia, especialista en inversión y venta de parcelas en Chile. Respuesta garantizada.{% endblock %}
+{% block og_title %}Agenda tu Visita — Punto Parcelas{% endblock %}
+{% block og_desc %}Contáctanos y te asesoramos sin compromiso para encontrar la parcela ideal. Leonardo Valencia te responde personalmente.{% endblock %}
 
 {% block extra_head %}
 <style>
-  .reserva-page { min-height: 100vh; padding-top: 80px; }
-  .split-left {
-    background: linear-gradient(160deg, #0f1a0a 0%, #0D0D0D 50%, #1a150a 100%);
-    min-height: 100vh;
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 4rem 3rem;
-    position: relative; overflow: hidden;
+  /* ── RESERVA HERO ── */
+  .reserva-hero {
+    min-height: 55vh;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding-bottom: 4rem;
+    overflow: hidden;
   }
-  .split-left::before {
-    content: '';
+  .reserva-hero-bg {
     position: absolute; inset: 0;
-    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=70');
-    background-size: cover; background-position: center;
-    opacity: .12;
+    background-image: url('https://images.unsplash.com/photo-1523688471150-efdd09f6e30e?w=1800&q=80');
+    background-size: cover; background-position: center 30%;
+    filter: brightness(.25);
   }
-  .split-left-content { position: relative; z-index: 1; }
-  .split-right {
-    background: var(--pp-bg);
-    min-height: 100vh;
-    display: flex; align-items: center;
-    padding: 4rem 3rem;
+  .reserva-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(13,13,13,1) 0%, rgba(13,13,13,.55) 50%, rgba(13,13,13,.1) 100%);
   }
-  .contact-card {
+  .reserva-hero-content { position: relative; z-index: 1; padding-top: 6rem; }
+  .reserva-title-small {
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    font-size: clamp(1.2rem, 3vw, 1.8rem); text-transform: uppercase;
+    color: var(--pp-text); letter-spacing: .03em; display: block; margin-bottom: .15rem;
+  }
+  .reserva-title-big {
+    font-family: 'Montserrat', sans-serif; font-weight: 900;
+    font-size: clamp(3rem, 9vw, 7rem); text-transform: uppercase;
+    letter-spacing: -.02em; line-height: .95;
+    color: var(--pp-gold); display: block; margin-bottom: .5rem;
+  }
+  .reserva-hero-sub {
+    font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(240,237,228,.45); font-weight: 600;
+  }
+
+  /* ── SPLIT ── */
+  .reserva-split { padding: 5rem 0; }
+  .leonardo-photo {
+    width: 100%; aspect-ratio: 3/4; object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid var(--pp-border);
+    background: var(--pp-surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem; color: var(--pp-gold);
+  }
+  .leonardo-photo-placeholder {
+    width: 100%; aspect-ratio: 3/4;
+    background: linear-gradient(160deg, var(--pp-surface) 0%, var(--pp-surface2) 100%);
+    border-radius: 12px; border: 2px solid var(--pp-border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--pp-gold); gap: .75rem;
+  }
+  .contact-row {
+    display: flex; align-items: center; gap: .85rem;
+    padding: .75rem 0; border-bottom: 1px solid var(--pp-border);
+  }
+  .contact-row:last-of-type { border-bottom: none; }
+  .contact-row-icon {
+    width: 38px; height: 38px; border-radius: 9px;
+    background: rgba(212,175,55,.1); border: 1px solid rgba(212,175,55,.2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--pp-gold); font-size: 1rem; flex-shrink: 0;
+  }
+
+  /* ── FORM ── */
+  .form-card {
     background: var(--pp-surface);
     border: 1px solid var(--pp-border);
-    border-radius: var(--pp-radius);
+    border-radius: 12px;
     padding: 2.5rem;
-    width: 100%;
   }
   .form-control, .form-select {
     background: var(--pp-surface2) !important;
     border: 1px solid var(--pp-border) !important;
     color: var(--pp-text) !important;
-    border-radius: 8px;
-    padding: .75rem 1rem;
-    font-size: .93rem;
+    border-radius: 8px; padding: .7rem 1rem; font-size: .9rem;
     transition: border-color var(--pp-tr);
   }
   .form-control:focus, .form-select:focus {
@@ -48,94 +91,131 @@
     color: var(--pp-text) !important;
   }
   .form-control::placeholder { color: var(--pp-muted); }
-  .form-label { font-size: .82rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--pp-muted); margin-bottom: .4rem; }
-  .contact-item { display: flex; align-items: center; gap: 1rem; padding: .85rem 0; border-bottom: 1px solid var(--pp-border); }
-  .contact-item:last-child { border-bottom: none; }
-  .contact-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(212,175,55,.1); border: 1px solid rgba(212,175,55,.2); display: flex; align-items: center; justify-content: center; color: var(--pp-gold); font-size: 1.1rem; flex-shrink: 0; }
-  @media (max-width: 991px) { .split-left, .split-right { min-height: auto; padding: 3rem 1.5rem; } }
+  .form-select option { background: #1A1A1A; }
+
+  /* ── PROPUESTA BAR ── */
+  .propuesta-bar {
+    background: var(--pp-surface);
+    border-top: 1px solid var(--pp-border);
+    border-bottom: 1px solid var(--pp-border);
+    padding: 2.5rem 0;
+  }
+  .propuesta-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 0 1.5rem;
+    border-right: 1px solid var(--pp-border);
+  }
+  .propuesta-item:last-child { border-right: none; }
+  .propuesta-icon {
+    width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+    background: rgba(212,175,55,.1); border: 1px solid rgba(212,175,55,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; color: var(--pp-gold);
+  }
+  .propuesta-name {
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: .85rem; text-transform: uppercase; letter-spacing: .04em;
+    margin-bottom: .2rem;
+  }
+  .propuesta-desc { font-size: .78rem; color: var(--pp-muted); line-height: 1.45; }
+
+  @media (max-width: 767px) {
+    .propuesta-item { border-right: none; border-bottom: 1px solid var(--pp-border); padding: 1rem 0; }
+    .propuesta-item:last-child { border-bottom: none; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="reserva-page">
-  <div class="row g-0">
 
-    <!-- LEFT — info Leonardo -->
-    <div class="col-lg-5">
-      <div class="split-left">
-        <div class="split-left-content">
-          <div class="gold-line mb-3"></div>
-          <h1 style="font-size:clamp(1.8rem,3.5vw,2.8rem); margin-bottom:.75rem; text-wrap:balance;">
-            Hablemos de tu próxima inversión
-          </h1>
-          <p style="color:var(--pp-muted); max-width:380px; margin-bottom:2.5rem; line-height:1.7;">
-            Cuéntanos qué estás buscando. Leonardo te asesora sin compromiso y responde personalmente cada consulta.
-          </p>
+<!-- RESERVA HERO -->
+<section class="reserva-hero">
+  <div class="reserva-hero-bg"></div>
+  <div class="reserva-hero-overlay"></div>
+  <div class="container reserva-hero-content">
+    <span class="reserva-title-small">Agenda tu</span>
+    <span class="reserva-title-big">Visita</span>
+    <span class="reserva-hero-sub">Tu inversión hoy, tu patrimonio mañana</span>
+  </div>
+</section>
 
-          <!-- Contacto info -->
-          <div>
-            <div class="contact-item">
-              <div class="contact-icon"><i class="bi bi-person-fill"></i></div>
-              <div>
-                <div style="font-weight:700; font-size:.95rem;">Leonardo Valencia</div>
-                <div style="color:var(--pp-muted); font-size:.85rem;">Asesor de inversión en parcelas</div>
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-icon"><i class="bi bi-whatsapp"></i></div>
-              <div>
-                <a href="{{ WA_LINK }}" target="_blank" style="font-weight:600; color:var(--pp-text); text-decoration:none;">+56 9 6409 0173</a>
-                <div style="color:var(--pp-muted); font-size:.82rem;">WhatsApp · respuesta en minutos</div>
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
-              <div>
-                <a href="mailto:{{ EMAIL_CONTACTO }}" style="font-weight:600; color:var(--pp-text); text-decoration:none;">{{ EMAIL_CONTACTO }}</a>
-                <div style="color:var(--pp-muted); font-size:.82rem;">Correo electrónico</div>
-              </div>
+<!-- SPLIT: LEONARDO + FORM -->
+<section class="reserva-split">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+
+      <!-- LEFT — Leonardo -->
+      <div class="col-lg-5">
+        <!-- Photo placeholder — reemplazar con foto real de Leonardo -->
+        <div class="leonardo-photo-placeholder mb-4">
+          <i class="bi bi-person-fill" style="font-size:4rem; opacity:.3;"></i>
+          <span style="font-size:.75rem; color:var(--pp-muted); letter-spacing:.08em; text-transform:uppercase;">Foto Leonardo Valencia</span>
+        </div>
+
+        <h2 style="font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.5rem; text-transform:uppercase; letter-spacing:.02em; margin-bottom:.2rem;">
+          Leonardo Valencia
+        </h2>
+        <p style="font-size:.78rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--pp-gold); margin-bottom:1.75rem;">
+          Especialista en inversión y venta de parcelas
+        </p>
+
+        <div>
+          <div class="contact-row">
+            <div class="contact-row-icon"><i class="bi bi-telephone-fill"></i></div>
+            <div>
+              <a href="{{ WA_LINK }}" target="_blank" style="font-weight:600; color:var(--pp-text); text-decoration:none; font-size:.95rem;">
+                +56 9 6409 0173
+              </a>
+              <div style="font-size:.78rem; color:var(--pp-muted);">WhatsApp · respuesta en minutos</div>
             </div>
           </div>
-
-          <div class="mt-4">
-            <p style="color:var(--pp-muted); font-size:.82rem; margin-bottom:.6rem;">Responde consultas sobre:</p>
-            <div class="d-flex flex-wrap gap-2">
-                {% for tag in tags_contacto %}
-              <span style="font-size:.75rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); color:var(--pp-gold); padding:.2rem .65rem; border-radius:20px;">{{ tag }}</span>
-              {% endfor %}
+          <div class="contact-row">
+            <div class="contact-row-icon"><i class="bi bi-envelope-fill"></i></div>
+            <div>
+              <a href="mailto:{{ EMAIL_CONTACTO }}" style="font-weight:600; color:var(--pp-text); text-decoration:none; font-size:.95rem;">
+                {{ EMAIL_CONTACTO }}
+              </a>
+              <div style="font-size:.78rem; color:var(--pp-muted);">Correo electrónico</div>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-row-icon"><i class="bi bi-globe"></i></div>
+            <div>
+              <a href="https://puntoparcelas.cl" target="_blank" style="font-weight:600; color:var(--pp-text); text-decoration:none; font-size:.95rem;">
+                puntoparcelas.cl
+              </a>
+              <div style="font-size:.78rem; color:var(--pp-muted);">Sitio web oficial</div>
             </div>
           </div>
         </div>
+
+        <a href="{{ WA_LINK }}" target="_blank" class="btn-wa mt-4 w-100 justify-content-center">
+          <i class="bi bi-whatsapp"></i> Escríbeme por WhatsApp
+        </a>
       </div>
-    </div>
 
-    <!-- RIGHT — FORM -->
-    <div class="col-lg-7">
-      <div class="split-right">
-        <div class="contact-card">
-          <h2 style="font-size:1.5rem; margin-bottom:.4rem;">Enviar consulta</h2>
-          <p style="color:var(--pp-muted); font-size:.9rem; margin-bottom:2rem;">Te responderemos a la brevedad posible.</p>
-
-          {% if messages %}
-          {% for msg in messages %}
-          <div class="alert" style="background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); color:#22C55E; border-radius:8px; padding:1rem; margin-bottom:1.5rem;">
-            <i class="bi bi-check-circle me-2"></i>{{ msg }}
-          </div>
-          {% endfor %}
-          {% endif %}
+      <!-- RIGHT — FORM -->
+      <div class="col-lg-7">
+        <div class="form-card">
+          <h2 style="font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.5rem; margin-bottom:.3rem;">
+            Enviar consulta
+          </h2>
+          <p style="color:var(--pp-muted); font-size:.88rem; margin-bottom:2rem;">
+            Completa el formulario y Leonardo te contactará a la brevedad.
+          </p>
 
           <form method="post">
             {% csrf_token %}
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label">Nombre *</label>
+                <label class="form-label">Nombre completo *</label>
                 {{ form.nombre }}
-                {% if form.nombre.errors %}<div style="color:#EF4444; font-size:.8rem; margin-top:.3rem;">{{ form.nombre.errors.0 }}</div>{% endif %}
+                {% if form.nombre.errors %}<div style="color:#EF4444; font-size:.78rem; margin-top:.3rem;">{{ form.nombre.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-6">
                 <label class="form-label">Teléfono *</label>
                 {{ form.telefono }}
-                {% if form.telefono.errors %}<div style="color:#EF4444; font-size:.8rem; margin-top:.3rem;">{{ form.telefono.errors.0 }}</div>{% endif %}
+                {% if form.telefono.errors %}<div style="color:#EF4444; font-size:.78rem; margin-top:.3rem;">{{ form.telefono.errors.0 }}</div>{% endif %}
               </div>
               <div class="col-md-6">
                 <label class="form-label">Email</label>
@@ -145,39 +225,59 @@
                 <label class="form-label">Región de interés</label>
                 {{ form.region_interes }}
               </div>
-              <div class="col-12">
-                <label class="form-label">Presupuesto disponible (CLP)</label>
-                {{ form.monto_disponible }}
-                <div style="font-size:.76rem; color:var(--pp-muted); margin-top:.3rem;">Opcional — ayuda a orientarte mejor</div>
+              <div class="col-md-6">
+                <label class="form-label">Monto a invertir</label>
+                {{ form.monto_rango }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">¿Cómo nos conociste?</label>
+                {{ form.como_nos_conociste }}
               </div>
               <div class="col-12">
                 <label class="form-label">Mensaje</label>
                 {{ form.mensaje }}
               </div>
               <div class="col-12">
-                <button type="submit" class="btn-gold w-100" style="padding:.9rem; font-size:.95rem;">
+                <button type="submit" class="btn-gold w-100" style="padding:.9rem; font-size:.88rem; letter-spacing:.08em;">
                   <i class="bi bi-send me-2"></i>Enviar consulta
                 </button>
               </div>
             </div>
           </form>
+        </div>
+      </div>
 
-          <div class="text-center mt-4" style="font-size:.82rem; color:var(--pp-muted);">
-            ¿Prefieres contacto inmediato?
-            <a href="{{ WA_LINK }}" target="_blank" style="color:var(--pp-gold); text-decoration:none; font-weight:600; margin-left:.3rem;">
-              <i class="bi bi-whatsapp me-1"></i>Escríbenos por WhatsApp
-            </a>
-          </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPUESTA BAR -->
+<div class="propuesta-bar">
+  <div class="container">
+    <div class="row g-0">
+      <div class="col-md-4 propuesta-item">
+        <div class="propuesta-icon"><i class="bi bi-shield-check"></i></div>
+        <div>
+          <div class="propuesta-name">Asesoría Experta</div>
+          <div class="propuesta-desc">Acompañamiento en todo el proceso, desde la visita hasta la escrituración</div>
+        </div>
+      </div>
+      <div class="col-md-4 propuesta-item">
+        <div class="propuesta-icon"><i class="bi bi-handshake"></i></div>
+        <div>
+          <div class="propuesta-name">Inversión Segura</div>
+          <div class="propuesta-desc">Proyectos con respaldo legal, documentación y escrituración al día</div>
+        </div>
+      </div>
+      <div class="col-md-4 propuesta-item">
+        <div class="propuesta-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <div>
+          <div class="propuesta-name">Plusvalía Garantizada</div>
+          <div class="propuesta-desc">Terrenos en sectores de alto crecimiento y valorización histórica</div>
         </div>
       </div>
     </div>
   </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-// Fix split template tag that Django doesn't have natively
-// (tags already rendered server-side)
-</script>
 {% endblock %}

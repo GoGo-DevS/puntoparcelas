@@ -35,10 +35,16 @@
           <div>{{ consulta.get_region_interes_display }}</div>
         </div>
         {% endif %}
-        {% if consulta.monto_disponible %}
+        {% if consulta.monto_rango %}
         <div class="col-md-6">
-          <div style="font-size:.75rem; color:var(--pp-muted); margin-bottom:.2rem;">Presupuesto</div>
+          <div style="font-size:.75rem; color:var(--pp-muted); margin-bottom:.2rem;">Monto a invertir</div>
           <div style="font-family:'Montserrat',sans-serif; font-weight:800; color:var(--pp-gold);">{{ consulta.monto_display }}</div>
+        </div>
+        {% endif %}
+        {% if consulta.como_nos_conociste %}
+        <div class="col-md-6">
+          <div style="font-size:.75rem; color:var(--pp-muted); margin-bottom:.2rem;">¿Cómo nos conoció?</div>
+          <div>{{ consulta.get_como_nos_conociste_display }}</div>
         </div>
         {% endif %}
         {% if consulta.parcela %}

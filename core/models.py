@@ -125,6 +125,7 @@ class FotoParcela(models.Model):
 
 class Testimonio(models.Model):
     nombre         = models.CharField(max_length=80)
+    profesion      = models.CharField(max_length=80, blank=True, default='Inversionista')
     ciudad         = models.CharField(max_length=80, blank=True)
     texto          = models.TextField()
     estrellas      = models.PositiveSmallIntegerField(default=5)
@@ -160,18 +161,33 @@ class Consulta(models.Model):
         ('en_proceso',  'En proceso'),
         ('cerrada',     'Cerrada'),
     ]
+    MONTO_RANGO_CHOICES = [
+        ('menos_10m',  'Menos de $10.000.000'),
+        ('10m_20m',    '$10.000.000 – $20.000.000'),
+        ('20m_35m',    '$20.000.000 – $35.000.000'),
+        ('35m_50m',    '$35.000.000 – $50.000.000'),
+        ('mas_50m',    'Más de $50.000.000'),
+    ]
+    COMO_CHOICES = [
+        ('instagram',  'Instagram'),
+        ('referido',   'Referido de un amigo'),
+        ('google',     'Google'),
+        ('facebook',   'Facebook'),
+        ('otro',       'Otro'),
+    ]
 
-    nombre           = models.CharField(max_length=120)
-    email            = models.EmailField(blank=True)
-    telefono         = models.CharField(max_length=30)
-    region_interes   = models.CharField(max_length=20, choices=REGIONES, blank=True)
-    monto_disponible = models.BigIntegerField(null=True, blank=True, help_text='Presupuesto aprox CLP')
-    parcela          = models.ForeignKey(Parcela, on_delete=models.SET_NULL, null=True, blank=True,
-                                         related_name='consultas')
-    mensaje          = models.TextField(blank=True)
-    estado           = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='nueva')
-    notas            = models.TextField(blank=True, help_text='Notas internas')
-    creado           = models.DateTimeField(auto_now_add=True)
+    nombre              = models.CharField(max_length=120)
+    email               = models.EmailField(blank=True)
+    telefono            = models.CharField(max_length=30)
+    region_interes      = models.CharField(max_length=20, choices=REGIONES, blank=True)
+    monto_rango         = models.CharField(max_length=20, choices=MONTO_RANGO_CHOICES, blank=True)
+    como_nos_conociste  = models.CharField(max_length=20, choices=COMO_CHOICES, blank=True)
+    parcela             = models.ForeignKey(Parcela, on_delete=models.SET_NULL, null=True, blank=True,
+                                            related_name='consultas')
+    mensaje             = models.TextField(blank=True)
+    estado              = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='nueva')
+    notas               = models.TextField(blank=True, help_text='Notas internas')
+    creado              = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-creado']
@@ -183,6 +199,4 @@ class Consulta(models.Model):
 
     @property
     def monto_display(self):
-        if not self.monto_disponible:
-            return 'No especificado'
-        return f"${self.monto_disponible:,}".replace(',', '.')
+        return self.get_monto_rango_display() or 'No especificado'

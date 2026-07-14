@@ -6,6 +6,16 @@
   <title>{% block title %}Punto Parcelas — Tu inversión hoy, tu patrimonio mañana{% endblock %}</title>
   <meta name="description" content="{% block meta_desc %}Parcelas de inversión en Chile. Seguridad, plusvalía y confianza en cada terreno.{% endblock %}">
 
+  <!-- Open Graph -->
+  <meta property="og:title"       content="{% block og_title %}Punto Parcelas — Tu inversión hoy, tu patrimonio mañana{% endblock %}">
+  <meta property="og:description" content="{% block og_desc %}Parcelas de inversión en Chile. Seguridad, plusvalía y confianza en cada terreno. Leonardo Valencia, especialista en inversión.{% endblock %}">
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="{{ request.build_absolute_uri }}">
+  <meta property="og:image"       content="{% block og_image %}https://puntoparcelas.cl/static/img/og-cover.jpg{% endblock %}">
+  <meta property="og:locale"      content="es_CL">
+  <meta property="og:site_name"   content="Punto Parcelas">
+  <meta name="twitter:card"       content="summary_large_image">
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,9 +39,7 @@
       --pp-tr:       .22s ease;
     }
     *, *::before, *::after { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
-
     body {
       background: var(--pp-bg);
       color: var(--pp-text);
@@ -40,7 +48,6 @@
       line-height: 1.65;
       min-height: 100vh;
     }
-
     h1,h2,h3,h4,h5,h6 {
       font-family: 'Montserrat', sans-serif;
       font-weight: 800;
@@ -51,45 +58,58 @@
     /* ── NAVBAR ── */
     .pp-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      padding: 1rem 0;
+      padding: .85rem 0;
       transition: background var(--pp-tr), padding var(--pp-tr), backdrop-filter var(--pp-tr);
     }
     .pp-nav.scrolled {
-      background: rgba(13,13,13,.92);
+      background: rgba(13,13,13,.94);
       backdrop-filter: blur(12px);
-      padding: .6rem 0;
+      padding: .55rem 0;
       border-bottom: 1px solid var(--pp-border);
     }
-    .pp-logo {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 900;
-      font-size: 1.35rem;
-      color: var(--pp-text);
+    .pp-logo-wrap {
+      display: flex; align-items: center; gap: .7rem;
       text-decoration: none;
-      letter-spacing: -.02em;
     }
-    .pp-logo span { color: var(--pp-gold); }
+    .pp-logo-icon {
+      width: 38px; height: 38px; flex-shrink: 0;
+    }
+    .pp-logo-text { line-height: 1.15; }
+    .pp-logo-name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900; font-size: 1.05rem;
+      color: var(--pp-text); letter-spacing: .01em;
+      display: block;
+    }
+    .pp-logo-sub {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600; font-size: .62rem;
+      color: var(--pp-gold); letter-spacing: .12em;
+      text-transform: uppercase; display: block;
+    }
     .pp-nav .nav-link {
       color: rgba(240,237,228,.75);
-      font-size: .875rem;
-      font-weight: 500;
-      letter-spacing: .04em;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .07em;
       text-transform: uppercase;
       padding: .4rem .9rem;
       transition: color var(--pp-tr);
     }
     .pp-nav .nav-link:hover,
     .pp-nav .nav-link.active { color: var(--pp-gold); }
+
+    /* ── BUTTONS ── */
     .btn-gold {
       background: var(--pp-gold);
       color: #0D0D0D;
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      font-size: .8rem;
-      letter-spacing: .06em;
+      font-size: .75rem;
+      letter-spacing: .07em;
       text-transform: uppercase;
       border: none;
-      padding: .6rem 1.4rem;
+      padding: .6rem 1.3rem;
       border-radius: 4px;
       transition: background var(--pp-tr), transform var(--pp-tr);
       text-decoration: none;
@@ -102,16 +122,34 @@
       color: var(--pp-gold);
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      font-size: .8rem;
-      letter-spacing: .06em;
+      font-size: .75rem;
+      letter-spacing: .07em;
       text-transform: uppercase;
-      padding: .6rem 1.4rem;
+      padding: .55rem 1.3rem;
       border-radius: 4px;
       transition: background var(--pp-tr), color var(--pp-tr);
       text-decoration: none;
       display: inline-block;
     }
     .btn-outline-gold:hover { background: var(--pp-gold); color: #0D0D0D; }
+    .btn-wa {
+      background: #25D366;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: .8rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: .65rem 1.4rem;
+      border-radius: 4px;
+      border: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      transition: background var(--pp-tr);
+    }
+    .btn-wa:hover { background: #1da851; color: #fff; }
 
     /* ── PARCELA CARD ── */
     .parcela-card {
@@ -120,18 +158,19 @@
       border-radius: var(--pp-radius);
       overflow: hidden;
       transition: transform var(--pp-tr), box-shadow var(--pp-tr), border-color var(--pp-tr);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+      display: flex; flex-direction: column; height: 100%;
+      text-decoration: none; color: inherit;
     }
     .parcela-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(212,175,55,.3);
       border-color: rgba(212,175,55,.35);
+      color: inherit; text-decoration: none;
     }
+    .parcela-card-img-wrap { position: relative; }
     .parcela-card-img {
       width: 100%; aspect-ratio: 16/10; object-fit: cover;
-      background: var(--pp-surface2);
+      background: var(--pp-surface2); display: block;
     }
     .parcela-card-img-placeholder {
       width: 100%; aspect-ratio: 16/10;
@@ -139,16 +178,37 @@
       display: flex; align-items: center; justify-content: center;
       color: var(--pp-gold); font-size: 2.5rem;
     }
-    .parcela-card-body { padding: 1.1rem; flex: 1; display: flex; flex-direction: column; }
+    .parcela-region-badge {
+      position: absolute; top: .65rem; left: .65rem;
+      font-size: .65rem; font-weight: 700;
+      letter-spacing: .05em; text-transform: uppercase;
+      background: rgba(13,13,13,.82);
+      backdrop-filter: blur(6px);
+      color: var(--pp-gold);
+      border: 1px solid rgba(212,175,55,.35);
+      padding: .2rem .65rem; border-radius: 20px;
+      display: flex; align-items: center; gap: .3rem;
+    }
+    .parcela-card-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
     .parcela-card-nombre {
       font-family: 'Montserrat', sans-serif;
-      font-weight: 700; font-size: 1rem; margin-bottom: .35rem;
-      color: var(--pp-text);
+      font-weight: 800; font-size: .9rem;
+      text-transform: uppercase; letter-spacing: .02em;
+      margin-bottom: .5rem; color: var(--pp-text);
     }
+    .parcela-card-attrs {
+      display: flex; gap: .9rem; margin-bottom: .6rem; flex-wrap: wrap;
+    }
+    .parcela-card-attr {
+      font-size: .72rem; color: var(--pp-muted);
+      display: flex; align-items: center; gap: .25rem; font-weight: 500;
+    }
+    .parcela-card-attr i { color: var(--pp-gold); font-size: .75rem; }
+    .parcela-desde { font-size: .68rem; color: var(--pp-muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
     .parcela-card-precio {
       font-family: 'Montserrat', sans-serif;
-      font-weight: 800; font-size: 1.2rem;
-      color: var(--pp-gold); margin-bottom: .6rem;
+      font-weight: 800; font-size: 1.1rem;
+      color: var(--pp-gold); margin-bottom: .8rem; line-height: 1;
     }
     .badge-region {
       display: inline-block; font-size: .7rem; font-weight: 600;
@@ -173,29 +233,32 @@
       display: flex; align-items: center; gap: .25rem;
     }
     .parcela-attr i { color: var(--pp-gold); font-size: .75rem; }
-    .superficie-badge {
-      font-size: .75rem; font-weight: 500; color: var(--pp-muted);
-    }
+    .superficie-badge { font-size: .75rem; font-weight: 500; color: var(--pp-muted); }
 
     /* ── FILTER PILLS ── */
     .filter-pill {
-      display: inline-block; font-size: .78rem; font-weight: 600;
-      letter-spacing: .04em; text-transform: uppercase;
-      padding: .4rem 1rem; border-radius: 50px;
+      display: inline-block; font-size: .75rem; font-weight: 600;
+      letter-spacing: .05em; text-transform: uppercase;
+      padding: .4rem 1.1rem; border-radius: 50px;
       border: 1.5px solid var(--pp-border);
       color: var(--pp-muted); background: var(--pp-surface);
       cursor: pointer; text-decoration: none;
-      transition: all var(--pp-tr);
+      transition: all var(--pp-tr); white-space: nowrap;
     }
     .filter-pill:hover { border-color: var(--pp-gold); color: var(--pp-gold); }
     .filter-pill.active { background: var(--pp-gold); border-color: var(--pp-gold); color: #0D0D0D; }
 
     /* ── SECTION ── */
-    .section { padding: 5rem 0; }
+    .section { padding: 5.5rem 0; }
     .section-sm { padding: 3rem 0; }
     .section-title {
       font-size: clamp(1.8rem, 4vw, 2.8rem);
       margin-bottom: .5rem;
+    }
+    .section-eyebrow {
+      font-size: .75rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--pp-gold); margin-bottom: .6rem; display: block;
     }
     .section-subtitle {
       color: var(--pp-muted); font-size: 1rem; max-width: 560px;
@@ -209,10 +272,23 @@
     .pp-footer {
       background: var(--pp-surface);
       border-top: 1px solid var(--pp-border);
-      padding: 3rem 0 2rem;
+      padding: 3.5rem 0 2rem;
     }
     .pp-footer a { color: var(--pp-muted); text-decoration: none; transition: color var(--pp-tr); }
     .pp-footer a:hover { color: var(--pp-gold); }
+    .footer-col-title {
+      font-size: .72rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--pp-gold);
+      margin-bottom: .85rem; display: block;
+    }
+    .footer-social a {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid var(--pp-border);
+      color: var(--pp-muted); font-size: 1rem;
+      transition: all var(--pp-tr);
+    }
+    .footer-social a:hover { border-color: var(--pp-gold); color: var(--pp-gold); background: rgba(212,175,55,.1); }
 
     /* ── WA FLOAT ── */
     .wa-float {
@@ -226,10 +302,32 @@
     .wa-float:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(37,211,102,.55); }
     .wa-float i { color: #fff; font-size: 1.6rem; }
 
+    /* ── FORM FIELDS ── */
+    .form-control, .form-select {
+      background: var(--pp-surface2);
+      border: 1px solid var(--pp-border);
+      color: var(--pp-text);
+      border-radius: 6px;
+      padding: .65rem .9rem;
+      font-size: .9rem;
+    }
+    .form-control:focus, .form-select:focus {
+      background: var(--pp-surface2);
+      border-color: var(--pp-gold);
+      color: var(--pp-text);
+      box-shadow: 0 0 0 3px rgba(212,175,55,.12);
+    }
+    .form-control::placeholder { color: var(--pp-muted); }
+    .form-select option { background: var(--pp-surface; }
+    .form-label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--pp-muted);
+      margin-bottom: .4rem; display: block;
+    }
+
     /* ── TOAST ── */
     .toast-container { position: fixed; top: 5rem; right: 1rem; z-index: 2000; }
 
-    /* scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--pp-bg); }
     ::-webkit-scrollbar-thumb { background: var(--pp-border); border-radius: 3px; }
@@ -246,15 +344,25 @@
 <!-- NAVBAR -->
 <nav class="pp-nav" id="ppNav">
   <div class="container d-flex align-items-center gap-3">
-    <a href="{% url 'core:home' %}" class="pp-logo me-auto">
-      PUNTO<span>.</span>PARCELAS
+    <!-- Logo with isotipo SVG -->
+    <a href="{% url 'core:home' %}" class="pp-logo-wrap me-auto">
+      <svg class="pp-logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="19" stroke="#D4AF37" stroke-width="1.5"/>
+        <path d="M8 29 L14 19 L19 25 L25 13 L32 29 Z" fill="#D4AF37" opacity=".9"/>
+        <line x1="7" y1="29" x2="33" y2="29" stroke="#D4AF37" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+      <div class="pp-logo-text">
+        <span class="pp-logo-name">PUNTO PARCELAS</span>
+        <span class="pp-logo-sub">Leonardo Valencia</span>
+      </div>
     </a>
+
     <div class="d-none d-md-flex align-items-center gap-1">
       <a href="{% url 'core:home' %}"     class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Inicio</a>
       <a href="{% url 'core:catalogo' %}" class="nav-link {% if request.resolver_match.url_name == 'catalogo' %}active{% endif %}">Catálogo</a>
-      <a href="{% url 'core:reserva' %}"  class="nav-link {% if request.resolver_match.url_name == 'reserva' %}active{% endif %}">Contacto</a>
+      <a href="{% url 'core:reserva' %}"  class="nav-link {% if request.resolver_match.url_name == 'reserva' %}active{% endif %}">Reserva</a>
     </div>
-    <a href="{% url 'core:reserva' %}" class="btn-gold d-none d-md-inline-block">Consultar ahora</a>
+    <a href="{% url 'core:reserva' %}" class="btn-outline-gold d-none d-md-inline-block">Hablemos tu inversión</a>
 
     <!-- Mobile hamburger -->
     <button class="d-md-none btn p-0 ms-auto" id="mobileMenuToggle" style="background:none;border:none;color:var(--pp-text)">
@@ -262,12 +370,12 @@
     </button>
   </div>
   <!-- Mobile menu -->
-  <div class="d-md-none" id="mobileMenu" style="display:none!important; background:rgba(13,13,13,.97); padding:.5rem 0; border-top:1px solid var(--pp-border);">
+  <div class="d-md-none" id="mobileMenu" style="display:none; background:rgba(13,13,13,.97); padding:.5rem 0; border-top:1px solid var(--pp-border);">
     <div class="container d-flex flex-column gap-1">
       <a href="{% url 'core:home' %}"     class="nav-link">Inicio</a>
       <a href="{% url 'core:catalogo' %}" class="nav-link">Catálogo</a>
-      <a href="{% url 'core:reserva' %}"  class="nav-link">Contacto</a>
-      <a href="{% url 'core:reserva' %}"  class="btn-gold mt-2 text-center">Consultar ahora</a>
+      <a href="{% url 'core:reserva' %}"  class="nav-link">Reserva</a>
+      <a href="{% url 'core:reserva' %}"  class="btn-outline-gold mt-2 text-center">Hablemos tu inversión</a>
     </div>
   </div>
 </nav>
@@ -293,38 +401,74 @@
 <footer class="pp-footer">
   <div class="container">
     <div class="row gy-4">
+
+      <!-- Brand + Social -->
       <div class="col-lg-4">
-        <div class="pp-logo mb-3">PUNTO<span>.</span>PARCELAS</div>
-        <p style="color:var(--pp-muted); font-size:.9rem; max-width:280px;">{{ SLOGAN }}</p>
-        <div class="d-flex gap-3 mt-3">
-          <a href="{{ WA_LINK }}" target="_blank"><i class="bi bi-whatsapp fs-5"></i></a>
-          <a href="mailto:{{ EMAIL_CONTACTO }}"><i class="bi bi-envelope fs-5"></i></a>
+        <a href="{% url 'core:home' %}" class="pp-logo-wrap mb-3" style="text-decoration:none;">
+          <svg style="width:32px;height:32px;flex-shrink:0;" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="19" stroke="#D4AF37" stroke-width="1.5"/>
+            <path d="M8 29 L14 19 L19 25 L25 13 L32 29 Z" fill="#D4AF37" opacity=".9"/>
+            <line x1="7" y1="29" x2="33" y2="29" stroke="#D4AF37" stroke-width="1"/>
+          </svg>
+          <div class="pp-logo-text">
+            <span class="pp-logo-name" style="font-size:.95rem;">PUNTO PARCELAS</span>
+            <span class="pp-logo-sub">Leonardo Valencia</span>
+          </div>
+        </a>
+        <p style="color:var(--pp-muted); font-size:.88rem; max-width:270px; margin-bottom:1.1rem;">{{ SLOGAN }}</p>
+        <div class="footer-social d-flex gap-2">
+          <a href="https://instagram.com/punto_parcelas" target="_blank" title="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="https://facebook.com/puntoparcelas" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="{{ WA_LINK }}" target="_blank" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+          <a href="https://youtube.com/@puntoparcelas" target="_blank" title="YouTube"><i class="bi bi-youtube"></i></a>
         </div>
       </div>
+
+      <!-- Links -->
       <div class="col-lg-2 col-6">
-        <p class="mb-2" style="color:var(--pp-gold); font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;">Navegación</p>
-        <div class="d-flex flex-column gap-1">
+        <span class="footer-col-title">Enlaces</span>
+        <div class="d-flex flex-column gap-2" style="font-size:.9rem;">
           <a href="{% url 'core:home' %}">Inicio</a>
           <a href="{% url 'core:catalogo' %}">Catálogo</a>
-          <a href="{% url 'core:reserva' %}">Contacto</a>
+          <a href="{% url 'core:reserva' %}">Reserva</a>
         </div>
       </div>
+
+      <!-- Contacto -->
       <div class="col-lg-3 col-6">
-        <p class="mb-2" style="color:var(--pp-gold); font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;">Contacto</p>
-        <div class="d-flex flex-column gap-1" style="font-size:.9rem;">
-          <a href="{{ WA_LINK }}" target="_blank"><i class="bi bi-whatsapp me-1"></i>+56 9 6409 0173</a>
-          <a href="mailto:{{ EMAIL_CONTACTO }}"><i class="bi bi-envelope me-1"></i>{{ EMAIL_CONTACTO }}</a>
+        <span class="footer-col-title">Contacto</span>
+        <div class="d-flex flex-column gap-2" style="font-size:.88rem;">
+          <a href="{{ WA_LINK }}" target="_blank">
+            <i class="bi bi-telephone me-1" style="color:var(--pp-gold);"></i>+56 9 6409 0173
+          </a>
+          <a href="mailto:{{ EMAIL_CONTACTO }}">
+            <i class="bi bi-envelope me-1" style="color:var(--pp-gold);"></i>{{ EMAIL_CONTACTO }}
+          </a>
+          <a href="https://puntoparcelas.cl" target="_blank">
+            <i class="bi bi-globe me-1" style="color:var(--pp-gold);"></i>puntoparcelas.cl
+          </a>
         </div>
       </div>
+
+      <!-- Cobertura Nacional -->
       <div class="col-lg-3">
-        <p class="mb-2" style="color:var(--pp-gold); font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;">Inversión segura</p>
-        <p style="color:var(--pp-muted); font-size:.85rem;">Parcelas escrituradas, con rol propio y respaldo legal en todo Chile.</p>
+        <span class="footer-col-title">Cobertura Nacional</span>
+        <div class="d-flex gap-3 align-items-start">
+          <!-- Chile silhouette SVG -->
+          <svg viewBox="0 0 50 170" xmlns="http://www.w3.org/2000/svg" style="height:80px;flex-shrink:0;opacity:.6;">
+            <path fill="#D4AF37" d="M26 4 C24 4 19 7 17 13 L14 25 C11 35 10 47 12 58 L10 73 C8 90 10 108 14 124 L18 141 C20 153 23 161 25 167 L27 167 C29 161 32 153 34 141 L38 124 C42 108 44 90 42 73 L40 58 C42 47 41 35 38 25 L35 13 C33 7 28 4 26 4 Z"/>
+          </svg>
+          <p style="color:var(--pp-muted); font-size:.83rem; line-height:1.5; margin:0;">
+            De Arica a Magallanes.<br>Estamos en todo Chile para ayudarte a invertir en tu futuro.
+          </p>
+        </div>
       </div>
+
     </div>
-    <hr style="border-color:var(--pp-border); margin:2rem 0 1rem;">
+    <hr style="border-color:var(--pp-border); margin:2.2rem 0 1rem;">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2"
          style="font-size:.8rem; color:var(--pp-muted);">
-      <span>© 2026 Punto Parcelas. Todos los derechos reservados.</span>
+      <span>© 2026 Punto Parcelas — Leonardo Valencia. Todos los derechos reservados.</span>
       <span>Diseño por <a href="https://gogodevs.com" target="_blank" style="color:var(--pp-gold);">GoGoDevS</a></span>
     </div>
   </div>
@@ -337,17 +481,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Navbar scroll
   const nav = document.getElementById('ppNav');
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 40);
   });
-  // Mobile menu
   document.getElementById('mobileMenuToggle').addEventListener('click', () => {
     const m = document.getElementById('mobileMenu');
     m.style.display = m.style.display === 'none' || m.style.display === '' ? 'block' : 'none';
   });
-  // Auto-dismiss toasts
   document.querySelectorAll('.toast').forEach(t => {
     setTimeout(() => t.style.opacity = '0', 4000);
     setTimeout(() => t.remove(), 4500);

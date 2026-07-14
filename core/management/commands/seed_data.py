@@ -120,24 +120,28 @@ PARCELAS = [
 TESTIMONIOS = [
     {
         'nombre': 'Claudia Reyes',
+        'profesion': 'Inversionista',
         'ciudad': 'Santiago',
         'texto': 'Compré mi parcela en Pirque con Leonardo y fue un proceso increíblemente sencillo. Todo en orden, escriturado en tiempo récord. 100% recomendado.',
         'estrellas': 5, 'es_placeholder': True, 'orden': 1,
     },
     {
         'nombre': 'Rodrigo Molina',
+        'profesion': 'Empresario',
         'ciudad': 'Concepción',
         'texto': 'Llevaba meses buscando una parcela en la VIII región. Leonardo me consiguió opciones que no encontré en ningún otro lado, con precios reales y documentación impecable.',
         'estrellas': 5, 'es_placeholder': True, 'orden': 2,
     },
     {
         'nombre': 'Patricia Uribe',
+        'profesion': 'Inversionista',
         'ciudad': 'Viña del Mar',
         'texto': 'Gracias a Punto Parcelas tengo mi inversión en Casablanca. El seguimiento fue excelente y la transparencia en todo el proceso me dio mucha confianza.',
         'estrellas': 5, 'es_placeholder': True, 'orden': 3,
     },
     {
         'nombre': 'Héctor Sáez',
+        'profesion': 'Arquitecto',
         'ciudad': 'Temuco',
         'texto': 'La parcela en Pucón superó todas mis expectativas. Vista al volcán, listo para construir. Proceso limpio y asesoría profesional en todo momento.',
         'estrellas': 5, 'es_placeholder': True, 'orden': 4,

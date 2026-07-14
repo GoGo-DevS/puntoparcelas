@@ -1,117 +1,160 @@
 {% extends "core/base.html" %}
 
-{% block title %}Catálogo de parcelas — Punto Parcelas{% endblock %}
-{% block meta_desc %}Explora nuestro catálogo de parcelas disponibles en Chile. Filtra por región, precio y características.{% endblock %}
+{% block title %}Catálogo de Parcelas — Punto Parcelas{% endblock %}
+{% block meta_desc %}Encuentra tu parcela ideal en Chile. Filtra por región y descubre oportunidades de inversión en terrenos a lo largo del país.{% endblock %}
+{% block og_title %}Catálogo de Parcelas — Punto Parcelas{% endblock %}
+{% block og_desc %}Explora nuestras parcelas disponibles por región. Seguridad, plusvalía y asesoría experta en cada terreno.{% endblock %}
 
 {% block extra_head %}
 <style>
-  .catalogo-header {
-    padding: 8rem 0 3rem;
-    background: linear-gradient(180deg, var(--pp-surface) 0%, var(--pp-bg) 100%);
+  /* ── CATALOG HERO ── */
+  .catalog-hero {
+    min-height: 52vh;
+    position: relative;
+    display: flex; align-items: flex-end;
+    padding-bottom: 3.5rem;
+    overflow: hidden;
+  }
+  .catalog-hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1800&q=80');
+    background-size: cover; background-position: center 40%;
+    filter: brightness(.28);
+  }
+  .catalog-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(13,13,13,1) 0%, rgba(13,13,13,.5) 50%, rgba(13,13,13,.1) 100%);
+  }
+  .catalog-hero-content { position: relative; z-index: 1; padding-top: 6rem; }
+  .catalog-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900; font-size: clamp(2.6rem, 7vw, 5rem);
+    text-transform: uppercase; letter-spacing: -.02em; line-height: 1.0;
+    margin-bottom: .6rem;
+  }
+  .catalog-sub {
+    font-size: .82rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--pp-gold); font-weight: 600;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    background: var(--pp-surface);
     border-bottom: 1px solid var(--pp-border);
+    padding: 1rem 0;
+    position: sticky; top: 56px; z-index: 900;
   }
-  .pills-bar {
-    display: flex; flex-wrap: wrap; gap: .5rem;
-    padding: 1.5rem 0;
+  .filter-pills-wrap {
+    display: flex; gap: .5rem; overflow-x: auto;
+    scrollbar-width: none; -ms-overflow-style: none;
   }
-  .parcelas-grid {
+  .filter-pills-wrap::-webkit-scrollbar { display: none; }
+
+  /* ── CATALOG GRID ── */
+  .catalog-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 1rem;
   }
-  @media (max-width: 1199px) { .parcelas-grid { grid-template-columns: repeat(4, 1fr); } }
-  @media (max-width: 991px)  { .parcelas-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 767px)  { .parcelas-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 479px)  { .parcelas-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 1199px) { .catalog-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 991px)  { .catalog-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 767px)  { .catalog-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 479px)  { .catalog-grid { grid-template-columns: 1fr; } }
 
-  .empty-state {
-    text-align: center; padding: 5rem 1rem;
-    color: var(--pp-muted);
+  /* ── PAGINATION ── */
+  .pp-pagination { display: flex; gap: .35rem; justify-content: center; flex-wrap: wrap; }
+  .pp-page-link {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 6px;
+    border: 1px solid var(--pp-border); color: var(--pp-muted);
+    font-size: .82rem; font-weight: 600; text-decoration: none;
+    transition: all var(--pp-tr);
   }
-  .empty-state i { font-size: 3rem; color: var(--pp-border); margin-bottom: 1rem; }
-
-  /* pagination */
-  .pp-pagination .page-link {
-    background: var(--pp-surface); border-color: var(--pp-border);
-    color: var(--pp-text);
-  }
-  .pp-pagination .page-link:hover { background: var(--pp-surface2); color: var(--pp-gold); }
-  .pp-pagination .page-item.active .page-link {
-    background: var(--pp-gold); border-color: var(--pp-gold); color: #0D0D0D;
-  }
-  .pp-pagination .page-item.disabled .page-link { opacity: .4; }
+  .pp-page-link:hover { border-color: var(--pp-gold); color: var(--pp-gold); }
+  .pp-page-link.active { background: var(--pp-gold); border-color: var(--pp-gold); color: #0D0D0D; }
+  .pp-page-link.disabled { opacity: .35; pointer-events: none; }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- HEADER -->
-<div class="catalogo-header">
-  <div class="container">
-    <div class="gold-line"></div>
-    <h1 class="section-title">Catálogo de parcelas</h1>
-    <p style="color:var(--pp-muted); margin-top:.5rem;">
-      {{ total }} parcela{% if total != 1 %}s{% endif %} disponible{% if total != 1 %}s{% endif %}
-      {% if region_activa %}en {{ region_activa|capfirst }}{% endif %}
-    </p>
+<!-- CATALOG HERO -->
+<section class="catalog-hero">
+  <div class="catalog-hero-bg"></div>
+  <div class="catalog-hero-overlay"></div>
+  <div class="container catalog-hero-content">
+    <span class="catalog-sub">Punto Parcelas · Chile</span>
+    <h1 class="catalog-title">Nuestras<br>Parcelas</h1>
   </div>
-</div>
+</section>
 
-<!-- FILTER PILLS -->
-<div style="background:var(--pp-surface); border-bottom:1px solid var(--pp-border); position:sticky; top:56px; z-index:100;">
+<!-- FILTER BAR -->
+<div class="filter-bar">
   <div class="container">
-    <div class="pills-bar">
+    <div class="filter-pills-wrap">
       <a href="{% url 'core:catalogo' %}" class="filter-pill {% if not region_activa %}active{% endif %}">
         Todas las regiones
       </a>
-      {% for r_key, r_label in regiones %}
-      <a href="{% url 'core:catalogo' %}?region={{ r_key }}"
-         class="filter-pill {% if region_activa == r_key %}active{% endif %}">
-        {{ r_label }}
+      {% for val, label in regiones %}
+      <a href="?region={{ val }}" class="filter-pill {% if region_activa == val %}active{% endif %}">
+        {{ label }}
       </a>
       {% endfor %}
     </div>
   </div>
 </div>
 
-<!-- GRID -->
-<section class="section">
+<!-- RESULTS -->
+<section class="section" style="padding-top:2.5rem;">
   <div class="container">
+
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+      <p style="color:var(--pp-muted); font-size:.85rem; margin:0;">
+        <strong style="color:var(--pp-text); font-family:'Montserrat',sans-serif; font-weight:800;">{{ total }}</strong>
+        parcela{{ total|pluralize }} disponible{{ total|pluralize }}{% if region_activa %} · filtrado por región{% endif %}
+      </p>
+      {% if region_activa %}
+      <a href="{% url 'core:catalogo' %}" style="font-size:.8rem; color:var(--pp-muted); text-decoration:none;">
+        <i class="bi bi-x-circle me-1"></i>Quitar filtro
+      </a>
+      {% endif %}
+    </div>
+
     {% if page_obj.object_list %}
-    <div class="parcelas-grid">
-      {% for p in page_obj.object_list %}
-      <a href="{% url 'core:parcela_detail' p.slug %}" style="text-decoration:none;">
-        <div class="parcela-card">
+    <div class="catalog-grid">
+      {% for p in page_obj %}
+      <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card">
+        <div class="parcela-card-img-wrap">
           {% if p.foto_principal_url %}
             <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
           {% else %}
             <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
           {% endif %}
-          <div class="parcela-card-body">
-            <div class="d-flex justify-content-between align-items-start mb-1">
-              <span class="badge-region">{{ p.get_region_display }}</span>
-              <span class="badge-estado badge-{{ p.estado }}">{{ p.get_estado_display }}</span>
-            </div>
-            <div class="parcela-card-nombre">{{ p.nombre }}</div>
-            {% if p.sector %}
-            <div style="font-size:.78rem; color:var(--pp-muted); margin-bottom:.3rem;">
-              <i class="bi bi-geo-alt me-1"></i>{{ p.sector }}
-            </div>
+          <div class="parcela-region-badge">
+            <i class="bi bi-geo-alt-fill"></i> {{ p.get_region_display }}
+          </div>
+        </div>
+        <div class="parcela-card-body">
+          <div class="parcela-card-nombre">{{ p.nombre }}</div>
+          <div class="parcela-card-attrs">
+            {% if p.tiene_luz %}
+              <span class="parcela-card-attr"><i class="bi bi-lightning-charge-fill"></i> Luz</span>
             {% endif %}
+            {% if p.tiene_agua %}
+              <span class="parcela-card-attr"><i class="bi bi-droplet-fill"></i> Agua</span>
+            {% endif %}
+            {% if p.tiene_acceso %}
+              <span class="parcela-card-attr"><i class="bi bi-signpost-2-fill"></i> Acceso</span>
+            {% endif %}
+            {% if p.bosque_nativo %}
+              <span class="parcela-card-attr"><i class="bi bi-tree-fill"></i> Bosque</span>
+            {% endif %}
+          </div>
+          <div class="mt-auto">
+            <div class="parcela-desde">Desde</div>
             <div class="parcela-card-precio">{{ p.precio_clp }}</div>
-            <div class="d-flex justify-content-between align-items-center mt-auto pt-1"
-                 style="border-top:1px solid var(--pp-border);">
-              <span class="superficie-badge"><i class="bi bi-aspect-ratio me-1"></i>{{ p.superficie_display }}</span>
-              <div class="d-flex gap-1">
-                {% for key, icon, label in p.atributos_activos|slice:":3" %}
-                <span style="color:var(--pp-gold); font-size:.78rem;" title="{{ label }}">
-                  <i class="bi {{ icon }}"></i>
-                </span>
-                {% endfor %}
-                {% if p.atributos_activos|length > 3 %}
-                <span style="font-size:.7rem; color:var(--pp-muted);">+{{ p.atributos_activos|length|add:"-3" }}</span>
-                {% endif %}
-              </div>
+            <div class="btn-outline-gold w-100 text-center" style="font-size:.72rem; padding:.45rem;">
+              Ver detalles
             </div>
           </div>
         </div>
@@ -119,51 +162,48 @@
       {% endfor %}
     </div>
 
-    <!-- PAGINACIÓN -->
     {% if page_obj.has_other_pages %}
-    <nav class="mt-5 d-flex justify-content-center">
-      <ul class="pagination pp-pagination">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ page_obj.previous_page_number }}">
-            <i class="bi bi-chevron-left"></i>
-          </a>
-        </li>
-        {% else %}
-        <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
+    <div class="mt-5 pp-pagination">
+      {% if page_obj.has_previous %}
+        <a href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ page_obj.previous_page_number }}" class="pp-page-link">
+          <i class="bi bi-chevron-left"></i>
+        </a>
+      {% else %}
+        <span class="pp-page-link disabled"><i class="bi bi-chevron-left"></i></span>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if num == page_obj.number %}
+          <span class="pp-page-link active">{{ num }}</span>
+        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+          <a href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ num }}" class="pp-page-link">{{ num }}</a>
+        {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+          <a href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ num }}" class="pp-page-link">{{ num }}</a>
         {% endif %}
-
-        {% for n in page_obj.paginator.page_range %}
-        <li class="page-item {% if n == page_obj.number %}active{% endif %}">
-          <a class="page-link" href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ n }}">{{ n }}</a>
-        </li>
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ page_obj.next_page_number }}">
-            <i class="bi bi-chevron-right"></i>
-          </a>
-        </li>
-        {% else %}
-        <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
-        {% endif %}
-      </ul>
-    </nav>
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ page_obj.next_page_number }}" class="pp-page-link">
+          <i class="bi bi-chevron-right"></i>
+        </a>
+      {% else %}
+        <span class="pp-page-link disabled"><i class="bi bi-chevron-right"></i></span>
+      {% endif %}
+    </div>
     {% endif %}
 
     {% else %}
-    <div class="empty-state">
-      <i class="bi bi-geo-alt d-block"></i>
+    <div style="text-align:center; padding:5rem 0; color:var(--pp-muted);">
+      <i class="bi bi-geo-alt" style="font-size:3rem; display:block; margin-bottom:1rem; opacity:.2;"></i>
       <h4>No hay parcelas disponibles</h4>
-      <p>
-        {% if region_activa %}No encontramos parcelas en esta región.{% else %}No hay parcelas disponibles en este momento.{% endif %}
+      <p style="font-size:.9rem;">
+        {% if region_activa %}No tenemos parcelas en esa región en este momento.
+        {% else %}El catálogo está siendo actualizado.{% endif %}
       </p>
       {% if region_activa %}
       <a href="{% url 'core:catalogo' %}" class="btn-outline-gold mt-2">Ver todas las regiones</a>
       {% endif %}
     </div>
     {% endif %}
+
   </div>
 </section>
 

@@ -48,13 +48,14 @@ class FotoParcelaForm(forms.ModelForm):
 class TestimonioForm(forms.ModelForm):
     class Meta:
         model = Testimonio
-        fields = ['nombre', 'ciudad', 'texto', 'estrellas', 'activo', 'orden']
+        fields = ['nombre', 'profesion', 'ciudad', 'texto', 'estrellas', 'activo', 'orden']
         widgets = {
-            'nombre':   forms.TextInput(attrs={'class': 'form-control'}),
-            'ciudad':   forms.TextInput(attrs={'class': 'form-control'}),
-            'texto':    forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'nombre':    forms.TextInput(attrs={'class': 'form-control'}),
+            'profesion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Inversionista'}),
+            'ciudad':    forms.TextInput(attrs={'class': 'form-control'}),
+            'texto':     forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'estrellas': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5}),
-            'orden':    forms.NumberInput(attrs={'class': 'form-control'}),
+            'orden':     forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
 
