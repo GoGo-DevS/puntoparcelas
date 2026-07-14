@@ -328,6 +328,79 @@
       margin-bottom: .4rem; display: block;
     }
 
+    /* ── ANIMATIONS ── */
+    @keyframes ppFadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes ppFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes ppWaPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,.4), 0 0 0 0   rgba(37,211,102,.35); }
+      60%       { box-shadow: 0 4px 20px rgba(37,211,102,.4), 0 0 0 18px rgba(37,211,102,0); }
+    }
+    @keyframes ppGoldShimmer {
+      0%   { background-position: -300% center; }
+      100% { background-position:  300% center; }
+    }
+    @keyframes ppLineGrow {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+    @keyframes ppCardFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-5px); }
+    }
+
+    /* Scroll-triggered entrance */
+    .anim {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .65s cubic-bezier(.25,.46,.45,.94),
+                  transform .65s cubic-bezier(.25,.46,.45,.94);
+      will-change: opacity, transform;
+    }
+    .anim.in-view { opacity: 1; transform: none; }
+    .anim-left {
+      opacity: 0; transform: translateX(-30px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .anim-left.in-view { opacity: 1; transform: none; }
+    .anim-right {
+      opacity: 0; transform: translateX(30px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .anim-right.in-view { opacity: 1; transform: none; }
+    .anim-fade {
+      opacity: 0;
+      transition: opacity .8s ease;
+    }
+    .anim-fade.in-view { opacity: 1; }
+
+    /* Gold line entrance */
+    .gold-line {
+      transform-origin: left;
+      animation: ppLineGrow .55s cubic-bezier(.25,.46,.45,.94) both;
+    }
+
+    /* WA floating pulse */
+    .wa-float { animation: ppWaPulse 2.6s ease-in-out infinite; }
+
+    /* Gold shimmer on hover for section eyebrows */
+    .section-eyebrow {
+      background: linear-gradient(90deg, var(--pp-gold) 0%, #F5E070 45%, var(--pp-gold) 55%, #9A7618 100%);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: ppGoldShimmer 4s linear infinite;
+    }
+
+    /* Hover float on parcela cards */
+    .parcela-card { transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+
     /* ── TOAST ── */
     .toast-container { position: fixed; top: 5rem; right: 1rem; z-index: 2000; }
 
@@ -530,18 +603,74 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Navbar scroll
   const nav = document.getElementById('ppNav');
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 40);
-  });
+  }, { passive: true });
+
+  // Mobile menu
   document.getElementById('mobileMenuToggle').addEventListener('click', () => {
     const m = document.getElementById('mobileMenu');
     m.style.display = m.style.display === 'none' || m.style.display === '' ? 'block' : 'none';
   });
+
+  // Toasts
   document.querySelectorAll('.toast').forEach(t => {
     setTimeout(() => t.style.opacity = '0', 4000);
     setTimeout(() => t.remove(), 4500);
   });
+
+  // ── INTERSECTION OBSERVER (scroll animations) ──
+  const animObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const delay = parseInt(el.dataset.delay || 0);
+      setTimeout(() => el.classList.add('in-view'), delay);
+      animObserver.unobserve(el);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.anim, .anim-left, .anim-right, .anim-fade').forEach(el => {
+    animObserver.observe(el);
+  });
+
+  // ── PARALLAX on hero backgrounds ──
+  const parallaxEls = document.querySelectorAll('[data-parallax]');
+  if (parallaxEls.length) {
+    window.addEventListener('scroll', () => {
+      const sy = window.scrollY;
+      parallaxEls.forEach(el => {
+        const factor = parseFloat(el.dataset.parallax || 0.25);
+        el.style.transform = `translateY(${sy * factor}px)`;
+      });
+    }, { passive: true });
+  }
+
+  // ── COUNTER animation ──
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const duration = 1400;
+    const start = performance.now();
+    function step(ts) {
+      const progress = Math.min((ts - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(ease * target) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-counter]').forEach(el => counterObserver.observe(el));
 </script>
 {% block extra_js %}{% endblock %}
 </body>

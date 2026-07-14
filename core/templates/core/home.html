@@ -104,7 +104,25 @@
     border-radius: 16px;
     padding: 4rem 2rem;
     text-align: center;
+    position: relative; overflow: hidden;
   }
+  .cta-banner::before {
+    content: '';
+    position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at center, rgba(212,175,55,.06) 0%, transparent 65%);
+    animation: ppCtaGlow 5s ease-in-out infinite alternate;
+  }
+  @keyframes ppCtaGlow {
+    from { transform: scale(.8) translate(-10%, -10%); }
+    to   { transform: scale(1.2) translate(10%, 10%); }
+  }
+
+  /* Hero entrance animations */
+  .hero-line1 { animation: ppFadeUp .7s ease .15s both; }
+  .hero-title  { animation: ppFadeUp .85s ease .35s both; }
+  .hero-sub    { animation: ppFadeUp .7s ease .6s both; }
+  .hero-ctas   { animation: ppFadeUp .7s ease .8s both; }
 
   @media (max-width: 767px) {
     .valor-bar-item { border-right: none; border-bottom: 1px solid var(--pp-border); padding: 1.3rem 1rem; }
@@ -117,7 +135,7 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg" data-parallax="0.28"></div>
   <div class="hero-overlay"></div>
   <div class="container hero-content">
     <div class="row">
@@ -142,21 +160,21 @@
 <div class="valores-bar">
   <div class="container">
     <div class="row g-0">
-      <div class="col-md-4 valor-bar-item">
+      <div class="col-md-4 valor-bar-item anim" data-delay="0">
         <div class="valor-bar-icon"><i class="bi bi-shield-check"></i></div>
         <div>
           <div class="valor-bar-name">Seguridad</div>
           <div class="valor-bar-desc">Proyectos con documentación y escrituración al día</div>
         </div>
       </div>
-      <div class="col-md-4 valor-bar-item">
+      <div class="col-md-4 valor-bar-item anim" data-delay="120">
         <div class="valor-bar-icon"><i class="bi bi-graph-up-arrow"></i></div>
         <div>
           <div class="valor-bar-name">Plusvalía</div>
           <div class="valor-bar-desc">Invierte en tierra, asegura tu futuro patrimonial</div>
         </div>
       </div>
-      <div class="col-md-4 valor-bar-item">
+      <div class="col-md-4 valor-bar-item anim" data-delay="240">
         <div class="valor-bar-icon"><i class="bi bi-handshake"></i></div>
         <div>
           <div class="valor-bar-name">Confianza</div>
@@ -172,18 +190,18 @@
 <section class="section">
   <div class="container">
     <div class="d-flex align-items-end justify-content-between mb-4">
-      <div>
+      <div class="anim">
         <span class="section-eyebrow">Parcelas Destacadas</span>
         <h2 class="section-title">Invierte en lo que<br>trasciende</h2>
       </div>
-      <a href="{% url 'core:catalogo' %}" class="btn-outline-gold d-none d-md-inline-block">
+      <a href="{% url 'core:catalogo' %}" class="btn-outline-gold d-none d-md-inline-block anim" data-delay="200">
         Ver catálogo completo <i class="bi bi-arrow-right ms-1"></i>
       </a>
     </div>
 
     <div class="destacadas-grid">
       {% for p in destacadas %}
-      <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card">
+      <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card anim" data-delay="{{ forloop.counter0 }}00">
         <div class="parcela-card-img-wrap">
           {% if p.foto_principal_url %}
             <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
@@ -233,13 +251,13 @@
 {% if testimonios %}
 <section class="section" style="background:var(--pp-surface); border-top:1px solid var(--pp-border); border-bottom:1px solid var(--pp-border);">
   <div class="container">
-    <div class="text-center mb-5">
+    <div class="text-center mb-5 anim">
       <span class="section-eyebrow">Testimonios</span>
       <h2 class="section-title">Lo que dicen<br>nuestros clientes</h2>
     </div>
     <div class="row g-4 justify-content-center">
       {% for t in testimonios %}
-      <div class="col-md-4">
+      <div class="col-md-4 anim" data-delay="{{ forloop.counter0 }}50">
         <div class="testimonio-card">
           <div class="testimonio-stars mb-2">{% for _ in t.rango_estrellas %}★{% endfor %}</div>
           <p class="testimonio-texto mb-3">"{{ t.texto }}"</p>
@@ -263,7 +281,7 @@
 <!-- CTA FINAL -->
 <section class="section">
   <div class="container">
-    <div class="cta-banner">
+    <div class="cta-banner anim">
       <span class="section-eyebrow">¿Listo para invertir?</span>
       <h2 class="section-title mb-3">Hablemos tu inversión<br>sin compromiso</h2>
       <p style="color:var(--pp-muted); max-width:460px; margin:0 auto 2rem; font-size:.95rem;">

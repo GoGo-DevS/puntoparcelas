@@ -80,11 +80,11 @@
 
 <!-- CATALOG HERO -->
 <section class="catalog-hero">
-  <div class="catalog-hero-bg"></div>
+  <div class="catalog-hero-bg" data-parallax="0.22"></div>
   <div class="catalog-hero-overlay"></div>
   <div class="container catalog-hero-content">
-    <span class="catalog-sub">Punto Parcelas · Chile</span>
-    <h1 class="catalog-title">Nuestras<br>Parcelas</h1>
+    <span class="catalog-sub" style="animation:ppFadeIn .8s ease .2s both;">Punto Parcelas · Chile</span>
+    <h1 class="catalog-title" style="animation:ppFadeUp .9s ease .4s both;">Nuestras<br>Parcelas</h1>
   </div>
 </section>
 
@@ -123,7 +123,7 @@
     {% if page_obj.object_list %}
     <div class="catalog-grid">
       {% for p in page_obj %}
-      <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card">
+      <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card anim" data-delay="{{ forloop.counter0 }}60">
         <div class="parcela-card-img-wrap">
           {% if p.foto_principal_url %}
             <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
