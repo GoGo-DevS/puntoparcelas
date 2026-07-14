@@ -1,0 +1,156 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{{ titulo }} — Panel{% endblock %}
+{% block topbar_title %}{{ titulo }}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'panel:parcelas_lista' %}" class="btn-pp-ghost">
+  <i class="bi bi-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .section-card { background:var(--pp-surface2); border:1px solid var(--pp-border); border-radius:10px; padding:1.5rem; margin-bottom:1.25rem; }
+  .section-card-title { font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; color:var(--pp-gold); margin-bottom:1.25rem; font-weight:700; }
+  .attr-check { display:flex; align-items:center; gap:.5rem; padding:.45rem .75rem; background:var(--pp-surface); border:1px solid var(--pp-border); border-radius:8px; cursor:pointer; transition:border-color .18s; }
+  .attr-check:has(input:checked) { border-color:rgba(212,175,55,.4); background:rgba(212,175,55,.06); }
+  .attr-check label { cursor:pointer; font-size:.88rem; margin:0; }
+
+  /* foto upload */
+  .foto-upload-area {
+    border: 2px dashed var(--pp-border); border-radius:10px; padding:2rem; text-align:center;
+    cursor:pointer; transition:border-color .18s;
+  }
+  .foto-upload-area:hover { border-color:var(--pp-gold); }
+  .foto-item { position:relative; display:inline-block; }
+  .foto-item img { width:90px; height:68px; object-fit:cover; border-radius:6px; border:1px solid var(--pp-border); }
+  .foto-item .foto-del { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#EF4444; color:#fff; border:none; cursor:pointer; font-size:.65rem; display:flex; align-items:center; justify-content:center; }
+  .foto-principal-radio { position:absolute; bottom:3px; left:3px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="row g-3">
+    <div class="col-lg-8">
+
+      <!-- INFO BÁSICA -->
+      <div class="section-card">
+        <div class="section-card-title"><i class="bi bi-info-circle me-2"></i>Información básica</div>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Nombre de la parcela *</label>
+            {{ form.nombre }}
+            {% if form.nombre.errors %}<div style="color:#EF4444; font-size:.8rem; margin-top:.3rem;">{{ form.nombre.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Región *</label>
+            {{ form.region }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Sector / Localidad</label>
+            {{ form.sector }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Precio CLP *</label>
+            {{ form.precio }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Superficie (m²) *</label>
+            {{ form.superficie }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Estado</label>
+            {{ form.estado }}
+          </div>
+          <div class="col-md-6 d-flex align-items-end">
+            <div class="form-check form-switch ms-2">
+              {{ form.destacada }}
+              <label class="form-check-label ms-2" for="{{ form.destacada.id_for_label }}">Mostrar en página de inicio</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Descripción</label>
+            {{ form.descripcion }}
+          </div>
+        </div>
+      </div>
+
+      <!-- ATRIBUTOS -->
+      <div class="section-card">
+        <div class="section-card-title"><i class="bi bi-toggles me-2"></i>Características de la parcela</div>
+        <div class="row g-2">
+          {% for field in form.tiene_luz,form.tiene_agua,form.tiene_acceso,form.vista_privilegiada,form.tiene_cercado,form.tiene_porton,form.es_turistico,form.bosque_nativo,form.rol_propio %}
+          <div class="col-md-4 col-6">
+            <div class="attr-check">
+              {{ field }}
+              <label for="{{ field.id_for_label }}" style="cursor:pointer; font-size:.87rem; margin:0;">{{ field.label }}</label>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- FOTOS -->
+    <div class="col-lg-4">
+      <div class="section-card">
+        <div class="section-card-title"><i class="bi bi-images me-2"></i>Fotos</div>
+
+        {% if not is_new and fotos %}
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          {% for foto in fotos %}
+          <div class="foto-item">
+            <img src="{{ foto.imagen.url }}" alt="">
+            <input type="radio" name="foto_principal" value="{{ foto.pk }}" class="foto-principal-radio"
+                   {% if foto.principal %}checked{% endif %} title="Principal">
+            <a href="{% url 'panel:foto_delete' foto.pk %}" class="foto-del" title="Eliminar"
+               onclick="return confirm('¿Eliminar esta foto?')">×</a>
+          </div>
+          {% endfor %}
+        </div>
+        <div style="font-size:.75rem; color:var(--pp-muted); margin-bottom:.75rem;">
+          <i class="bi bi-info-circle me-1"></i>Selecciona el círculo para marcar como foto principal.
+        </div>
+        {% endif %}
+
+        <label class="foto-upload-area" for="fotosInput">
+          <i class="bi bi-cloud-upload" style="font-size:2rem; color:var(--pp-gold); display:block; margin-bottom:.5rem;"></i>
+          <div style="font-weight:600; font-size:.9rem;">Subir fotos</div>
+          <div style="font-size:.78rem; color:var(--pp-muted); margin-top:.25rem;">JPG, PNG · máx 5 MB cada una</div>
+        </label>
+        <input type="file" id="fotosInput" name="fotos_nuevas" multiple accept="image/*" style="display:none;"
+               onchange="mostrarVista(this)">
+        <div id="fotosPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="section-card" style="background:transparent; border:none; padding:0;">
+        <button type="submit" class="btn-pp w-100" style="padding:.85rem; font-size:.9rem; justify-content:center;">
+          <i class="bi bi-check2 me-2"></i>
+          {% if is_new %}Crear parcela{% else %}Guardar cambios{% endif %}
+        </button>
+        <a href="{% url 'panel:parcelas_lista' %}" class="btn-pp-ghost w-100 mt-2" style="justify-content:center; padding:.75rem;">
+          Cancelar
+        </a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function mostrarVista(input) {
+  const prev = document.getElementById('fotosPreview');
+  prev.innerHTML = '';
+  Array.from(input.files).forEach(f => {
+    const img = document.createElement('img');
+    img.style.cssText = 'width:80px; height:60px; object-fit:cover; border-radius:6px; border:1px solid rgba(212,175,55,.2);';
+    img.src = URL.createObjectURL(f);
+    prev.appendChild(img);
+  });
+}
+</script>
+{% endblock %}

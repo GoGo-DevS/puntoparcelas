@@ -1,0 +1,44 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{{ titulo }} — Panel{% endblock %}
+{% block topbar_title %}{{ titulo }}{% endblock %}
+{% block topbar_actions %}
+<a href="{% url 'panel:testimonios_lista' %}" class="btn-pp-ghost"><i class="bi bi-arrow-left"></i> Volver</a>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:540px;">
+  <div class="kpi-card">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre *</label>{{ form.nombre }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ciudad</label>{{ form.ciudad }}
+        </div>
+        <div class="col-12">
+          <label class="form-label">Texto del testimonio *</label>{{ form.texto }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Estrellas (1-5)</label>{{ form.estrellas }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Orden</label>{{ form.orden }}
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <div class="form-check form-switch">
+            {{ form.activo }}
+            <label class="form-check-label ms-2" for="{{ form.activo.id_for_label }}">Activo</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn-pp" style="padding:.75rem 1.5rem;">
+            <i class="bi bi-check2 me-2"></i>{% if is_new %}Crear{% else %}Guardar{% endif %}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

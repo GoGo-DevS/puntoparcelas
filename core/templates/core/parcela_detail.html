@@ -1,0 +1,176 @@
+{% extends "core/base.html" %}
+{% block title %}{{ parcela.nombre }} — Punto Parcelas{% endblock %}
+
+{% block extra_head %}
+<style>
+  .detail-hero { padding: 7rem 0 3rem; background: var(--pp-surface); border-bottom: 1px solid var(--pp-border); }
+  .gallery-main { width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:var(--pp-radius); background:var(--pp-surface2); }
+  .gallery-thumb { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:6px; cursor:pointer; opacity:.6; transition:opacity var(--pp-tr); }
+  .gallery-thumb:hover, .gallery-thumb.active { opacity:1; }
+  .info-card { background:var(--pp-surface); border:1px solid var(--pp-border); border-radius:var(--pp-radius); padding:1.5rem; }
+  .attr-badge {
+    display:inline-flex; align-items:center; gap:.4rem;
+    background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2);
+    border-radius:6px; padding:.35rem .75rem;
+    font-size:.8rem; color:var(--pp-text);
+  }
+  .attr-badge i { color:var(--pp-gold); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-hero">
+  <div class="container">
+    <nav style="font-size:.82rem; margin-bottom:1rem;">
+      <a href="{% url 'core:home' %}" style="color:var(--pp-muted); text-decoration:none;">Inicio</a>
+      <span style="color:var(--pp-border); margin:0 .5rem;">/</span>
+      <a href="{% url 'core:catalogo' %}" style="color:var(--pp-muted); text-decoration:none;">Catálogo</a>
+      <span style="color:var(--pp-border); margin:0 .5rem;">/</span>
+      <span style="color:var(--pp-gold);">{{ parcela.nombre }}</span>
+    </nav>
+    <div class="d-flex align-items-start gap-3 flex-wrap">
+      <div class="flex-grow-1">
+        <span class="badge-region mb-2">{{ parcela.get_region_display }}</span>
+        {% if parcela.sector %}<span style="color:var(--pp-muted); font-size:.85rem; margin-left:.5rem;"><i class="bi bi-geo-alt me-1"></i>{{ parcela.sector }}</span>{% endif %}
+        <h1 style="font-size:clamp(1.8rem,4vw,2.6rem); margin:.4rem 0 .2rem;">{{ parcela.nombre }}</h1>
+        <div style="font-size:1.8rem; font-family:'Montserrat',sans-serif; font-weight:900; color:var(--pp-gold);">{{ parcela.precio_clp }}</div>
+      </div>
+      <span class="badge-estado badge-{{ parcela.estado }} align-self-start" style="font-size:.9rem; padding:.35rem 1rem;">{{ parcela.get_estado_display }}</span>
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- GALERIA + DESCRIPCION -->
+      <div class="col-lg-7">
+        {% with fotos=parcela.fotos.all %}
+        {% if fotos %}
+          <img src="{{ parcela.foto_principal_url }}" class="gallery-main mb-2" id="mainPhoto" alt="{{ parcela.nombre }}">
+          {% if fotos|length > 1 %}
+          <div class="d-flex gap-2 flex-wrap">
+            {% for f in fotos %}
+            <img src="{{ f.imagen.url }}" class="gallery-thumb {% if f.principal %}active{% endif %}"
+                 style="width:80px;" alt="foto"
+                 onclick="document.getElementById('mainPhoto').src=this.src; document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
+            {% endfor %}
+          </div>
+          {% endif %}
+        {% else %}
+          <div style="width:100%; aspect-ratio:16/9; background:var(--pp-surface2); border-radius:var(--pp-radius); display:flex; align-items:center; justify-content:center; color:var(--pp-border); font-size:4rem;">
+            <i class="bi bi-image"></i>
+          </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if parcela.descripcion %}
+        <div class="mt-4">
+          <h3 style="font-size:1.1rem; margin-bottom:.75rem;">Descripción</h3>
+          <p style="color:var(--pp-muted); line-height:1.75;">{{ parcela.descripcion }}</p>
+        </div>
+        {% endif %}
+
+        {% if parcela.atributos_activos %}
+        <div class="mt-4">
+          <h3 style="font-size:1.1rem; margin-bottom:.75rem;">Características</h3>
+          <div class="d-flex flex-wrap gap-2">
+            {% for key, icon, label in parcela.atributos_activos %}
+            <span class="attr-badge"><i class="bi {{ icon }}"></i>{{ label }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- SIDEBAR CONSULTA -->
+      <div class="col-lg-5">
+        <div class="info-card mb-3">
+          <h4 style="font-size:1.05rem; margin-bottom:1rem; padding-bottom:.75rem; border-bottom:1px solid var(--pp-border);">
+            <i class="bi bi-info-circle me-2" style="color:var(--pp-gold);"></i>Ficha técnica
+          </h4>
+          <table style="width:100%; font-size:.88rem; color:var(--pp-muted);">
+            <tr>
+              <td style="padding:.4rem 0; color:var(--pp-text);">Superficie</td>
+              <td style="text-align:right; font-weight:600;">{{ parcela.superficie_display }}</td>
+            </tr>
+            <tr>
+              <td style="padding:.4rem 0; color:var(--pp-text);">Región</td>
+              <td style="text-align:right;">{{ parcela.get_region_display }}</td>
+            </tr>
+            {% if parcela.sector %}
+            <tr>
+              <td style="padding:.4rem 0; color:var(--pp-text);">Sector</td>
+              <td style="text-align:right;">{{ parcela.sector }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+              <td style="padding:.4rem 0; color:var(--pp-text);">Estado</td>
+              <td style="text-align:right;"><span class="badge-estado badge-{{ parcela.estado }}">{{ parcela.get_estado_display }}</span></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="info-card">
+          <h4 style="font-size:1rem; margin-bottom:1rem;">Consultar por esta parcela</h4>
+          <form method="post" action="{% url 'core:reserva' %}">
+            {% csrf_token %}
+            <input type="hidden" name="parcela" value="{{ parcela.pk }}">
+            <div class="mb-3">
+              <input type="text" name="nombre" class="form-control" placeholder="Tu nombre" required
+                     style="background:var(--pp-surface2); border-color:var(--pp-border); color:var(--pp-text);">
+            </div>
+            <div class="mb-3">
+              <input type="text" name="telefono" class="form-control" placeholder="+56 9 XXXX XXXX" required
+                     style="background:var(--pp-surface2); border-color:var(--pp-border); color:var(--pp-text);">
+            </div>
+            <div class="mb-3">
+              <textarea name="mensaje" class="form-control" rows="3" placeholder="¿Qué te interesa saber de esta parcela?"
+                        style="background:var(--pp-surface2); border-color:var(--pp-border); color:var(--pp-text);"></textarea>
+            </div>
+            <button type="submit" class="btn-gold w-100" style="padding:.75rem;">
+              <i class="bi bi-send me-2"></i>Enviar consulta
+            </button>
+          </form>
+          <div class="text-center mt-3">
+            <span style="font-size:.8rem; color:var(--pp-muted);">o contacta directo</span>
+            <br>
+            <a href="{{ WA_LINK }}" target="_blank" class="btn-outline-gold mt-2 w-100 text-center" style="padding:.65rem;">
+              <i class="bi bi-whatsapp me-2"></i>WhatsApp a Leonardo
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RELACIONADAS -->
+    {% if relacionadas %}
+    <div class="mt-5 pt-4" style="border-top:1px solid var(--pp-border);">
+      <h3 style="margin-bottom:1.5rem;">Otras parcelas en {{ parcela.get_region_display }}</h3>
+      <div class="row g-3">
+        {% for r in relacionadas %}
+        <div class="col-md-4">
+          <a href="{% url 'core:parcela_detail' r.slug %}" style="text-decoration:none;">
+            <div class="parcela-card">
+              {% if r.foto_principal_url %}
+                <img src="{{ r.foto_principal_url }}" class="parcela-card-img" alt="{{ r.nombre }}" loading="lazy">
+              {% else %}
+                <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
+              {% endif %}
+              <div class="parcela-card-body">
+                <div class="parcela-card-nombre">{{ r.nombre }}</div>
+                <div class="parcela-card-precio">{{ r.precio_clp }}</div>
+                <div class="superficie-badge">{{ r.superficie_display }}</div>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

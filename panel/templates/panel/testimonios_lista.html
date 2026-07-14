@@ -1,0 +1,49 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Testimonios — Panel{% endblock %}
+{% block topbar_title %}Testimonios{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'panel:testimonio_create' %}" class="btn-pp"><i class="bi bi-plus-lg"></i> Nuevo</a>
+{% endblock %}
+
+{% block content %}
+{% if testimonios %}
+<div class="kpi-card p-0" style="overflow:hidden;">
+  <table class="pp-table">
+    <thead>
+      <tr>
+        <th style="padding-left:1.25rem;">Nombre</th>
+        <th>Ciudad</th>
+        <th>Estrellas</th>
+        <th>Estado</th>
+        <th>Orden</th>
+        <th style="text-align:right; padding-right:1.25rem;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in testimonios %}
+      <tr>
+        <td style="padding-left:1.25rem; font-weight:600;">{{ t.nombre }}{% if t.es_placeholder %} <span style="font-size:.7rem; color:var(--pp-muted);">(placeholder)</span>{% endif %}</td>
+        <td style="color:var(--pp-muted); font-size:.88rem;">{{ t.ciudad|default:"—" }}</td>
+        <td style="color:var(--pp-gold); letter-spacing:.05em;">{% for _ in t.rango_estrellas %}★{% endfor %}</td>
+        <td>{% if t.activo %}<span class="badge-disponible">Activo</span>{% else %}<span class="badge-vendida">Inactivo</span>{% endif %}</td>
+        <td style="color:var(--pp-muted);">{{ t.orden }}</td>
+        <td style="text-align:right; padding-right:1.25rem;">
+          <div class="d-flex gap-2 justify-content-end">
+            <a href="{% url 'panel:testimonio_edit' t.pk %}" class="btn-pp-ghost" style="padding:.3rem .7rem; font-size:.78rem;"><i class="bi bi-pencil"></i></a>
+            <a href="{% url 'panel:testimonio_delete' t.pk %}" class="btn-danger-ghost" style="padding:.3rem .7rem; font-size:.78rem;"><i class="bi bi-trash3"></i></a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div style="text-align:center; padding:5rem; color:var(--pp-muted);">
+  <i class="bi bi-star" style="font-size:3rem; display:block; margin-bottom:1rem; opacity:.2;"></i>
+  <h4>Sin testimonios</h4>
+  <a href="{% url 'panel:testimonio_create' %}" class="btn-pp mt-2"><i class="bi bi-plus-lg"></i> Agregar testimonio</a>
+</div>
+{% endif %}
+{% endblock %}

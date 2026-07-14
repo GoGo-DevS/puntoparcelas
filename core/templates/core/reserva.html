@@ -1,0 +1,183 @@
+{% extends "core/base.html" %}
+{% block title %}Contacto y consultas — Punto Parcelas{% endblock %}
+
+{% block extra_head %}
+<style>
+  .reserva-page { min-height: 100vh; padding-top: 80px; }
+  .split-left {
+    background: linear-gradient(160deg, #0f1a0a 0%, #0D0D0D 50%, #1a150a 100%);
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 4rem 3rem;
+    position: relative; overflow: hidden;
+  }
+  .split-left::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=70');
+    background-size: cover; background-position: center;
+    opacity: .12;
+  }
+  .split-left-content { position: relative; z-index: 1; }
+  .split-right {
+    background: var(--pp-bg);
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 4rem 3rem;
+  }
+  .contact-card {
+    background: var(--pp-surface);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius);
+    padding: 2.5rem;
+    width: 100%;
+  }
+  .form-control, .form-select {
+    background: var(--pp-surface2) !important;
+    border: 1px solid var(--pp-border) !important;
+    color: var(--pp-text) !important;
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    font-size: .93rem;
+    transition: border-color var(--pp-tr);
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--pp-gold) !important;
+    box-shadow: 0 0 0 3px rgba(212,175,55,.12) !important;
+    background: var(--pp-surface2) !important;
+    color: var(--pp-text) !important;
+  }
+  .form-control::placeholder { color: var(--pp-muted); }
+  .form-label { font-size: .82rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--pp-muted); margin-bottom: .4rem; }
+  .contact-item { display: flex; align-items: center; gap: 1rem; padding: .85rem 0; border-bottom: 1px solid var(--pp-border); }
+  .contact-item:last-child { border-bottom: none; }
+  .contact-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(212,175,55,.1); border: 1px solid rgba(212,175,55,.2); display: flex; align-items: center; justify-content: center; color: var(--pp-gold); font-size: 1.1rem; flex-shrink: 0; }
+  @media (max-width: 991px) { .split-left, .split-right { min-height: auto; padding: 3rem 1.5rem; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reserva-page">
+  <div class="row g-0">
+
+    <!-- LEFT — info Leonardo -->
+    <div class="col-lg-5">
+      <div class="split-left">
+        <div class="split-left-content">
+          <div class="gold-line mb-3"></div>
+          <h1 style="font-size:clamp(1.8rem,3.5vw,2.8rem); margin-bottom:.75rem; text-wrap:balance;">
+            Hablemos de tu próxima inversión
+          </h1>
+          <p style="color:var(--pp-muted); max-width:380px; margin-bottom:2.5rem; line-height:1.7;">
+            Cuéntanos qué estás buscando. Leonardo te asesora sin compromiso y responde personalmente cada consulta.
+          </p>
+
+          <!-- Contacto info -->
+          <div>
+            <div class="contact-item">
+              <div class="contact-icon"><i class="bi bi-person-fill"></i></div>
+              <div>
+                <div style="font-weight:700; font-size:.95rem;">Leonardo Valencia</div>
+                <div style="color:var(--pp-muted); font-size:.85rem;">Asesor de inversión en parcelas</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><i class="bi bi-whatsapp"></i></div>
+              <div>
+                <a href="{{ WA_LINK }}" target="_blank" style="font-weight:600; color:var(--pp-text); text-decoration:none;">+56 9 6409 0173</a>
+                <div style="color:var(--pp-muted); font-size:.82rem;">WhatsApp · respuesta en minutos</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+              <div>
+                <a href="mailto:{{ EMAIL_CONTACTO }}" style="font-weight:600; color:var(--pp-text); text-decoration:none;">{{ EMAIL_CONTACTO }}</a>
+                <div style="color:var(--pp-muted); font-size:.82rem;">Correo electrónico</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <p style="color:var(--pp-muted); font-size:.82rem; margin-bottom:.6rem;">Responde consultas sobre:</p>
+            <div class="d-flex flex-wrap gap-2">
+                {% for tag in tags_contacto %}
+              <span style="font-size:.75rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); color:var(--pp-gold); padding:.2rem .65rem; border-radius:20px;">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT — FORM -->
+    <div class="col-lg-7">
+      <div class="split-right">
+        <div class="contact-card">
+          <h2 style="font-size:1.5rem; margin-bottom:.4rem;">Enviar consulta</h2>
+          <p style="color:var(--pp-muted); font-size:.9rem; margin-bottom:2rem;">Te responderemos a la brevedad posible.</p>
+
+          {% if messages %}
+          {% for msg in messages %}
+          <div class="alert" style="background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); color:#22C55E; border-radius:8px; padding:1rem; margin-bottom:1.5rem;">
+            <i class="bi bi-check-circle me-2"></i>{{ msg }}
+          </div>
+          {% endfor %}
+          {% endif %}
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombre *</label>
+                {{ form.nombre }}
+                {% if form.nombre.errors %}<div style="color:#EF4444; font-size:.8rem; margin-top:.3rem;">{{ form.nombre.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Teléfono *</label>
+                {{ form.telefono }}
+                {% if form.telefono.errors %}<div style="color:#EF4444; font-size:.8rem; margin-top:.3rem;">{{ form.telefono.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                {{ form.email }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Región de interés</label>
+                {{ form.region_interes }}
+              </div>
+              <div class="col-12">
+                <label class="form-label">Presupuesto disponible (CLP)</label>
+                {{ form.monto_disponible }}
+                <div style="font-size:.76rem; color:var(--pp-muted); margin-top:.3rem;">Opcional — ayuda a orientarte mejor</div>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Mensaje</label>
+                {{ form.mensaje }}
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn-gold w-100" style="padding:.9rem; font-size:.95rem;">
+                  <i class="bi bi-send me-2"></i>Enviar consulta
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div class="text-center mt-4" style="font-size:.82rem; color:var(--pp-muted);">
+            ¿Prefieres contacto inmediato?
+            <a href="{{ WA_LINK }}" target="_blank" style="color:var(--pp-gold); text-decoration:none; font-weight:600; margin-left:.3rem;">
+              <i class="bi bi-whatsapp me-1"></i>Escríbenos por WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Fix split template tag that Django doesn't have natively
+// (tags already rendered server-side)
+</script>
+{% endblock %}

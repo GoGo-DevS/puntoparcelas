@@ -1,0 +1,25 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Eliminar parcela — Panel{% endblock %}
+{% block topbar_title %}Eliminar parcela{% endblock %}
+
+{% block content %}
+<div style="max-width:480px; margin:0 auto;">
+  <div class="kpi-card" style="text-align:center; padding:3rem 2rem;">
+    <i class="bi bi-exclamation-triangle-fill" style="font-size:3rem; color:#EF4444; display:block; margin-bottom:1rem;"></i>
+    <h3>¿Eliminar esta parcela?</h3>
+    <p style="color:var(--pp-muted); margin:1rem 0 2rem;">
+      "<strong style="color:var(--pp-text);">{{ parcela.nombre }}</strong>" será eliminada permanentemente junto con todas sus fotos y consultas asociadas.
+      Esta acción no se puede deshacer.
+    </p>
+    <div class="d-flex gap-3 justify-content-center">
+      <a href="{% url 'panel:parcelas_lista' %}" class="btn-pp-ghost">Cancelar</a>
+      <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger-ghost" style="padding:.6rem 1.4rem;">
+          <i class="bi bi-trash3 me-2"></i>Sí, eliminar
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

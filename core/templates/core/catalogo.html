@@ -1,0 +1,170 @@
+{% extends "core/base.html" %}
+
+{% block title %}Catálogo de parcelas — Punto Parcelas{% endblock %}
+{% block meta_desc %}Explora nuestro catálogo de parcelas disponibles en Chile. Filtra por región, precio y características.{% endblock %}
+
+{% block extra_head %}
+<style>
+  .catalogo-header {
+    padding: 8rem 0 3rem;
+    background: linear-gradient(180deg, var(--pp-surface) 0%, var(--pp-bg) 100%);
+    border-bottom: 1px solid var(--pp-border);
+  }
+  .pills-bar {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    padding: 1.5rem 0;
+  }
+  .parcelas-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+  }
+  @media (max-width: 1199px) { .parcelas-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 991px)  { .parcelas-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 767px)  { .parcelas-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 479px)  { .parcelas-grid { grid-template-columns: 1fr; } }
+
+  .empty-state {
+    text-align: center; padding: 5rem 1rem;
+    color: var(--pp-muted);
+  }
+  .empty-state i { font-size: 3rem; color: var(--pp-border); margin-bottom: 1rem; }
+
+  /* pagination */
+  .pp-pagination .page-link {
+    background: var(--pp-surface); border-color: var(--pp-border);
+    color: var(--pp-text);
+  }
+  .pp-pagination .page-link:hover { background: var(--pp-surface2); color: var(--pp-gold); }
+  .pp-pagination .page-item.active .page-link {
+    background: var(--pp-gold); border-color: var(--pp-gold); color: #0D0D0D;
+  }
+  .pp-pagination .page-item.disabled .page-link { opacity: .4; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="catalogo-header">
+  <div class="container">
+    <div class="gold-line"></div>
+    <h1 class="section-title">Catálogo de parcelas</h1>
+    <p style="color:var(--pp-muted); margin-top:.5rem;">
+      {{ total }} parcela{% if total != 1 %}s{% endif %} disponible{% if total != 1 %}s{% endif %}
+      {% if region_activa %}en {{ region_activa|capfirst }}{% endif %}
+    </p>
+  </div>
+</div>
+
+<!-- FILTER PILLS -->
+<div style="background:var(--pp-surface); border-bottom:1px solid var(--pp-border); position:sticky; top:56px; z-index:100;">
+  <div class="container">
+    <div class="pills-bar">
+      <a href="{% url 'core:catalogo' %}" class="filter-pill {% if not region_activa %}active{% endif %}">
+        Todas las regiones
+      </a>
+      {% for r_key, r_label in regiones %}
+      <a href="{% url 'core:catalogo' %}?region={{ r_key }}"
+         class="filter-pill {% if region_activa == r_key %}active{% endif %}">
+        {{ r_label }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- GRID -->
+<section class="section">
+  <div class="container">
+    {% if page_obj.object_list %}
+    <div class="parcelas-grid">
+      {% for p in page_obj.object_list %}
+      <a href="{% url 'core:parcela_detail' p.slug %}" style="text-decoration:none;">
+        <div class="parcela-card">
+          {% if p.foto_principal_url %}
+            <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
+          {% else %}
+            <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
+          {% endif %}
+          <div class="parcela-card-body">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <span class="badge-region">{{ p.get_region_display }}</span>
+              <span class="badge-estado badge-{{ p.estado }}">{{ p.get_estado_display }}</span>
+            </div>
+            <div class="parcela-card-nombre">{{ p.nombre }}</div>
+            {% if p.sector %}
+            <div style="font-size:.78rem; color:var(--pp-muted); margin-bottom:.3rem;">
+              <i class="bi bi-geo-alt me-1"></i>{{ p.sector }}
+            </div>
+            {% endif %}
+            <div class="parcela-card-precio">{{ p.precio_clp }}</div>
+            <div class="d-flex justify-content-between align-items-center mt-auto pt-1"
+                 style="border-top:1px solid var(--pp-border);">
+              <span class="superficie-badge"><i class="bi bi-aspect-ratio me-1"></i>{{ p.superficie_display }}</span>
+              <div class="d-flex gap-1">
+                {% for key, icon, label in p.atributos_activos|slice:":3" %}
+                <span style="color:var(--pp-gold); font-size:.78rem;" title="{{ label }}">
+                  <i class="bi {{ icon }}"></i>
+                </span>
+                {% endfor %}
+                {% if p.atributos_activos|length > 3 %}
+                <span style="font-size:.7rem; color:var(--pp-muted);">+{{ p.atributos_activos|length|add:"-3" }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- PAGINACIÓN -->
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-5 d-flex justify-content-center">
+      <ul class="pagination pp-pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ page_obj.previous_page_number }}">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
+        {% endif %}
+
+        {% for n in page_obj.paginator.page_range %}
+        <li class="page-item {% if n == page_obj.number %}active{% endif %}">
+          <a class="page-link" href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ n }}">{{ n }}</a>
+        </li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ page_obj.next_page_number }}">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-geo-alt d-block"></i>
+      <h4>No hay parcelas disponibles</h4>
+      <p>
+        {% if region_activa %}No encontramos parcelas en esta región.{% else %}No hay parcelas disponibles en este momento.{% endif %}
+      </p>
+      {% if region_activa %}
+      <a href="{% url 'core:catalogo' %}" class="btn-outline-gold mt-2">Ver todas las regiones</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

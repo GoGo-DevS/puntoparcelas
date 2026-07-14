@@ -1,0 +1,65 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Consultas — Panel{% endblock %}
+{% block topbar_title %}Consultas{% endblock %}
+
+{% block content %}
+<!-- FILTER TABS -->
+<div class="d-flex gap-2 mb-4 flex-wrap">
+  <a href="{% url 'panel:consultas_lista' %}" class="btn-pp-ghost"
+     style="{% if not estado_activo %}border-color:var(--pp-gold); color:var(--pp-gold);{% endif %}">
+    Todas
+  </a>
+  {% for val, label in estados %}
+  <a href="?estado={{ val }}" class="btn-pp-ghost"
+     style="{% if estado_activo == val %}border-color:var(--pp-gold); color:var(--pp-gold);{% endif %}">
+    {{ label }}
+  </a>
+  {% endfor %}
+</div>
+
+{% if consultas %}
+<div class="kpi-card p-0" style="overflow:hidden;">
+  <table class="pp-table">
+    <thead>
+      <tr>
+        <th style="padding-left:1.25rem;">Nombre</th>
+        <th>Teléfono</th>
+        <th>Región</th>
+        <th>Presupuesto</th>
+        <th>Parcela</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+        <th style="text-align:right; padding-right:1.25rem;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in consultas %}
+      <tr>
+        <td style="padding-left:1.25rem; font-weight:600;">{{ c.nombre }}</td>
+        <td>
+          <a href="https://wa.me/{{ c.telefono|cut:' '|cut:'+'|cut:'-' }}" target="_blank"
+             style="color:var(--pp-text); text-decoration:none; font-size:.88rem;">
+            <i class="bi bi-whatsapp me-1" style="color:#22C55E;"></i>{{ c.telefono }}
+          </a>
+        </td>
+        <td style="color:var(--pp-muted); font-size:.85rem;">{{ c.get_region_interes_display|default:"—" }}</td>
+        <td style="font-size:.85rem; color:var(--pp-gold);">{{ c.monto_display }}</td>
+        <td style="font-size:.82rem; color:var(--pp-muted);">{{ c.parcela|default:"—" }}</td>
+        <td><span class="badge-{{ c.estado }}">{{ c.get_estado_display }}</span></td>
+        <td style="font-size:.78rem; color:var(--pp-muted);">{{ c.creado|date:"d/m/Y H:i" }}</td>
+        <td style="text-align:right; padding-right:1.25rem;">
+          <a href="{% url 'panel:consulta_detail' c.pk %}" class="btn-pp-ghost" style="padding:.3rem .7rem; font-size:.78rem;">Ver</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div style="text-align:center; padding:5rem; color:var(--pp-muted);">
+  <i class="bi bi-inbox" style="font-size:3rem; display:block; margin-bottom:1rem; opacity:.2;"></i>
+  <h4>Sin consultas</h4>
+  <p>Aquí aparecerán las consultas del formulario de contacto.</p>
+</div>
+{% endif %}
+{% endblock %}

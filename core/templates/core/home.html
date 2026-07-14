@@ -1,0 +1,325 @@
+{% extends "core/base.html" %}
+
+{% block title %}Punto Parcelas — Tu inversión hoy, tu patrimonio mañana{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex; align-items: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1800&q=80');
+    background-size: cover; background-position: center;
+    filter: brightness(.35);
+  }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      105deg,
+      rgba(13,13,13,.85) 0%,
+      rgba(13,13,13,.4) 60%,
+      rgba(13,13,13,.1) 100%
+    );
+  }
+  .hero-content { position: relative; z-index: 1; padding: 8rem 0 5rem; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--pp-gold); margin-bottom: 1.2rem;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: inline-block; width: 28px; height: 2px; background: var(--pp-gold);
+  }
+  .hero-title {
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    line-height: 1.06; margin-bottom: 1.4rem;
+    text-wrap: balance;
+  }
+  .hero-title span { color: var(--pp-gold); }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: rgba(240,237,228,.72); max-width: 500px;
+    margin-bottom: 2.2rem; line-height: 1.6;
+  }
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--pp-surface);
+    border-top: 1px solid var(--pp-border);
+    border-bottom: 1px solid var(--pp-border);
+  }
+  .stat-item {
+    padding: 1.6rem 1rem;
+    text-align: center;
+    border-right: 1px solid var(--pp-border);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900; font-size: 2.2rem;
+    color: var(--pp-gold); line-height: 1;
+    margin-bottom: .2rem;
+  }
+  .stat-label {
+    font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--pp-muted); font-weight: 500;
+  }
+
+  /* ── VALORES ── */
+  .valor-card {
+    background: var(--pp-surface);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius);
+    padding: 2rem 1.75rem;
+    transition: border-color var(--pp-tr), transform var(--pp-tr);
+    height: 100%;
+  }
+  .valor-card:hover {
+    border-color: rgba(212,175,55,.4);
+    transform: translateY(-3px);
+  }
+  .valor-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: rgba(212,175,55,.1); border: 1px solid rgba(212,175,55,.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: var(--pp-gold);
+    margin-bottom: 1.2rem;
+  }
+  .valor-title {
+    font-size: 1.2rem; font-weight: 800; margin-bottom: .6rem;
+  }
+  .valor-text { color: var(--pp-muted); font-size: .92rem; line-height: 1.6; }
+
+  /* ── PARCELAS DESTACADAS ── */
+  .destacadas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  @media (max-width: 991px) { .destacadas-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 575px) { .destacadas-grid { grid-template-columns: 1fr; } }
+
+  /* ── TESTIMONIOS ── */
+  .testimonio-card {
+    background: var(--pp-surface);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius);
+    padding: 1.75rem;
+    height: 100%;
+  }
+  .testimonio-inicial {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(212,175,55,.15); border: 1.5px solid rgba(212,175,55,.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Montserrat',sans-serif; font-weight: 800; font-size: .95rem;
+    color: var(--pp-gold);
+  }
+  .testimonio-stars { color: var(--pp-gold); letter-spacing: .1em; }
+  .testimonio-texto { color: var(--pp-muted); font-size: .93rem; line-height: 1.65; }
+
+  /* ── CTA BANNER ── */
+  .cta-banner {
+    background: linear-gradient(135deg, var(--pp-surface) 0%, #1f1a0e 100%);
+    border: 1px solid rgba(212,175,55,.25);
+    border-radius: 16px;
+    padding: 3.5rem 2rem;
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <div class="row">
+      <div class="col-lg-8 col-xl-7">
+        <div class="hero-eyebrow">Parcelas de inversión en Chile</div>
+        <h1 class="hero-title">
+          Tu inversión hoy,<br>
+          <span>tu patrimonio</span><br>
+          mañana.
+        </h1>
+        <p class="hero-sub">
+          Parcelas escrituradas con rol propio en las mejores zonas del país.
+          Seguridad legal, plusvalía garantizada y asesoría personalizada.
+        </p>
+        <div class="hero-ctas">
+          <a href="{% url 'core:catalogo' %}" class="btn-gold" style="padding:.85rem 2rem; font-size:.9rem;">
+            <i class="bi bi-grid me-2"></i>Ver catálogo
+          </a>
+          <a href="{% url 'core:reserva' %}" class="btn-outline-gold" style="padding:.85rem 2rem; font-size:.9rem;">
+            <i class="bi bi-chat-dots me-2"></i>Consultar gratis
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="row g-0">
+      <div class="col-4 stat-item">
+        <div class="stat-num">{{ stats.activas }}+</div>
+        <div class="stat-label">Parcelas disponibles</div>
+      </div>
+      <div class="col-4 stat-item">
+        <div class="stat-num">{{ stats.regiones }}</div>
+        <div class="stat-label">Regiones del país</div>
+      </div>
+      <div class="col-4 stat-item">
+        <div class="stat-num">{{ stats.vendidas }}+</div>
+        <div class="stat-label">Clientes satisfechos</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VALORES -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="gold-line mx-auto"></div>
+      <h2 class="section-title">Por qué elegir<br>Punto Parcelas</h2>
+      <p class="section-subtitle mx-auto mt-2">Más de 3 razones para invertir con nosotros. Aquí las principales.</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4">
+        <div class="valor-card">
+          <div class="valor-icon"><i class="bi bi-shield-check"></i></div>
+          <h3 class="valor-title">Seguridad</h3>
+          <p class="valor-text">Cada parcela cuenta con escritura pública, rol propio y estudio de títulos. Tu inversión está protegida desde el día uno.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="valor-card">
+          <div class="valor-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <h3 class="valor-title">Plusvalía</h3>
+          <p class="valor-text">Zonas seleccionadas por su potencial de crecimiento. El suelo es el activo con mayor rentabilidad histórica en Chile.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="valor-card">
+          <div class="valor-icon"><i class="bi bi-handshake"></i></div>
+          <h3 class="valor-title">Confianza</h3>
+          <p class="valor-text">Acompañamos el proceso completo: desde la visita hasta la escrituración. Transparencia total y asesoría sin costo adicional.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARCELAS DESTACADAS -->
+{% if destacadas %}
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="d-flex align-items-end justify-content-between mb-4">
+      <div>
+        <div class="gold-line"></div>
+        <h2 class="section-title">Parcelas destacadas</h2>
+      </div>
+      <a href="{% url 'core:catalogo' %}" class="btn-outline-gold d-none d-md-inline-block">
+        Ver todo el catálogo <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div class="destacadas-grid">
+      {% for p in destacadas %}
+      <a href="{% url 'core:parcela_detail' p.slug %}" style="text-decoration:none;">
+        <div class="parcela-card">
+          {% if p.foto_principal_url %}
+            <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
+          {% else %}
+            <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
+          {% endif %}
+          <div class="parcela-card-body">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <span class="badge-region">{{ p.get_region_display }}</span>
+              <span class="badge-estado badge-{{ p.estado }}">{{ p.get_estado_display }}</span>
+            </div>
+            <div class="parcela-card-nombre">{{ p.nombre }}</div>
+            {% if p.sector %}<div style="font-size:.8rem; color:var(--pp-muted); margin-bottom:.3rem;"><i class="bi bi-geo-alt me-1"></i>{{ p.sector }}</div>{% endif %}
+            <div class="parcela-card-precio">{{ p.precio_clp }}</div>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="superficie-badge"><i class="bi bi-aspect-ratio me-1"></i>{{ p.superficie_display }}</span>
+              <div class="parcela-attrs">
+                {% for key, icon, label in p.atributos_activos|slice:":4" %}
+                <span class="parcela-attr" title="{{ label }}"><i class="bi {{ icon }}"></i></span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4 d-md-none">
+      <a href="{% url 'core:catalogo' %}" class="btn-outline-gold">Ver todo el catálogo</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- TESTIMONIOS -->
+{% if testimonios %}
+<section class="section" style="background: var(--pp-surface); border-top:1px solid var(--pp-border); border-bottom:1px solid var(--pp-border);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="gold-line mx-auto"></div>
+      <h2 class="section-title">Lo que dicen<br>nuestros clientes</h2>
+    </div>
+    <div class="row g-4">
+      {% for t in testimonios %}
+      <div class="col-md-6 col-lg-3">
+        <div class="testimonio-card">
+          <div class="testimonio-stars mb-2">
+            {% for _ in t.rango_estrellas %}★{% endfor %}
+          </div>
+          <p class="testimonio-texto mb-3">"{{ t.texto }}"</p>
+          <div class="d-flex align-items-center gap-2 mt-auto">
+            <div class="testimonio-inicial">{{ t.inicial }}</div>
+            <div>
+              <div style="font-weight:700; font-size:.9rem;">{{ t.nombre }}</div>
+              {% if t.ciudad %}<div style="font-size:.78rem; color:var(--pp-muted);">{{ t.ciudad }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA FINAL -->
+<section class="section">
+  <div class="container">
+    <div class="cta-banner">
+      <div class="gold-line mx-auto mb-3"></div>
+      <h2 class="section-title mb-3">¿Listo para invertir<br>en tu patrimonio?</h2>
+      <p style="color:var(--pp-muted); max-width:480px; margin:0 auto 2rem;">
+        Escríbenos hoy y te asesoramos sin compromiso. Leonardo te contactará personalmente para resolver todas tus dudas.
+      </p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="{{ WA_LINK }}" target="_blank" class="btn-gold" style="font-size:.9rem; padding:.85rem 2rem;">
+          <i class="bi bi-whatsapp me-2"></i>WhatsApp directo
+        </a>
+        <a href="{% url 'core:reserva' %}" class="btn-outline-gold" style="font-size:.9rem; padding:.85rem 2rem;">
+          <i class="bi bi-envelope me-2"></i>Enviar consulta
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

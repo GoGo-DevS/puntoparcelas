@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Panel — Punto Parcelas{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --pp-bg:      #0D0D0D;
+      --pp-surface: #141414;
+      --pp-surface2:#1E1E1E;
+      --pp-gold:    #D4AF37;
+      --pp-gold-dk: #B8941E;
+      --pp-text:    #F0EDE4;
+      --pp-muted:   rgba(240,237,228,.5);
+      --pp-border:  rgba(212,175,55,.12);
+      --sidebar-w:  240px;
+    }
+    * { box-sizing:border-box; }
+    body { background:var(--pp-bg); color:var(--pp-text); font-family:'Roboto',sans-serif; margin:0; }
+    h1,h2,h3,h4,h5 { font-family:'Montserrat',sans-serif; font-weight:800; }
+
+    /* ── SIDEBAR ── */
+    .pp-sidebar {
+      position: fixed; top:0; left:0; bottom:0;
+      width: var(--sidebar-w);
+      background: var(--pp-surface);
+      border-right: 1px solid var(--pp-border);
+      display: flex; flex-direction: column;
+      z-index: 200;
+      overflow-y: auto;
+    }
+    .pp-sidebar-logo {
+      padding: 1.5rem 1.25rem 1rem;
+      font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.1rem;
+      letter-spacing:-.02em; text-decoration:none;
+      color: var(--pp-text); display:block;
+    }
+    .pp-sidebar-logo span { color:var(--pp-gold); }
+    .pp-sidebar-section {
+      font-size:.65rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--pp-muted); padding:.75rem 1.25rem .3rem;
+    }
+    .pp-nav-item {
+      display:flex; align-items:center; gap:.7rem;
+      padding:.6rem 1.25rem;
+      color: var(--pp-muted); text-decoration:none; font-size:.88rem; font-weight:500;
+      transition: color .18s, background .18s;
+      border-radius:6px; margin:0 .5rem .1rem;
+    }
+    .pp-nav-item:hover { color:var(--pp-text); background:rgba(255,255,255,.04); }
+    .pp-nav-item.active { color:var(--pp-gold); background:rgba(212,175,55,.08); }
+    .pp-nav-item i { font-size:1rem; width:18px; text-align:center; }
+    .pp-sidebar-footer {
+      margin-top:auto; padding:1rem 1.25rem;
+      border-top:1px solid var(--pp-border);
+    }
+
+    /* ── MAIN ── */
+    .pp-main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+    }
+    .pp-topbar {
+      background: var(--pp-surface);
+      border-bottom: 1px solid var(--pp-border);
+      padding: .9rem 2rem;
+      display:flex; align-items:center; justify-content:space-between;
+      position: sticky; top:0; z-index:100;
+    }
+    .pp-topbar-title { font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem; }
+    .pp-content { padding: 2rem; }
+
+    /* ── CARDS ── */
+    .kpi-card {
+      background: var(--pp-surface2);
+      border: 1px solid var(--pp-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .kpi-label { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--pp-muted); margin-bottom:.4rem; }
+    .kpi-num { font-family:'Montserrat',sans-serif; font-weight:900; font-size:2.4rem; line-height:1; color:var(--pp-gold); }
+    .kpi-icon { width:44px; height:44px; border-radius:10px; background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.2); display:flex; align-items:center; justify-content:center; color:var(--pp-gold); font-size:1.2rem; }
+
+    /* ── TABLE ── */
+    .pp-table { width:100%; border-collapse:collapse; }
+    .pp-table th { font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--pp-muted); padding:.6rem .75rem; border-bottom:1px solid var(--pp-border); font-weight:600; }
+    .pp-table td { padding:.75rem; border-bottom:1px solid rgba(255,255,255,.04); font-size:.88rem; vertical-align:middle; }
+    .pp-table tr:hover td { background:rgba(255,255,255,.02); }
+
+    /* ── BADGES ── */
+    .badge-disponible { background:rgba(34,197,94,.12); color:#22C55E; border:1px solid rgba(34,197,94,.25); padding:.2rem .6rem; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .badge-reservada  { background:rgba(234,179,8,.12);  color:#EAB308; border:1px solid rgba(234,179,8,.25);  padding:.2rem .6rem; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .badge-vendida    { background:rgba(239,68,68,.12);  color:#EF4444; border:1px solid rgba(239,68,68,.25);  padding:.2rem .6rem; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .badge-nueva      { background:rgba(59,130,246,.12); color:#3B82F6; border:1px solid rgba(59,130,246,.25); padding:.2rem .6rem; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .badge-contactado { background:rgba(212,175,55,.12); color:var(--pp-gold); border:1px solid rgba(212,175,55,.25); padding:.2rem .6rem; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .badge-en_proceso { background:rgba(168,85,247,.12); color:#A855F7; border:1px solid rgba(168,85,247,.25); padding:.2rem .6rem; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .badge-cerrada    { background:rgba(107,114,128,.12); color:#9CA3AF; border:1px solid rgba(107,114,128,.25); padding:.2rem .6rem; border-radius:20px; font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+
+    /* ── FORMS ── */
+    .form-control, .form-select {
+      background: var(--pp-surface2) !important;
+      border: 1px solid var(--pp-border) !important;
+      color: var(--pp-text) !important;
+      border-radius: 8px;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--pp-gold) !important;
+      box-shadow: 0 0 0 3px rgba(212,175,55,.12) !important;
+    }
+    .form-control::placeholder { color:var(--pp-muted); }
+    .form-label { font-size:.78rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--pp-muted); }
+    .form-check-input { background:var(--pp-surface2); border-color:var(--pp-border); }
+    .form-check-input:checked { background-color:var(--pp-gold); border-color:var(--pp-gold); }
+    .form-check-label { font-size:.9rem; color:var(--pp-text); }
+
+    /* ── BUTTONS ── */
+    .btn-pp { background:var(--pp-gold); color:#0D0D0D; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.05em; text-transform:uppercase; border:none; padding:.55rem 1.2rem; border-radius:6px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:.4rem; transition:background .18s; }
+    .btn-pp:hover { background:var(--pp-gold-dk); color:#0D0D0D; }
+    .btn-pp-ghost { background:transparent; border:1.5px solid var(--pp-border); color:var(--pp-muted); font-size:.8rem; padding:.5rem 1rem; border-radius:6px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:.4rem; transition:all .18s; }
+    .btn-pp-ghost:hover { border-color:var(--pp-gold); color:var(--pp-gold); }
+    .btn-danger-ghost { background:transparent; border:1.5px solid rgba(239,68,68,.3); color:rgba(239,68,68,.7); font-size:.8rem; padding:.5rem 1rem; border-radius:6px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:.4rem; transition:all .18s; }
+    .btn-danger-ghost:hover { border-color:#EF4444; color:#EF4444; background:rgba(239,68,68,.06); }
+
+    /* messages */
+    .pp-alert { padding:.85rem 1.1rem; border-radius:8px; margin-bottom:1.2rem; font-size:.88rem; }
+    .pp-alert-success { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.25); color:#22C55E; }
+    .pp-alert-error   { background:rgba(239,68,68,.1);  border:1px solid rgba(239,68,68,.25);  color:#EF4444; }
+
+    @media (max-width:768px) {
+      .pp-sidebar { transform:translateX(-100%); transition:transform .25s; }
+      .pp-sidebar.open { transform:translateX(0); }
+      .pp-main { margin-left:0; }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="pp-sidebar" id="ppSidebar">
+  <a href="{% url 'panel:dashboard' %}" class="pp-sidebar-logo">PUNTO<span>.</span>PARCELAS</a>
+
+  <div class="pp-sidebar-section">Principal</div>
+  <a href="{% url 'panel:dashboard' %}" class="pp-nav-item {% if active == 'dashboard' %}active{% endif %}">
+    <i class="bi bi-grid-1x2-fill"></i> Dashboard
+  </a>
+
+  <div class="pp-sidebar-section">Inventario</div>
+  <a href="{% url 'panel:parcelas_lista' %}" class="pp-nav-item {% if active == 'parcelas' %}active{% endif %}">
+    <i class="bi bi-geo-alt-fill"></i> Mis Parcelas
+  </a>
+
+  <div class="pp-sidebar-section">Clientes</div>
+  <a href="{% url 'panel:consultas_lista' %}" class="pp-nav-item {% if active == 'consultas' %}active{% endif %}">
+    <i class="bi bi-chat-left-text-fill"></i> Consultas
+  </a>
+  <a href="{% url 'panel:testimonios_lista' %}" class="pp-nav-item {% if active == 'testimonios' %}active{% endif %}">
+    <i class="bi bi-star-fill"></i> Testimonios
+  </a>
+
+  <div class="pp-sidebar-section">Sitio público</div>
+  <a href="/" target="_blank" class="pp-nav-item">
+    <i class="bi bi-box-arrow-up-right"></i> Ver sitio
+  </a>
+
+  <div class="pp-sidebar-footer">
+    <a href="{% url 'panel:logout' %}" class="pp-nav-item" style="margin:0;">
+      <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="pp-main">
+  <!-- TOPBAR -->
+  <div class="pp-topbar">
+    <div class="d-flex align-items-center gap-3">
+      <button class="d-md-none btn p-0" style="background:none; border:none; color:var(--pp-text);" id="sidebarToggle">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <span class="pp-topbar-title">{% block topbar_title %}Panel{% endblock %}</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      {% block topbar_actions %}{% endblock %}
+      <span style="font-size:.82rem; color:var(--pp-muted);">{{ request.user.get_full_name|default:request.user.username }}</span>
+    </div>
+  </div>
+
+  <!-- MESSAGES -->
+  {% if messages %}
+  <div style="padding:1rem 2rem 0;">
+    {% for msg in messages %}
+    <div class="pp-alert {% if msg.tags == 'error' %}pp-alert-error{% else %}pp-alert-success{% endif %}">
+      <i class="bi {% if msg.tags == 'error' %}bi-x-circle{% else %}bi-check-circle{% endif %} me-2"></i>{{ msg }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- CONTENT -->
+  <div class="pp-content">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.getElementById('sidebarToggle')?.addEventListener('click', () => {
+    document.getElementById('ppSidebar').classList.toggle('open');
+  });
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

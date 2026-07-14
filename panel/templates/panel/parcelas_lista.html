@@ -1,0 +1,87 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Mis Parcelas — Panel{% endblock %}
+{% block topbar_title %}Mis Parcelas{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'panel:parcela_create' %}" class="btn-pp">
+  <i class="bi bi-plus-lg"></i> Nueva parcela
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- FILTER -->
+<div class="d-flex gap-2 mb-4 flex-wrap">
+  <a href="{% url 'panel:parcelas_lista' %}" class="btn-pp-ghost {% if not estado_activo %}active{% endif %}"
+     style="{% if not estado_activo %}border-color:var(--pp-gold); color:var(--pp-gold);{% endif %}">
+    Todas
+  </a>
+  {% for val, label in estado_choices %}
+  <a href="?estado={{ val }}" class="btn-pp-ghost"
+     style="{% if estado_activo == val %}border-color:var(--pp-gold); color:var(--pp-gold);{% endif %}">
+    {{ label }}
+  </a>
+  {% endfor %}
+</div>
+
+{% if parcelas %}
+<div class="kpi-card p-0" style="overflow:hidden;">
+  <table class="pp-table">
+    <thead>
+      <tr>
+        <th style="padding-left:1.25rem;">Parcela</th>
+        <th>Región</th>
+        <th>Precio</th>
+        <th>Superficie</th>
+        <th>Estado</th>
+        <th style="text-align:right; padding-right:1.25rem;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in parcelas %}
+      <tr>
+        <td style="padding-left:1.25rem;">
+          <div class="d-flex align-items-center gap-3">
+            {% if p.foto_principal_url %}
+              <img src="{{ p.foto_principal_url }}" style="width:52px; height:40px; object-fit:cover; border-radius:6px; border:1px solid var(--pp-border);" alt="">
+            {% else %}
+              <div style="width:52px; height:40px; background:var(--pp-surface2); border-radius:6px; border:1px solid var(--pp-border); display:flex; align-items:center; justify-content:center; color:var(--pp-border);">
+                <i class="bi bi-image"></i>
+              </div>
+            {% endif %}
+            <div>
+              <div style="font-weight:700;">{{ p.nombre }}</div>
+              {% if p.sector %}<div style="font-size:.77rem; color:var(--pp-muted);">{{ p.sector }}</div>{% endif %}
+            </div>
+          </div>
+        </td>
+        <td style="color:var(--pp-muted); font-size:.88rem;">{{ p.get_region_display }}</td>
+        <td style="font-family:'Montserrat',sans-serif; font-weight:800; color:var(--pp-gold); font-variant-numeric:tabular-nums;">{{ p.precio_clp }}</td>
+        <td style="color:var(--pp-muted); font-size:.88rem;">{{ p.superficie_display }}</td>
+        <td><span class="badge-{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+        <td style="text-align:right; padding-right:1.25rem;">
+          <div class="d-flex gap-2 justify-content-end">
+            <a href="{% url 'core:parcela_detail' p.slug %}" target="_blank" class="btn-pp-ghost" style="padding:.3rem .7rem; font-size:.78rem;" title="Ver en sitio">
+              <i class="bi bi-eye"></i>
+            </a>
+            <a href="{% url 'panel:parcela_edit' p.pk %}" class="btn-pp-ghost" style="padding:.3rem .7rem; font-size:.78rem;">
+              <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'panel:parcela_delete' p.pk %}" class="btn-danger-ghost" style="padding:.3rem .7rem; font-size:.78rem;">
+              <i class="bi bi-trash3"></i>
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div style="text-align:center; padding:5rem; color:var(--pp-muted);">
+  <i class="bi bi-geo-alt" style="font-size:3rem; display:block; margin-bottom:1rem; opacity:.2;"></i>
+  <h4>No hay parcelas</h4>
+  <p>Comienza agregando tu primera parcela.</p>
+  <a href="{% url 'panel:parcela_create' %}" class="btn-pp mt-2"><i class="bi bi-plus-lg"></i> Nueva parcela</a>
+</div>
+{% endif %}
+{% endblock %}
