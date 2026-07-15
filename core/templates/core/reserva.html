@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 {% block title %}Agenda tu visita — Punto Parcelas{% endblock %}
 {% block meta_desc %}Reserva una asesoría con Leonardo Valencia, especialista en inversión y venta de parcelas en Chile. Respuesta garantizada.{% endblock %}
 {% block og_title %}Agenda tu Visita — Punto Parcelas{% endblock %}
@@ -146,11 +147,8 @@
 
       <!-- LEFT — Leonardo -->
       <div class="col-lg-5 anim-left">
-        <!-- Photo placeholder — reemplazar con foto real de Leonardo -->
-        <div class="leonardo-photo-placeholder mb-4">
-          <i class="bi bi-person-fill" style="font-size:4rem; opacity:.3;"></i>
-          <span style="font-size:.75rem; color:var(--pp-muted); letter-spacing:.08em; text-transform:uppercase;">Foto Leonardo Valencia</span>
-        </div>
+        <img src="{% static 'img/foto-leo.jpeg' %}" alt="Leonardo Valencia" class="mb-4"
+             style="width:100%; max-width:340px; border-radius:12px; display:block; object-fit:cover; aspect-ratio:3/4; border:1px solid rgba(212,175,55,.2);">
 
         <h2 style="font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.5rem; text-transform:uppercase; letter-spacing:.02em; margin-bottom:.2rem;">
           Leonardo Valencia
@@ -263,7 +261,7 @@
         </div>
       </div>
       <div class="col-md-4 propuesta-item anim" data-delay="130">
-        <div class="propuesta-icon"><i class="bi bi-handshake"></i></div>
+        <div class="propuesta-icon"><i class="bi bi-shield-lock-fill"></i></div>
         <div>
           <div class="propuesta-name">Inversión Segura</div>
           <div class="propuesta-desc">Proyectos con respaldo legal, documentación y escrituración al día</div>

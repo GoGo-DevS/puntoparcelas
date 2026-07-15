@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -71,24 +72,31 @@
       display: flex; align-items: center; gap: .75rem;
       text-decoration: none;
     }
-    .pp-logo-icon { width: 42px; height: 42px; flex-shrink: 0; }
+    .pp-logo-icon { width: 46px; height: 46px; flex-shrink: 0; }
     .pp-logo-sep {
-      width: 1px; height: 36px;
+      width: 1px; height: 40px;
       background: linear-gradient(to bottom, transparent, #D4AF37, transparent);
       flex-shrink: 0; opacity: .55;
     }
-    .pp-logo-text { line-height: 1.2; }
+    .pp-logo-text { line-height: 1.15; }
     .pp-logo-name {
       font-family: 'Montserrat', sans-serif;
-      font-weight: 900; font-size: 1.05rem;
-      color: var(--pp-text); letter-spacing: .04em;
+      font-weight: 900; font-size: 1.08rem;
+      color: var(--pp-text); letter-spacing: .05em;
       display: block; text-transform: uppercase;
     }
     .pp-logo-sub {
       font-family: 'Montserrat', sans-serif;
-      font-weight: 500; font-size: .58rem;
-      color: var(--pp-gold); letter-spacing: .18em;
+      font-weight: 500; font-size: .57rem;
+      color: var(--pp-gold); letter-spacing: .2em;
       text-transform: uppercase; display: block;
+    }
+    .pp-logo-tagline {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 500; font-size: .47rem;
+      color: rgba(212,175,55,.45); letter-spacing: .12em;
+      text-transform: uppercase; display: block;
+      margin-top: .12rem;
     }
     .pp-nav .nav-link {
       color: rgba(240,237,228,.75);
@@ -304,6 +312,7 @@
     }
     .wa-float:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(37,211,102,.55); }
     .wa-float i { color: #fff; font-size: 1.6rem; }
+    @media (min-width: 768px) { .footer-bottom-row { padding-right: 5rem; } }
 
     /* ── FORM FIELDS ── */
     .form-control, .form-select {
@@ -420,41 +429,17 @@
 <!-- NAVBAR -->
 <nav class="pp-nav" id="ppNav">
   <div class="container d-flex align-items-center gap-3">
-    <!-- Logo with isotipo SVG -->
-    <a href="{% url 'core:home' %}" class="pp-logo-wrap me-auto">
-      <svg class="pp-logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="ppgn" gradientUnits="userSpaceOnUse" x1="5" y1="10" x2="95" y2="95">
-            <stop offset="0%"   stop-color="#F5E070"/>
-            <stop offset="45%"  stop-color="#D4AF37"/>
-            <stop offset="100%" stop-color="#9A7618"/>
-          </linearGradient>
-          <clipPath id="ppcn"><circle cx="50" cy="50" r="44"/></clipPath>
-        </defs>
-        <circle cx="50" cy="50" r="47.5" fill="none" stroke="url(#ppgn)" stroke-width="2.5"/>
-        <circle cx="50" cy="50" r="43"   fill="none" stroke="#D4AF37"    stroke-width=".5" opacity=".35"/>
-        <g clip-path="url(#ppcn)">
-          <!-- Left mountain (tallest) -->
-          <path d="M7 74 L30 14 L55 74 Z" fill="url(#ppgn)"/>
-          <path d="M30 14 L43 42 L55 74 Z" fill="#000" opacity=".18"/>
-          <!-- Right mountain -->
-          <path d="M44 74 L63 30 L80 74 Z" fill="url(#ppgn)" opacity=".82"/>
-          <path d="M63 30 L72 52 L80 74 Z" fill="#000" opacity=".14"/>
-          <!-- Pine tree (right) -->
-          <rect x="82" y="62" width="4" height="12" rx="1" fill="#D4AF37"/>
-          <path d="M77 65 L84 46 L91 65 Z" fill="url(#ppgn)"/>
-          <path d="M78 57 L84 39 L90 57 Z" fill="url(#ppgn)"/>
-          <path d="M79.5 50 L84 33 L88.5 50 Z" fill="url(#ppgn)"/>
-          <!-- Field rows -->
-          <path d="M5 76 Q50 68 95 76" fill="none" stroke="url(#ppgn)" stroke-width="3.5" stroke-linecap="round"/>
-          <path d="M4 83 Q50 74 96 83" fill="none" stroke="url(#ppgn)" stroke-width="3.5" stroke-linecap="round"/>
-          <path d="M5 89 Q50 80 95 89" fill="none" stroke="url(#ppgn)" stroke-width="3"   stroke-linecap="round"/>
-        </g>
-      </svg>
-      <div class="pp-logo-sep"></div>
-      <div class="pp-logo-text">
-        <span class="pp-logo-name">Punto Parcelas</span>
-        <span class="pp-logo-sub">Leonardo · Valencia</span>
+    <!-- Logo -->
+    <a href="{% url 'core:home' %}" class="pp-logo-wrap me-auto" style="gap:.6rem;">
+      <!-- Isotipo: siempre visible -->
+      <img src="{% static 'img/logo-isotipo.png' %}" alt="Punto Parcelas" style="height:62px; width:auto;">
+      <!-- Separador + texto: desde md -->
+      <div class="d-none d-md-flex align-items-center" style="border-left:1px solid rgba(212,175,55,.4); padding-left:.7rem; gap:.7rem;">
+        <img src="{% static 'img/logo-texto.png' %}" alt="Punto Parcelas" style="height:52px; width:auto;">
+        <!-- Tagline: solo en pantallas grandes -->
+        <div class="d-none d-lg-flex align-items-center" style="border-left:1px solid rgba(212,175,55,.25); padding-left:.7rem;">
+          <img src="{% static 'img/logo-tagline.png' %}" alt="Tu inversión hoy, tu patrimonio mañana" style="height:60px; width:auto; opacity:.9;">
+        </div>
       </div>
     </a>
 
@@ -505,44 +490,21 @@
 
       <!-- Brand + Social -->
       <div class="col-lg-4">
-        <a href="{% url 'core:home' %}" class="pp-logo-wrap mb-3" style="text-decoration:none;">
-          <svg style="width:40px;height:40px;flex-shrink:0;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="ppgf" gradientUnits="userSpaceOnUse" x1="5" y1="10" x2="95" y2="95">
-                <stop offset="0%"   stop-color="#F5E070"/>
-                <stop offset="45%"  stop-color="#D4AF37"/>
-                <stop offset="100%" stop-color="#9A7618"/>
-              </linearGradient>
-              <clipPath id="ppcf"><circle cx="50" cy="50" r="44"/></clipPath>
-            </defs>
-            <circle cx="50" cy="50" r="47.5" fill="none" stroke="url(#ppgf)" stroke-width="2.5"/>
-            <circle cx="50" cy="50" r="43"   fill="none" stroke="#D4AF37"    stroke-width=".5" opacity=".35"/>
-            <g clip-path="url(#ppcf)">
-              <path d="M7 74 L30 14 L55 74 Z" fill="url(#ppgf)"/>
-              <path d="M30 14 L43 42 L55 74 Z" fill="#000" opacity=".18"/>
-              <path d="M44 74 L63 30 L80 74 Z" fill="url(#ppgf)" opacity=".82"/>
-              <path d="M63 30 L72 52 L80 74 Z" fill="#000" opacity=".14"/>
-              <rect x="82" y="62" width="4" height="12" rx="1" fill="#D4AF37"/>
-              <path d="M77 65 L84 46 L91 65 Z" fill="url(#ppgf)"/>
-              <path d="M78 57 L84 39 L90 57 Z" fill="url(#ppgf)"/>
-              <path d="M79.5 50 L84 33 L88.5 50 Z" fill="url(#ppgf)"/>
-              <path d="M5 76 Q50 68 95 76" fill="none" stroke="url(#ppgf)" stroke-width="3.5" stroke-linecap="round"/>
-              <path d="M4 83 Q50 74 96 83" fill="none" stroke="url(#ppgf)" stroke-width="3.5" stroke-linecap="round"/>
-              <path d="M5 89 Q50 80 95 89" fill="none" stroke="url(#ppgf)" stroke-width="3"   stroke-linecap="round"/>
-            </g>
-          </svg>
-          <div class="pp-logo-sep" style="height:32px;"></div>
-          <div class="pp-logo-text">
-            <span class="pp-logo-name" style="font-size:.9rem;">Punto Parcelas</span>
-            <span class="pp-logo-sub">Leonardo · Valencia</span>
+        <a href="{% url 'core:home' %}" class="pp-logo-wrap mb-3" style="text-decoration:none; gap:.6rem;">
+          <img src="{% static 'img/logo-isotipo.png' %}" alt="Punto Parcelas" style="height:62px; width:auto;">
+          <div style="border-left:1px solid rgba(212,175,55,.4); padding-left:.7rem; display:flex; align-items:center; gap:.7rem;">
+            <img src="{% static 'img/logo-texto.png' %}" alt="Punto Parcelas" style="height:52px; width:auto;">
+            <div style="border-left:1px solid rgba(212,175,55,.25); padding-left:.7rem;">
+              <img src="{% static 'img/logo-tagline.png' %}" alt="Tu inversión hoy, tu patrimonio mañana" style="height:60px; width:auto; opacity:.9;">
+            </div>
           </div>
         </a>
-        <p style="color:var(--pp-muted); font-size:.88rem; max-width:270px; margin-bottom:1.1rem;">{{ SLOGAN }}</p>
         <div class="footer-social d-flex gap-2">
-          <a href="https://instagram.com/punto_parcelas" target="_blank" title="Instagram"><i class="bi bi-instagram"></i></a>
-          <a href="https://facebook.com/puntoparcelas" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="https://www.instagram.com/punto_parcelas/" target="_blank" title="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="https://www.facebook.com/puntoparcelas" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
           <a href="{{ WA_LINK }}" target="_blank" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
-          <a href="https://youtube.com/@puntoparcelas" target="_blank" title="YouTube"><i class="bi bi-youtube"></i></a>
+          <a href="https://www.youtube.com/@PuntoParcelas" target="_blank" title="YouTube"><i class="bi bi-youtube"></i></a>
+          <a href="https://www.tiktok.com/@puntoparcelas.cl" target="_blank" title="TikTok"><i class="bi bi-tiktok"></i></a>
         </div>
       </div>
 
@@ -593,7 +555,7 @@
 
     </div>
     <hr style="border-color:var(--pp-border); margin:2.2rem 0 1rem;">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2"
+    <div class="footer-bottom-row d-flex flex-column flex-md-row justify-content-between align-items-center gap-2"
          style="font-size:.8rem; color:var(--pp-muted);">
       <span>© 2026 Punto Parcelas — Leonardo Valencia. Todos los derechos reservados.</span>
       <span>Diseño por <a href="https://gogodevs.com" target="_blank" style="color:var(--pp-gold);">GoGoDevS</a></span>
@@ -627,15 +589,16 @@
   });
 
   // ── INTERSECTION OBSERVER (scroll animations) ──
+  const isMobile = window.innerWidth < 768;
   const animObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
       const el = entry.target;
-      const delay = parseInt(el.dataset.delay || 0);
+      const delay = isMobile ? 0 : parseInt(el.dataset.delay || 0);
       setTimeout(() => el.classList.add('in-view'), delay);
       animObserver.unobserve(el);
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: isMobile ? 0.01 : 0.12, rootMargin: isMobile ? '0px' : '0px 0px -40px 0px' });
 
   document.querySelectorAll('.anim, .anim-left, .anim-right, .anim-fade').forEach(el => {
     animObserver.observe(el);
