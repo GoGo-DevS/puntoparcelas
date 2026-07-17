@@ -119,12 +119,17 @@ def foto_delete(request, pk):
 
 
 def _procesar_fotos(request, parcela):
+    nuevas = []
     for f in request.FILES.getlist('fotos_nuevas'):
-        FotoParcela.objects.create(parcela=parcela, imagen=f)
+        nuevas.append(FotoParcela.objects.create(parcela=parcela, imagen=f))
+
     principal_id = request.POST.get('foto_principal')
     if principal_id:
         parcela.fotos.update(principal=False)
         parcela.fotos.filter(pk=principal_id).update(principal=True)
+    elif nuevas and not parcela.fotos.filter(principal=True).exists():
+        nuevas[0].principal = True
+        nuevas[0].save(update_fields=['principal'])
 
 
 # ── CONSULTAS ───────────────────────────────────────────────────

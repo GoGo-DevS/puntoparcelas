@@ -142,8 +142,11 @@
           <div style="font-weight:600; font-size:.9rem;">Subir fotos</div>
           <div style="font-size:.78rem; color:var(--pp-muted); margin-top:.25rem;">JPG, PNG · máx 5 MB cada una</div>
         </label>
-        <input type="file" id="fotosInput" name="fotos_nuevas" multiple accept="image/*" style="display:none;"
+        <input type="file" id="fotosInput" name="fotos_nuevas" multiple accept="image/*" class="form-control mt-2"
                onchange="mostrarVista(this)">
+        <div style="font-size:.72rem; color:var(--pp-muted); margin-top:.45rem;">
+          En celular puedes tocar el campo de arriba para elegir fotos desde la galería.
+        </div>
         <div id="fotosPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
       </div>
 

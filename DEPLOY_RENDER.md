@@ -9,6 +9,14 @@ Subir este repo a GitHub. La rama actual es `master`.
 Render Free no debe usar SQLite para produccion, porque puede perder datos al reiniciar/redeploy.
 Usar una base Postgres externa gratis, por ejemplo Neon, y copiar su URL en `DATABASE_URL`.
 
+Para una demo corta se puede dejar `DATABASE_URL` vacio y usar SQLite. Ojo: los datos pueden perderse si Render reinicia o se redeploya.
+
+## 2.1 Fotos
+
+Para produccion real configurar `CLOUDINARY_URL`, porque Render Free no guarda archivos subidos de forma persistente.
+
+Para una demo corta se puede dejar `CLOUDINARY_URL` vacio. El sitio servira las fotos locales, pero pueden perderse al reiniciar/redeployar.
+
 ## 3. Variables en Render
 
 Configurar estas variables:
