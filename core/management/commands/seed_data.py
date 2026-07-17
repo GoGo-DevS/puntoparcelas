@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
-from django.core.management.base import BaseCommand
+from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
 import os
 
 from core.models import Parcela, Testimonio
@@ -260,9 +261,15 @@ class Command(BaseCommand):
             if created:
                 created_testimonios += 1
 
-        username = os.environ.get('PANEL_USERNAME', 'leonardo')
-        password = os.environ.get('PANEL_PASSWORD', 'PuntoParcelas2026!')
-        email = os.environ.get('PANEL_EMAIL', 'l.valencia@ctpchile.cl')
+        username = os.environ.get('PANEL_USERNAME') or 'leonardo'
+        password = os.environ.get('PANEL_PASSWORD')
+        email = os.environ.get('PANEL_EMAIL') or 'l.valencia@ctpchile.cl'
+
+        if not password:
+            if settings.DEBUG:
+                password = 'PuntoParcelas2026!'
+            else:
+                raise CommandError('Falta PANEL_PASSWORD para crear/actualizar el usuario del panel.')
 
         user = User.objects.filter(username=username).first()
         if not user:
