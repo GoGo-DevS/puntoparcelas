@@ -2,6 +2,81 @@
 {% block title %}Mis Parcelas — Panel{% endblock %}
 {% block topbar_title %}Mis Parcelas{% endblock %}
 
+{% block extra_head %}
+<style>
+  .parcelas-mobile-list { display:none; }
+  .parcela-card-mobile {
+    background:var(--pp-surface2);
+    border:1px solid var(--pp-border);
+    border-radius:10px;
+    padding:.9rem;
+  }
+  .parcela-card-mobile + .parcela-card-mobile { margin-top:.75rem; }
+  .parcela-card-head { display:flex; align-items:flex-start; gap:.75rem; }
+  .parcela-card-thumb {
+    width:64px; height:52px; flex:0 0 64px;
+    object-fit:cover; border-radius:8px; border:1px solid var(--pp-border);
+    background:var(--pp-surface);
+  }
+  .parcela-card-placeholder {
+    width:64px; height:52px; flex:0 0 64px;
+    border-radius:8px; border:1px solid var(--pp-border);
+    background:var(--pp-surface);
+    color:var(--pp-border);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .parcela-card-title {
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    font-size:.95rem;
+    line-height:1.25;
+    margin-bottom:.2rem;
+  }
+  .parcela-card-sector { color:var(--pp-muted); font-size:.78rem; line-height:1.35; }
+  .parcela-card-meta {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:.65rem;
+    margin:.85rem 0;
+  }
+  .parcela-card-meta small {
+    display:block;
+    color:var(--pp-muted);
+    font-size:.62rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin-bottom:.15rem;
+  }
+  .parcela-card-price {
+    font-family:'Montserrat',sans-serif;
+    font-weight:900;
+    color:var(--pp-gold);
+    font-variant-numeric:tabular-nums;
+  }
+  .parcela-card-actions {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:.55rem;
+  }
+  .parcela-card-actions .btn-pp-ghost,
+  .parcela-card-actions .btn-danger-ghost {
+    justify-content:center;
+    padding:.55rem .65rem;
+  }
+  .parcela-card-actions .edit-action {
+    grid-column:1 / -1;
+    border-color:var(--pp-gold);
+    color:var(--pp-gold);
+  }
+
+  @media (max-width:768px) {
+    .parcelas-table-wrap { display:none; }
+    .parcelas-mobile-list { display:block; }
+    .parcelas-filter a { flex:1 1 calc(50% - .35rem); justify-content:center; }
+  }
+</style>
+{% endblock %}
+
 {% block topbar_actions %}
 <a href="{% url 'panel:parcela_create' %}" class="btn-pp">
   <i class="bi bi-plus-lg"></i> Nueva parcela
@@ -10,7 +85,7 @@
 
 {% block content %}
 <!-- FILTER -->
-<div class="d-flex gap-2 mb-4 flex-wrap">
+<div class="parcelas-filter d-flex gap-2 mb-4 flex-wrap">
   <a href="{% url 'panel:parcelas_lista' %}" class="btn-pp-ghost {% if not estado_activo %}active{% endif %}"
      style="{% if not estado_activo %}border-color:var(--pp-gold); color:var(--pp-gold);{% endif %}">
     Todas
@@ -24,7 +99,7 @@
 </div>
 
 {% if parcelas %}
-<div class="kpi-card p-0" style="overflow:hidden;">
+<div class="kpi-card p-0 parcelas-table-wrap" style="overflow:hidden;">
   <table class="pp-table">
     <thead>
       <tr>
@@ -75,6 +150,53 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+
+<div class="parcelas-mobile-list">
+  {% for p in parcelas %}
+  <article class="parcela-card-mobile">
+    <div class="parcela-card-head">
+      {% if p.foto_principal_url %}
+        <img src="{{ p.foto_principal_url }}" class="parcela-card-thumb" alt="">
+      {% else %}
+        <div class="parcela-card-placeholder"><i class="bi bi-image"></i></div>
+      {% endif %}
+      <div style="min-width:0;">
+        <div class="parcela-card-title">{{ p.nombre }}</div>
+        {% if p.sector %}<div class="parcela-card-sector">{{ p.sector }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="parcela-card-meta">
+      <div>
+        <small>Región</small>
+        <span>{{ p.get_region_display }}</span>
+      </div>
+      <div>
+        <small>Superficie</small>
+        <span>{{ p.superficie_display }}</span>
+      </div>
+      <div>
+        <small>Precio</small>
+        <span class="parcela-card-price">{{ p.precio_clp }}</span>
+      </div>
+      <div>
+        <small>Estado</small>
+        <span class="badge-{{ p.estado }}">{{ p.get_estado_display }}</span>
+      </div>
+    </div>
+    <div class="parcela-card-actions">
+      <a href="{% url 'panel:parcela_edit' p.pk %}" class="btn-pp-ghost edit-action">
+        <i class="bi bi-pencil"></i> Editar parcela
+      </a>
+      <a href="{% url 'core:parcela_detail' p.slug %}" target="_blank" class="btn-pp-ghost">
+        <i class="bi bi-eye"></i> Ver
+      </a>
+      <a href="{% url 'panel:parcela_delete' p.pk %}" class="btn-danger-ghost">
+        <i class="bi bi-trash3"></i> Eliminar
+      </a>
+    </div>
+  </article>
+  {% endfor %}
 </div>
 {% else %}
 <div style="text-align:center; padding:5rem; color:var(--pp-muted);">
