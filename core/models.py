@@ -3,10 +3,12 @@ from django.utils.text import slugify
 
 
 REGIONES = [
-    ('metropolitana', 'Región Metropolitana'),
+    ('coquimbo',      'Coquimbo'),
     ('valparaiso',    'Valparaíso'),
+    ('metropolitana', 'Región Metropolitana'),
     ('ohiggins',      "O'Higgins"),
     ('maule',         'Maule'),
+    ('nuble',         'Ñuble'),
     ('biobio',        'Biobío'),
     ('araucania',     'La Araucanía'),
     ('los_rios',      'Los Ríos'),
@@ -27,11 +29,16 @@ class Parcela(models.Model):
     slug         = models.SlugField(max_length=200, unique=True, blank=True)
     region       = models.CharField(max_length=20, choices=REGIONES, default='metropolitana')
     sector       = models.CharField(max_length=120, blank=True, help_text='Ej: Colina, Pirque, Lampa')
-    precio       = models.BigIntegerField(default=0, help_text='Precio en CLP')
+    MONEDA_CHOICES = [('CLP', 'CLP ($)'), ('UF', 'UF')]
+
+    precio       = models.BigIntegerField(default=0, help_text='Número sin puntos ni comas')
+    moneda       = models.CharField(max_length=3, choices=MONEDA_CHOICES, default='CLP')
     superficie   = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text='Superficie en m²')
     descripcion  = models.TextField(blank=True)
     destacada    = models.BooleanField(default=False)
     estado       = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='disponible')
+    video_url    = models.URLField(blank=True, help_text='URL de YouTube (ej: https://youtu.be/XXX)')
+    mapa_url     = models.URLField(blank=True, help_text='URL de Google Maps (pega el link de compartir)')
 
     # Atributos booleanos
     tiene_luz           = models.BooleanField(default=False, verbose_name='Luz eléctrica')
@@ -80,7 +87,18 @@ class Parcela(models.Model):
     def precio_clp(self):
         if not self.precio:
             return 'Consultar'
-        return f"${self.precio:,}".replace(',', '.')
+        num = f"{self.precio:,}".replace(',', '.')
+        return f"UF {num}" if self.moneda == 'UF' else f"${num}"
+
+    @property
+    def video_embed_url(self):
+        if not self.video_url:
+            return ''
+        import re
+        m = re.search(r'(?:v=|youtu\.be/|embed/)([A-Za-z0-9_-]{11})', self.video_url)
+        if m:
+            return f"https://www.youtube.com/embed/{m.group(1)}"
+        return ''
 
     @property
     def superficie_display(self):
@@ -106,6 +124,42 @@ class Parcela(models.Model):
     @property
     def estado_color(self):
         return {'disponible': '#22C55E', 'reservada': '#EAB308', 'vendida': '#EF4444'}.get(self.estado, '#888')
+
+
+class PlanPago(models.Model):
+    parcela        = models.ForeignKey(Parcela, on_delete=models.CASCADE, related_name='planes')
+    nombre         = models.CharField(max_length=120)
+    precio_contado = models.BigIntegerField(default=0, help_text='Precio al contado CLP')
+    precio_credito = models.BigIntegerField(null=True, blank=True, help_text='Total crédito CLP')
+    diferencia     = models.BigIntegerField(null=True, blank=True)
+    pie            = models.BigIntegerField(null=True, blank=True)
+    cuota          = models.BigIntegerField(null=True, blank=True, help_text='Cuota mensual CLP')
+    num_cuotas     = models.IntegerField(null=True, blank=True)
+    orden          = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['orden']
+        verbose_name = 'Plan de Pago'
+        verbose_name_plural = 'Planes de Pago'
+
+    def __str__(self):
+        return f"{self.nombre} — {self.parcela.nombre}"
+
+    def _fmt(self, val):
+        if val is None:
+            return '—'
+        return f"${val:,}".replace(',', '.')
+
+    @property
+    def contado_fmt(self): return self._fmt(self.precio_contado)
+    @property
+    def credito_fmt(self): return self._fmt(self.precio_credito)
+    @property
+    def diferencia_fmt(self): return self._fmt(self.diferencia)
+    @property
+    def pie_fmt(self): return self._fmt(self.pie)
+    @property
+    def cuota_fmt(self): return self._fmt(self.cuota)
 
 
 class FotoParcela(models.Model):

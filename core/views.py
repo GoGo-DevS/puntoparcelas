@@ -20,8 +20,15 @@ def home(request):
 
 
 def catalogo(request):
+    from django.db.models import Case, IntegerField, Value, When
     region = request.GET.get('region', '').strip()
-    qs = Parcela.objects.filter(estado='disponible')
+    estado_order = Case(
+        When(estado='disponible', then=Value(0)),
+        When(estado='reservada',  then=Value(1)),
+        When(estado='vendida',    then=Value(2)),
+        default=Value(3), output_field=IntegerField(),
+    )
+    qs = Parcela.objects.annotate(estado_order=estado_order).order_by('-destacada', 'estado_order', 'precio')
     if region:
         qs = qs.filter(region=region)
 

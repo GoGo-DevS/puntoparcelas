@@ -14,6 +14,30 @@ Admin panel (no es Django admin): `/admin-panel/login/` — leonardo / PuntoParc
 ════════════════════════════════════════════════
 
 ---
+[16-07-2026] — Modo: colaborativo
+Tarea completada: Mejoras post-QA + features nuevas pedidas por Leonardo vía audios WA.
+  1. Fix filtro pills catálogo: último pill "LOS LAGOS" se cortaba — CSS bug conocido de
+     overflow-x:auto en flex; fix con ::after pseudo-element como spacer (padding-right no
+     funciona en Chrome para este caso).
+  2. Fix link footer "Diseño por GoGoDevS" → gogodevs.cl (estaba .com).
+  3. Feature: campo `moneda` (CLP/UF) en Parcela — precio muestra "$" o "UF" según moneda.
+     Leo tiene una parcela en UF 2800 que antes mostraba "$2800".
+  4. Feature: campo `video_url` — YouTube watch/share → auto-convierte a embed en ficha pública.
+  5. Feature: campo `mapa_url` — Google Maps share link → botón "Ver en Google Maps" en ficha.
+  6. Feature: badges "Vendida" (rojo) / "Reservada" (amarillo) overlay en cards del catálogo
+     y home. Catálogo ahora muestra todos los estados (antes solo disponible); vendidas van
+     al final via Case/When annotation.
+  7. Panel: sección nueva "Video y Ubicación" + selector moneda junto al precio.
+  Migración 0005_parcela_moneda_video_mapa aplicada (check 0 issues).
+Archivos modificados: core/models.py, core/views.py, core/migrations/0005_*,
+  core/templates/core/catalogo.html, core/templates/core/home.html,
+  core/templates/core/parcela_detail.html, core/templates/core/base.html (gogodevs.cl),
+  panel/forms.py, panel/templates/panel/parcela_form.html.
+Pendiente commit: TODO lo de esta sesión + sesión anterior (logos, foto-leo, QA fixes).
+Próxima tarea: commit puntoparcelas + deploy Render + capacitación Leonardo.
+---
+
+---
 [15-07-2026] — QA completo (modo tryhard)
 Tarea completada: QA de punta a punta del sitio en local (http://127.0.0.1:8001).
   Revisadas las 11 páginas del checklist (home, catálogo, catálogo con filtro región,

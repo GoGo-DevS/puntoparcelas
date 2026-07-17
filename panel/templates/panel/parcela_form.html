@@ -52,9 +52,13 @@
             <label class="form-label">Sector / Localidad</label>
             {{ form.sector }}
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Precio CLP *</label>
+          <div class="col-md-4">
+            <label class="form-label">Precio *</label>
             {{ form.precio }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Moneda</label>
+            {{ form.moneda }}
           </div>
           <div class="col-md-6">
             <label class="form-label">Superficie (m²) *</label>
@@ -77,18 +81,36 @@
         </div>
       </div>
 
+      <!-- VIDEO + MAPA -->
+      <div class="section-card">
+        <div class="section-card-title"><i class="bi bi-play-circle me-2"></i>Video y Ubicación</div>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Video promocional <span style="color:var(--pp-muted); font-size:.8rem;">(YouTube)</span></label>
+            {{ form.video_url }}
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>Pega el link de YouTube (youtu.be/... o youtube.com/watch?v=...)</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Ubicación en mapa <span style="color:var(--pp-muted); font-size:.8rem;">(Google Maps)</span></label>
+            {{ form.mapa_url }}
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>En Google Maps → Compartir → Copiar enlace</div>
+          </div>
+        </div>
+      </div>
+
       <!-- ATRIBUTOS -->
       <div class="section-card">
         <div class="section-card-title"><i class="bi bi-toggles me-2"></i>Características de la parcela</div>
         <div class="row g-2">
-          {% for field in form.tiene_luz,form.tiene_agua,form.tiene_acceso,form.vista_privilegiada,form.tiene_cercado,form.tiene_porton,form.es_turistico,form.bosque_nativo,form.rol_propio %}
-          <div class="col-md-4 col-6">
-            <div class="attr-check">
-              {{ field }}
-              <label for="{{ field.id_for_label }}" style="cursor:pointer; font-size:.87rem; margin:0;">{{ field.label }}</label>
-            </div>
-          </div>
-          {% endfor %}
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.tiene_luz }}<label for="{{ form.tiene_luz.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.tiene_luz.label }}</label></div></div>
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.tiene_agua }}<label for="{{ form.tiene_agua.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.tiene_agua.label }}</label></div></div>
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.tiene_acceso }}<label for="{{ form.tiene_acceso.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.tiene_acceso.label }}</label></div></div>
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.vista_privilegiada }}<label for="{{ form.vista_privilegiada.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.vista_privilegiada.label }}</label></div></div>
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.tiene_cercado }}<label for="{{ form.tiene_cercado.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.tiene_cercado.label }}</label></div></div>
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.tiene_porton }}<label for="{{ form.tiene_porton.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.tiene_porton.label }}</label></div></div>
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.es_turistico }}<label for="{{ form.es_turistico.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.es_turistico.label }}</label></div></div>
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.bosque_nativo }}<label for="{{ form.bosque_nativo.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.bosque_nativo.label }}</label></div></div>
+          <div class="col-md-4 col-6"><div class="attr-check">{{ form.rol_propio }}<label for="{{ form.rol_propio.id_for_label }}" style="cursor:pointer;font-size:.87rem;margin:0;">{{ form.rol_propio.label }}</label></div></div>
         </div>
       </div>
     </div>

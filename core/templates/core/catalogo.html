@@ -37,6 +37,18 @@
     color: var(--pp-gold); font-weight: 600;
   }
 
+  /* ── ESTADO OVERLAY ── */
+  .parcela-card-img-wrap { position: relative; }
+  .parcela-estado-overlay {
+    position: absolute; top: .6rem; left: .6rem;
+    padding: .22rem .65rem; border-radius: 5px;
+    font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    z-index: 2;
+  }
+  .parcela-estado-vendida  { background: #EF4444; color: #fff; }
+  .parcela-estado-reservada { background: #EAB308; color: #0D0D0D; }
+  .parcela-vendida { opacity: .75; }
+
   /* ── FILTER BAR ── */
   .filter-bar {
     background: var(--pp-surface);
@@ -49,6 +61,9 @@
     scrollbar-width: none; -ms-overflow-style: none;
   }
   .filter-pills-wrap::-webkit-scrollbar { display: none; }
+  .filter-pills-wrap::after {
+    content: ''; display: block; min-width: 1rem; flex-shrink: 0;
+  }
 
   /* ── CATALOG GRID ── */
   .catalog-grid {
@@ -123,7 +138,7 @@
     {% if page_obj.object_list %}
     <div class="catalog-grid">
       {% for p in page_obj %}
-      <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card anim" data-delay="{{ forloop.counter0 }}60">
+      <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card anim{% if p.estado == 'vendida' %} parcela-vendida{% endif %}" data-delay="{{ forloop.counter0 }}60">
         <div class="parcela-card-img-wrap">
           {% if p.foto_principal_url %}
             <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
@@ -133,6 +148,9 @@
           <div class="parcela-region-badge">
             <i class="bi bi-geo-alt-fill"></i> {{ p.get_region_display }}
           </div>
+          {% if p.estado != 'disponible' %}
+          <div class="parcela-estado-overlay parcela-estado-{{ p.estado }}">{{ p.get_estado_display }}</div>
+          {% endif %}
         </div>
         <div class="parcela-card-body">
           <div class="parcela-card-nombre">{{ p.nombre }}</div>

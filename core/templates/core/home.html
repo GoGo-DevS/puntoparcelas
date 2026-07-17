@@ -175,7 +175,7 @@
         </div>
       </div>
       <div class="col-md-4 valor-bar-item anim" data-delay="240">
-        <div class="valor-bar-icon"><i class="bi bi-handshake"></i></div>
+        <div class="valor-bar-icon"><i class="bi bi-people-fill"></i></div>
         <div>
           <div class="valor-bar-name">Confianza</div>
           <div class="valor-bar-desc">Asesoría experta y acompañamiento total del proceso</div>
@@ -202,11 +202,16 @@
     <div class="destacadas-grid">
       {% for p in destacadas %}
       <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card anim" data-delay="{{ forloop.counter0 }}00">
-        <div class="parcela-card-img-wrap">
+        <div class="parcela-card-img-wrap" style="position:relative;">
           {% if p.foto_principal_url %}
             <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
           {% else %}
             <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
+          {% endif %}
+          {% if p.estado == 'vendida' %}
+          <div style="position:absolute;top:.6rem;left:.6rem;padding:.22rem .65rem;border-radius:5px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;z-index:2;background:#EF4444;color:#fff;">Vendida</div>
+          {% elif p.estado == 'reservada' %}
+          <div style="position:absolute;top:.6rem;left:.6rem;padding:.22rem .65rem;border-radius:5px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;z-index:2;background:#EAB308;color:#0D0D0D;">Reservada</div>
           {% endif %}
           <div class="parcela-region-badge">
             <i class="bi bi-geo-alt-fill"></i> {{ p.get_region_display }}

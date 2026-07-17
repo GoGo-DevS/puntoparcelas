@@ -10,10 +10,18 @@ services:
         value: false
       - key: SECRET_KEY
         generateValue: true
+      - key: DATABASE_URL
+        sync: false
       - key: PYTHON_VERSION
         value: "3.11.0"
       - key: CLOUDINARY_URL
         sync: false
+      - key: PANEL_USERNAME
+        value: "leonardo"
+      - key: PANEL_PASSWORD
+        sync: false
+      - key: PANEL_EMAIL
+        value: "l.valencia@ctpchile.cl"
       - key: EMAIL_HOST_USER
         sync: false
       - key: EMAIL_HOST_PASSWORD

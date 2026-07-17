@@ -20,19 +20,23 @@ class ParcelaForm(forms.ModelForm):
     class Meta:
         model = Parcela
         fields = [
-            'nombre', 'region', 'sector', 'precio', 'superficie',
+            'nombre', 'region', 'sector', 'precio', 'moneda', 'superficie',
             'descripcion', 'destacada', 'estado',
             'tiene_luz', 'tiene_agua', 'tiene_acceso', 'vista_privilegiada',
             'tiene_cercado', 'tiene_porton', 'es_turistico', 'bosque_nativo', 'rol_propio',
+            'video_url', 'mapa_url',
         ]
         widgets = {
             'nombre':      forms.TextInput(attrs={'class': 'form-control'}),
             'region':      forms.Select(attrs={'class': 'form-select'}),
             'sector':      forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Colina, Pirque...'}),
-            'precio':      forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Precio en CLP'}),
+            'precio':      forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Número sin puntos'}),
+            'moneda':      forms.Select(attrs={'class': 'form-select'}),
             'superficie':  forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Superficie en m²'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'estado':      forms.Select(attrs={'class': 'form-select'}),
+            'video_url':   forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://youtu.be/...'}),
+            'mapa_url':    forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://maps.app.goo.gl/...'}),
         }
 
 

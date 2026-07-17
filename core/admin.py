@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Consulta, FotoParcela, Parcela, Testimonio
+from .models import Consulta, FotoParcela, Parcela, PlanPago, Testimonio
 
 
 class FotoParcelaInline(admin.TabularInline):
@@ -7,12 +7,18 @@ class FotoParcelaInline(admin.TabularInline):
     extra = 1
 
 
+class PlanPagoInline(admin.TabularInline):
+    model = PlanPago
+    extra = 0
+    fields = ['nombre', 'precio_contado', 'precio_credito', 'diferencia', 'pie', 'cuota', 'num_cuotas', 'orden']
+
+
 @admin.register(Parcela)
 class ParcelaAdmin(admin.ModelAdmin):
     list_display  = ['nombre', 'region', 'precio_clp', 'superficie_display', 'estado', 'destacada']
     list_filter   = ['region', 'estado', 'destacada']
     search_fields = ['nombre', 'sector']
-    inlines       = [FotoParcelaInline]
+    inlines       = [FotoParcelaInline, PlanPagoInline]
     prepopulated_fields = {'slug': ('nombre',)}
 
 
