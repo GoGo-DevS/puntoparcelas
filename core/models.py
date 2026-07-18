@@ -1,5 +1,16 @@
+import os
+
 from django.db import models
 from django.utils.text import slugify
+
+
+def _geo_pdf_storage():
+    """Use RawMediaCloudinaryStorage in production so PDFs upload as raw (not image)."""
+    if os.environ.get('CLOUDINARY_URL'):
+        from cloudinary_storage.storage import RawMediaCloudinaryStorage
+        return RawMediaCloudinaryStorage()
+    from django.core.files.storage import FileSystemStorage
+    return FileSystemStorage()
 
 
 REGIONES = [
@@ -40,7 +51,8 @@ class Parcela(models.Model):
     video_url      = models.URLField(blank=True, help_text='URL de YouTube (ej: https://youtu.be/XXX)')
     mapa_url       = models.URLField(blank=True, help_text='URL de Google Maps (link de compartir, para el botón)')
     mapa_embed_url = models.URLField(blank=True, help_text='URL embed de Google Maps (para mostrar el mapa en la web)')
-    geo_pdf        = models.FileField(upload_to='geo/', blank=True, help_text='Plano GEO en PDF')
+    geo_pdf        = models.FileField(upload_to='geo/', blank=True, help_text='Plano GEO en PDF',
+                                      storage=_geo_pdf_storage)
 
     # Atributos booleanos
     tiene_luz           = models.BooleanField(default=False, verbose_name='Luz eléctrica')
