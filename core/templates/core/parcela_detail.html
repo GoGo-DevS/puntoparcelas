@@ -231,21 +231,66 @@
         {% if parcela.geo_pdf %}
         <div class="mt-4">
           <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-map me-2" style="color:var(--pp-gold);"></i>Plano GEO del proyecto</h3>
-          <!-- Visor PDF: abre en Google Docs Viewer (nueva pestaña) + descarga directa -->
-          <div style="background:rgba(212,175,55,.04); border:1px solid rgba(212,175,55,.18); border-radius:var(--pp-radius); padding:1.5rem; text-align:center;">
-            <i class="bi bi-file-earmark-pdf-fill" style="font-size:2.5rem; color:var(--pp-gold); display:block; margin-bottom:.75rem;"></i>
-            <div style="font-size:.9rem; color:var(--pp-muted); margin-bottom:1rem;">Plano GEO del proyecto en PDF</div>
-            <div style="display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center;">
-              <a href="{{ parcela.geo_pdf.url }}" target="_blank" rel="noopener"
-                 style="display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1.2rem; border-radius:8px; background:var(--pp-gold); color:#000; text-decoration:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.83rem;">
-                <i class="bi bi-eye-fill"></i> Ver plano GEO
-              </a>
-              <a href="{{ parcela.geo_pdf.url }}" target="_blank" rel="noopener" download
-                 style="display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1.2rem; border-radius:8px; background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.3); color:var(--pp-gold); text-decoration:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.83rem;">
-                <i class="bi bi-download"></i> Descargar
-              </a>
+          <!-- Visor PDF inline (PDF.js) -->
+          <div id="geoViewer_{{ parcela.pk }}"
+               style="background:#111; border-radius:var(--pp-radius); border:1px solid var(--pp-border); overflow-y:auto; max-height:620px;">
+            <div style="padding:2.5rem; text-align:center; color:var(--pp-muted);">
+              <i class="bi bi-hourglass-split" style="font-size:1.5rem; display:block; margin-bottom:.5rem;"></i>
+              Cargando plano...
             </div>
           </div>
+          <div class="mt-2" style="display:flex; justify-content:flex-end;">
+            <a href="{{ parcela.geo_pdf.url }}" target="_blank" rel="noopener" download
+               style="font-size:.76rem; color:var(--pp-muted); text-decoration:none; display:flex; align-items:center; gap:.3rem;">
+              <i class="bi bi-download"></i> Descargar PDF
+            </a>
+          </div>
+          <script>
+          (function(){
+            var PDF_URL = '{{ parcela.geo_pdf.url|escapejs }}';
+            var cid = 'geoViewer_{{ parcela.pk }}';
+            function renderPDF() {
+              var container = document.getElementById(cid);
+              pdfjsLib.GlobalWorkerOptions.workerSrc =
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+              pdfjsLib.getDocument({ url: PDF_URL, withCredentials: false }).promise
+                .then(function(pdf) {
+                  container.innerHTML = '';
+                  container.style.padding = '4px';
+                  function doPage(n) {
+                    if (n > pdf.numPages) return;
+                    pdf.getPage(n).then(function(page) {
+                      var vp0 = page.getViewport({ scale: 1 });
+                      var scale = Math.max((container.offsetWidth - 8) / vp0.width, 0.5);
+                      var vp = page.getViewport({ scale: scale });
+                      var canvas = document.createElement('canvas');
+                      canvas.width = vp.width; canvas.height = vp.height;
+                      canvas.style.cssText = 'width:100%;display:block;margin-bottom:4px;';
+                      container.appendChild(canvas);
+                      page.render({ canvasContext: canvas.getContext('2d'), viewport: vp })
+                          .promise.then(function(){ doPage(n + 1); });
+                    });
+                  }
+                  doPage(1);
+                })
+                .catch(function() {
+                  document.getElementById(cid).innerHTML =
+                    '<div style="padding:2rem;text-align:center;color:var(--pp-muted);">' +
+                    '<i class="bi bi-exclamation-circle" style="font-size:1.5rem;display:block;margin-bottom:.5rem;"></i>' +
+                    'No se pudo mostrar el plano. ' +
+                    '<a href="' + PDF_URL + '" target="_blank" style="color:var(--pp-gold);">Descargar PDF</a></div>';
+                });
+            }
+            if (window.pdfjsLib) {
+              renderPDF();
+            } else {
+              var s = document.createElement('script');
+              s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+              s.onload = renderPDF;
+              document.head.appendChild(s);
+            }
+          })();
+          </script>
         </div>
         {% endif %}
       </div>
