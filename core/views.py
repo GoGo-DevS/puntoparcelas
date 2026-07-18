@@ -1,4 +1,4 @@
-import urllib.request
+import requests as http_requests
 
 from django.conf import settings
 from django.contrib import messages
@@ -126,10 +126,14 @@ def parcela_geo_pdf(request, slug):
     if not parcela.geo_pdf:
         raise Http404
     try:
-        with urllib.request.urlopen(parcela.geo_pdf.url, timeout=20) as resp:
-            content = resp.read()
-    except Exception:
-        raise Http404
-    response = HttpResponse(content, content_type='application/pdf')
+        pdf_url = parcela.geo_pdf.url
+    except Exception as e:
+        return HttpResponse(f'URL error: {e}', status=500, content_type='text/plain')
+    try:
+        r = http_requests.get(pdf_url, timeout=30)
+        r.raise_for_status()
+    except Exception as e:
+        return HttpResponse(f'Fetch error [{pdf_url}]: {e}', status=500, content_type='text/plain')
+    response = HttpResponse(r.content, content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="plano-geo.pdf"'
     return response
