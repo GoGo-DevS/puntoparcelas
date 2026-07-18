@@ -135,6 +135,13 @@ class Parcela(models.Model):
         return attrs
 
     @property
+    def mapa_embed_url_valid(self):
+        """Only return embed URL if it's actually a Google Maps embed URL (not a share link)."""
+        if self.mapa_embed_url and 'google.com/maps/embed' in self.mapa_embed_url:
+            return self.mapa_embed_url
+        return ''
+
+    @property
     def estado_color(self):
         return {'disponible': '#22C55E', 'reservada': '#EAB308', 'vendida': '#EF4444'}.get(self.estado, '#888')
 

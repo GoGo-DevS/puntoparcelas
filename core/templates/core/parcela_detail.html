@@ -209,12 +209,14 @@
         {% if parcela.mapa_embed_url or parcela.mapa_url %}
         <div class="mt-4">
           <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-map-fill me-2" style="color:var(--pp-gold);"></i>Ubicación</h3>
-          {% if parcela.mapa_embed_url %}
-          <div style="border-radius:var(--pp-radius); overflow:hidden; border:1px solid var(--pp-border); background:#111;">
-            <iframe src="{{ parcela.mapa_embed_url }}"
+          {% if parcela.mapa_embed_url_valid %}
+          <div style="border-radius:var(--pp-radius); overflow:hidden; border:1px solid var(--pp-border); background:#111; position:relative;">
+            <iframe id="mapaIframe_{{ parcela.pk }}"
+                    src="{{ parcela.mapa_embed_url_valid }}"
                     style="width:100%; height:340px; border:0; display:block;"
                     loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                    allowfullscreen></iframe>
+                    allowfullscreen
+                    onerror="this.style.display='none'; document.getElementById('mapaError_{{ parcela.pk }}').style.display='flex';"></iframe>
           </div>
           {% endif %}
           {% if parcela.mapa_url %}
@@ -229,11 +231,18 @@
         {% if parcela.geo_pdf %}
         <div class="mt-4">
           <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-map me-2" style="color:var(--pp-gold);"></i>Plano GEO del proyecto</h3>
-          <!-- Desktop: visor inline -->
+          <!-- Desktop: visor inline vía Google Docs Viewer (evita bloqueo iframe de Cloudinary) -->
           <div class="d-none d-md-block" style="border-radius:var(--pp-radius); overflow:hidden; border:1px solid var(--pp-border); background:#111;">
-            <iframe src="{{ parcela.geo_pdf.url }}"
+            <iframe id="geoFrame_{{ parcela.pk }}"
                     style="width:100%; height:580px; border:0; display:block;"
                     loading="lazy"></iframe>
+            <script>
+            (function(){
+              var u = '{{ parcela.geo_pdf.url|escapejs }}';
+              document.getElementById('geoFrame_{{ parcela.pk }}').src =
+                'https://docs.google.com/viewer?url=' + encodeURIComponent(u) + '&embedded=true';
+            })();
+            </script>
           </div>
           <!-- Mobile: botón (iframes PDF no funcionan bien en móvil) -->
           <div class="d-md-none">
