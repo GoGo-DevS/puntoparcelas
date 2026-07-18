@@ -232,15 +232,44 @@
         <div class="mt-4">
           <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-map me-2" style="color:var(--pp-gold);"></i>Plano GEO del proyecto</h3>
           <!-- Visor PDF inline (PDF.js) -->
-          <div style="background:rgba(212,175,55,.04); border:1px solid rgba(212,175,55,.18); border-radius:var(--pp-radius); padding:2rem; text-align:center;">
-            <i class="bi bi-map-fill" style="font-size:3rem; color:var(--pp-gold); display:block; margin-bottom:.75rem; opacity:.8;"></i>
-            <div style="font-size:.95rem; font-weight:600; color:var(--pp-text); margin-bottom:.4rem;">Plano GEO disponible</div>
-            <div style="font-size:.83rem; color:var(--pp-muted); margin-bottom:1.25rem;">Abre en pantalla completa para navegar el plano con zoom</div>
+          <!-- JS fetch → blob URL → iframe (evita que el iframe abra conexión directo a Gunicorn) -->
+          <div id="geoWrap_{{ parcela.pk }}" style="border-radius:var(--pp-radius); overflow:hidden; border:1px solid var(--pp-border); background:#111; min-height:200px;">
+            <div id="geoLoad_{{ parcela.pk }}" style="padding:2.5rem; text-align:center; color:var(--pp-muted);">
+              <i class="bi bi-hourglass-split" style="font-size:1.5rem; display:block; margin-bottom:.5rem;"></i>
+              Cargando plano GEO...
+            </div>
+            <iframe id="geoFrame_{{ parcela.pk }}" style="width:100%; height:580px; border:0; display:none;"></iframe>
+          </div>
+          <div class="mt-2" style="display:flex; justify-content:flex-end;">
             <a href="{% url 'core:parcela_geo_pdf' parcela.slug %}" target="_blank" rel="noopener"
-               style="display:inline-flex; align-items:center; gap:.6rem; padding:.7rem 1.5rem; border-radius:8px; background:var(--pp-gold); color:#000; text-decoration:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.88rem;">
-              <i class="bi bi-eye-fill"></i> Ver Plano GEO
+               style="font-size:.76rem; color:var(--pp-muted); text-decoration:none; display:flex; align-items:center; gap:.3rem;">
+              <i class="bi bi-box-arrow-up-right"></i> Abrir en pantalla completa
             </a>
           </div>
+          <script>
+          (function(){
+            var proxyUrl = '{% url "core:parcela_geo_pdf" parcela.slug %}';
+            var loadEl  = document.getElementById('geoLoad_{{ parcela.pk }}');
+            var frameEl = document.getElementById('geoFrame_{{ parcela.pk }}');
+            fetch(proxyUrl)
+              .then(function(r){
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.blob();
+              })
+              .then(function(blob){
+                var blobUrl = URL.createObjectURL(blob);
+                frameEl.src = blobUrl;
+                frameEl.style.display = 'block';
+                loadEl.style.display  = 'none';
+              })
+              .catch(function(){
+                loadEl.innerHTML =
+                  '<i class="bi bi-exclamation-circle" style="font-size:1.5rem;display:block;margin-bottom:.5rem;"></i>' +
+                  'No se pudo mostrar el plano. ' +
+                  '<a href="' + proxyUrl + '" target="_blank" style="color:var(--pp-gold);">Abrir en nueva pestaña</a>';
+              });
+          })();
+          </script>
         </div>
         {% endif %}
       </div>
