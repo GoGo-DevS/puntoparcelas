@@ -126,10 +126,14 @@ def parcela_geo_pdf(request, slug):
     if not parcela.geo_pdf:
         raise Http404
     try:
+        import re
         import cloudinary.utils
-        storage = parcela.geo_pdf.storage
-        # get_name() agrega el prefijo 'media/' que es el public_id real en Cloudinary
-        public_id = storage.get_name(parcela.geo_pdf.name)
+        # Extraer public_id desde la URL (ej: media/geo/filename.pdf)
+        raw_url = parcela.geo_pdf.url
+        m = re.search(r'/raw/upload/(?:v\d+/)?(.+)', raw_url)
+        if not m:
+            return HttpResponse(f'No public_id en URL: {raw_url}', status=500, content_type='text/plain')
+        public_id = m.group(1)
         signed_url = cloudinary.utils.cloudinary_url(
             public_id,
             resource_type='raw',
