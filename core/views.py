@@ -130,22 +130,26 @@ def parcela_geo_pdf(request, slug):
         import cloudinary.utils
         # Extraer public_id desde la URL (ej: media/geo/filename.pdf)
         raw_url = parcela.geo_pdf.url
-        m = re.search(r'/raw/upload/(?:v\d+/)?(.+)', raw_url)
+        m = re.search(r'/raw/upload/(?:s--[^/]+--/)?(?:v\d+/)?(.+)', raw_url)
         if not m:
             return HttpResponse(f'No public_id en URL: {raw_url}', status=500, content_type='text/plain')
         public_id = m.group(1)
-        signed_url = cloudinary.utils.cloudinary_url(
+        # private_download_url autentica con API key+secret en query params
+        # (bypass de Auth Tokens y URL-signature restrictions)
+        download_url = cloudinary.utils.private_download_url(
             public_id,
+            '',
             resource_type='raw',
-            sign_url=True,
-        )[0]
+            type='upload',
+            attachment=False,
+        )
     except Exception as e:
         return HttpResponse(f'Sign error: {e}', status=500, content_type='text/plain')
     try:
-        r = http_requests.get(signed_url, timeout=30)
+        r = http_requests.get(download_url, timeout=30)
         r.raise_for_status()
     except Exception as e:
-        return HttpResponse(f'Fetch error [{signed_url}]: {e}', status=500, content_type='text/plain')
+        return HttpResponse(f'Fetch error [{download_url}]: {e}', status=500, content_type='text/plain')
     response = HttpResponse(r.content, content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="plano-geo.pdf"'
     return response
