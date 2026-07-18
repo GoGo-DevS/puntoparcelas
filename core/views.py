@@ -121,19 +121,27 @@ def sitemap_xml(request):
 
 
 def parcela_geo_pdf(request, slug):
-    """Proxy: sirve el PDF de Cloudinary same-origin para evitar CORS/Content-Disposition."""
+    """Proxy: sirve el PDF firmado de Cloudinary same-origin (bypasea access restrictions)."""
     parcela = get_object_or_404(Parcela, slug=slug)
     if not parcela.geo_pdf:
         raise Http404
     try:
-        pdf_url = parcela.geo_pdf.url
+        import cloudinary.utils
+        storage = parcela.geo_pdf.storage
+        # get_name() agrega el prefijo 'media/' que es el public_id real en Cloudinary
+        public_id = storage.get_name(parcela.geo_pdf.name)
+        signed_url = cloudinary.utils.cloudinary_url(
+            public_id,
+            resource_type='raw',
+            sign_url=True,
+        )[0]
     except Exception as e:
-        return HttpResponse(f'URL error: {e}', status=500, content_type='text/plain')
+        return HttpResponse(f'Sign error: {e}', status=500, content_type='text/plain')
     try:
-        r = http_requests.get(pdf_url, timeout=30)
+        r = http_requests.get(signed_url, timeout=30)
         r.raise_for_status()
     except Exception as e:
-        return HttpResponse(f'Fetch error [{pdf_url}]: {e}', status=500, content_type='text/plain')
+        return HttpResponse(f'Fetch error [{signed_url}]: {e}', status=500, content_type='text/plain')
     response = HttpResponse(r.content, content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="plano-geo.pdf"'
     return response
