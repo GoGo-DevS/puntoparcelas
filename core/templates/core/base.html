@@ -301,17 +301,20 @@
     }
     .footer-social a:hover { border-color: var(--pp-gold); color: var(--pp-gold); background: rgba(212,175,55,.1); }
 
-    /* ── WA FLOAT ── */
-    .wa-float {
-      position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 999;
+    /* ── FLOAT BUTTONS ── */
+    .wa-float, .ig-float {
+      position: fixed; right: 1.8rem; z-index: 999;
       width: 56px; height: 56px; border-radius: 50%;
-      background: #25D366; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 20px rgba(37,211,102,.4);
+      display: flex; align-items: center; justify-content: center;
       transition: transform var(--pp-tr), box-shadow var(--pp-tr);
       text-decoration: none;
     }
+    .wa-float { bottom: 1.8rem; background: #25D366; box-shadow: 0 4px 20px rgba(37,211,102,.4); }
     .wa-float:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(37,211,102,.55); }
     .wa-float i { color: #fff; font-size: 1.6rem; }
+    .ig-float { bottom: 5.2rem; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); box-shadow: 0 4px 20px rgba(214,36,159,.4); }
+    .ig-float:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(214,36,159,.55); }
+    .ig-float i { color: #fff; font-size: 1.5rem; }
     @media (min-width: 768px) { .footer-bottom-row { padding-right: 5rem; } }
 
     /* ── FORM FIELDS ── */
@@ -396,6 +399,7 @@
 
     /* WA floating pulse */
     .wa-float { animation: ppWaPulse 2.6s ease-in-out infinite; }
+    .ig-float { animation: ppWaPulse 2.6s ease-in-out infinite .6s; }
 
     /* Gold shimmer on hover for section eyebrows */
     .section-eyebrow {
@@ -563,7 +567,10 @@
   </div>
 </footer>
 
-<!-- WA Float -->
+<!-- Float buttons -->
+<a href="https://www.instagram.com/punto_parcelas/" class="ig-float" target="_blank" rel="noopener" title="Instagram">
+  <i class="bi bi-instagram"></i>
+</a>
 <a href="{{ WA_LINK }}" class="wa-float" target="_blank" title="WhatsApp">
   <i class="bi bi-whatsapp"></i>
 </a>
