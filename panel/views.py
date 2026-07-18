@@ -57,7 +57,7 @@ def parcelas_lista(request):
 @login_required(login_url='panel:login')
 def parcela_create(request):
     if request.method == 'POST':
-        form = ParcelaForm(request.POST)
+        form = ParcelaForm(request.POST, request.FILES)
         if form.is_valid():
             parcela = form.save()
             _procesar_fotos(request, parcela)
@@ -77,7 +77,7 @@ def parcela_create(request):
 def parcela_edit(request, pk):
     parcela = get_object_or_404(Parcela, pk=pk)
     if request.method == 'POST':
-        form = ParcelaForm(request.POST, instance=parcela)
+        form = ParcelaForm(request.POST, request.FILES, instance=parcela)
         if form.is_valid():
             form.save()
             _procesar_fotos(request, parcela)

@@ -153,14 +153,22 @@
         </div>
         {% endif %}
 
-        {% if parcela.video_embed_url %}
+        {% if parcela.video_url %}
         <div class="mt-4">
           <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-play-circle-fill me-2" style="color:var(--pp-gold);"></i>Video del proyecto</h3>
-          <div style="position:relative; width:100%; aspect-ratio:16/9; border-radius:var(--pp-radius); overflow:hidden; background:#000;">
-            <iframe src="{{ parcela.video_embed_url }}" style="position:absolute; inset:0; width:100%; height:100%; border:0;"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen loading="lazy"></iframe>
-          </div>
+          <a href="{{ parcela.video_url }}" target="_blank" rel="noopener"
+             style="display:block; position:relative; border-radius:var(--pp-radius); overflow:hidden; aspect-ratio:16/9; background:#111; text-decoration:none;">
+            {% if parcela.video_thumbnail_url %}
+            <img src="{{ parcela.video_thumbnail_url }}" alt="Video" loading="lazy"
+                 style="width:100%; height:100%; object-fit:cover; opacity:.75; display:block;">
+            {% endif %}
+            <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.6rem;">
+              <div style="width:64px; height:64px; background:rgba(255,0,0,.92); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(0,0,0,.5);">
+                <i class="bi bi-play-fill" style="color:#fff; font-size:1.9rem; margin-left:4px;"></i>
+              </div>
+              <span style="color:#fff; font-size:.8rem; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:.05em; text-shadow:0 1px 4px rgba(0,0,0,.8);">VER EN YOUTUBE</span>
+            </div>
+          </a>
         </div>
         {% endif %}
 
@@ -170,6 +178,16 @@
           <a href="{{ parcela.mapa_url }}" target="_blank" rel="noopener"
              class="btn-outline-gold w-100 text-center" style="padding:.75rem; display:flex; align-items:center; justify-content:center; gap:.5rem;">
             <i class="bi bi-geo-alt-fill"></i> Ver en Google Maps
+          </a>
+        </div>
+        {% endif %}
+
+        {% if parcela.geo_pdf %}
+        <div class="mt-4">
+          <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-file-earmark-pdf-fill me-2" style="color:var(--pp-gold);"></i>Plano GEO</h3>
+          <a href="{{ parcela.geo_pdf.url }}" target="_blank" rel="noopener"
+             style="display:flex; align-items:center; justify-content:center; gap:.6rem; padding:.75rem; border-radius:var(--pp-radius); background:rgba(212,175,55,.07); border:1px solid rgba(212,175,55,.25); color:var(--pp-gold); text-decoration:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.85rem; letter-spacing:.03em; transition:background .18s;">
+            <i class="bi bi-download"></i> Descargar plano de loteo (PDF)
           </a>
         </div>
         {% endif %}

@@ -39,6 +39,7 @@ class Parcela(models.Model):
     estado       = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='disponible')
     video_url    = models.URLField(blank=True, help_text='URL de YouTube (ej: https://youtu.be/XXX)')
     mapa_url     = models.URLField(blank=True, help_text='URL de Google Maps (pega el link de compartir)')
+    geo_pdf      = models.FileField(upload_to='geo/', blank=True, help_text='Plano GEO en PDF')
 
     # Atributos booleanos
     tiene_luz           = models.BooleanField(default=False, verbose_name='Luz eléctrica')
@@ -90,15 +91,22 @@ class Parcela(models.Model):
         num = f"{self.precio:,}".replace(',', '.')
         return f"UF {num}" if self.moneda == 'UF' else f"${num}"
 
-    @property
-    def video_embed_url(self):
+    def _youtube_id(self):
         if not self.video_url:
             return ''
         import re
         m = re.search(r'(?:v=|youtu\.be/|embed/|shorts/|live/)([A-Za-z0-9_-]{11})', self.video_url)
-        if m:
-            return f"https://www.youtube.com/embed/{m.group(1)}"
-        return ''
+        return m.group(1) if m else ''
+
+    @property
+    def video_embed_url(self):
+        vid = self._youtube_id()
+        return f"https://www.youtube.com/embed/{vid}" if vid else ''
+
+    @property
+    def video_thumbnail_url(self):
+        vid = self._youtube_id()
+        return f"https://img.youtube.com/vi/{vid}/hqdefault.jpg" if vid else ''
 
     @property
     def superficie_display(self):

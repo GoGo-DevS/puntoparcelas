@@ -95,6 +95,17 @@
             {{ form.mapa_url }}
             <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>En Google Maps → Compartir → Copiar enlace</div>
           </div>
+          <div class="col-12">
+            <label class="form-label">Plano GEO <span style="color:var(--pp-muted); font-size:.8rem;">(PDF)</span></label>
+            {% if parcela.geo_pdf %}
+            <div style="display:flex; align-items:center; gap:.75rem; background:var(--pp-surface); border:1px solid var(--pp-border); border-radius:8px; padding:.6rem .9rem; margin-bottom:.5rem;">
+              <i class="bi bi-file-earmark-pdf-fill" style="color:var(--pp-gold); font-size:1.2rem;"></i>
+              <a href="{{ parcela.geo_pdf.url }}" target="_blank" style="color:var(--pp-gold); font-size:.85rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Ver PDF actual</a>
+            </div>
+            {% endif %}
+            {{ form.geo_pdf }}
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>PDF con el plano de loteo del proyecto (máx 10 MB)</div>
+          </div>
         </div>
       </div>
 
