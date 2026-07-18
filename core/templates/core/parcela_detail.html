@@ -32,6 +32,9 @@
     font-size:.8rem; color:var(--pp-text);
   }
   .attr-badge i { color:var(--pp-gold); }
+  @media (min-width: 992px) {
+    .detail-sidebar { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; }
+  }
 
   /* Tabla planes de pago */
   .planes-section { margin-top: 3rem; padding-top: 2.5rem; border-top: 1px solid var(--pp-border); }
@@ -276,6 +279,7 @@
 
       <!-- SIDEBAR CONSULTA -->
       <div class="col-lg-5">
+        <div class="detail-sidebar">
         <div class="info-card mb-3">
           <h4 style="font-size:1.05rem; margin-bottom:1rem; padding-bottom:.75rem; border-bottom:1px solid var(--pp-border);">
             <i class="bi bi-info-circle me-2" style="color:var(--pp-gold);"></i>Ficha técnica
@@ -331,6 +335,7 @@
             </a>
           </div>
         </div>
+        </div>{# /detail-sidebar #}
       </div>
     </div>
 
