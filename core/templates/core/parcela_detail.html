@@ -206,23 +206,49 @@
         </script>
         {% endif %}
 
-        {% if parcela.mapa_url %}
+        {% if parcela.mapa_embed_url or parcela.mapa_url %}
         <div class="mt-4">
           <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-map-fill me-2" style="color:var(--pp-gold);"></i>Ubicación</h3>
+          {% if parcela.mapa_embed_url %}
+          <div style="border-radius:var(--pp-radius); overflow:hidden; border:1px solid var(--pp-border); background:#111;">
+            <iframe src="{{ parcela.mapa_embed_url }}"
+                    style="width:100%; height:340px; border:0; display:block;"
+                    loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen></iframe>
+          </div>
+          {% endif %}
+          {% if parcela.mapa_url %}
           <a href="{{ parcela.mapa_url }}" target="_blank" rel="noopener"
-             class="btn-outline-gold w-100 text-center" style="padding:.75rem; display:flex; align-items:center; justify-content:center; gap:.5rem;">
-            <i class="bi bi-geo-alt-fill"></i> Ver en Google Maps
+             style="display:flex; align-items:center; justify-content:center; gap:.5rem; padding:.65rem; border-radius:var(--pp-radius); background:rgba(212,175,55,.07); border:1px solid rgba(212,175,55,.2); color:var(--pp-gold); text-decoration:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.82rem; margin-top:.6rem;">
+            <i class="bi bi-box-arrow-up-right"></i> Abrir en Google Maps
           </a>
+          {% endif %}
         </div>
         {% endif %}
 
         {% if parcela.geo_pdf %}
         <div class="mt-4">
-          <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-file-earmark-pdf-fill me-2" style="color:var(--pp-gold);"></i>Plano GEO</h3>
-          <a href="{{ parcela.geo_pdf.url }}" target="_blank" rel="noopener"
-             style="display:flex; align-items:center; justify-content:center; gap:.6rem; padding:.75rem; border-radius:var(--pp-radius); background:rgba(212,175,55,.07); border:1px solid rgba(212,175,55,.25); color:var(--pp-gold); text-decoration:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.85rem; letter-spacing:.03em; transition:background .18s;">
-            <i class="bi bi-download"></i> Descargar plano de loteo (PDF)
-          </a>
+          <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-map me-2" style="color:var(--pp-gold);"></i>Plano GEO del proyecto</h3>
+          <!-- Desktop: visor inline -->
+          <div class="d-none d-md-block" style="border-radius:var(--pp-radius); overflow:hidden; border:1px solid var(--pp-border); background:#111;">
+            <iframe src="{{ parcela.geo_pdf.url }}"
+                    style="width:100%; height:580px; border:0; display:block;"
+                    loading="lazy"></iframe>
+          </div>
+          <!-- Mobile: botón (iframes PDF no funcionan bien en móvil) -->
+          <div class="d-md-none">
+            <a href="{{ parcela.geo_pdf.url }}" target="_blank" rel="noopener"
+               style="display:flex; align-items:center; justify-content:center; gap:.6rem; padding:.75rem; border-radius:var(--pp-radius); background:rgba(212,175,55,.07); border:1px solid rgba(212,175,55,.25); color:var(--pp-gold); text-decoration:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.85rem;">
+              <i class="bi bi-file-earmark-pdf-fill"></i> Ver plano GEO (PDF)
+            </a>
+          </div>
+          <!-- Desktop: link abrir en nueva pestaña -->
+          <div class="d-none d-md-flex mt-2" style="justify-content:flex-end;">
+            <a href="{{ parcela.geo_pdf.url }}" target="_blank" rel="noopener"
+               style="font-size:.76rem; color:var(--pp-muted); text-decoration:none; display:flex; align-items:center; gap:.3rem;">
+              <i class="bi bi-box-arrow-up-right"></i> Abrir en pantalla completa
+            </a>
+          </div>
         </div>
         {% endif %}
       </div>

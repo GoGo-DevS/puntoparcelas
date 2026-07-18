@@ -37,9 +37,10 @@ class Parcela(models.Model):
     descripcion  = models.TextField(blank=True)
     destacada    = models.BooleanField(default=False)
     estado       = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='disponible')
-    video_url    = models.URLField(blank=True, help_text='URL de YouTube (ej: https://youtu.be/XXX)')
-    mapa_url     = models.URLField(blank=True, help_text='URL de Google Maps (pega el link de compartir)')
-    geo_pdf      = models.FileField(upload_to='geo/', blank=True, help_text='Plano GEO en PDF')
+    video_url      = models.URLField(blank=True, help_text='URL de YouTube (ej: https://youtu.be/XXX)')
+    mapa_url       = models.URLField(blank=True, help_text='URL de Google Maps (link de compartir, para el botón)')
+    mapa_embed_url = models.URLField(blank=True, help_text='URL embed de Google Maps (para mostrar el mapa en la web)')
+    geo_pdf        = models.FileField(upload_to='geo/', blank=True, help_text='Plano GEO en PDF')
 
     # Atributos booleanos
     tiene_luz           = models.BooleanField(default=False, verbose_name='Luz eléctrica')

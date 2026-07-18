@@ -91,9 +91,17 @@
             <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>Pega el link de YouTube (youtu.be/... o youtube.com/watch?v=...)</div>
           </div>
           <div class="col-12">
-            <label class="form-label">Ubicación en mapa <span style="color:var(--pp-muted); font-size:.8rem;">(Google Maps)</span></label>
+            <label class="form-label">Ubicación — link externo <span style="color:var(--pp-muted); font-size:.8rem;">(botón "Ver en Google Maps")</span></label>
             {{ form.mapa_url }}
-            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>En Google Maps → Compartir → Copiar enlace</div>
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>Google Maps → Compartir → Copiar enlace</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Ubicación — mapa embebido <span style="color:var(--pp-muted); font-size:.8rem;">(mapa visible en la web)</span></label>
+            {{ form.mapa_embed_url }}
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;">
+              <i class="bi bi-info-circle me-1"></i>
+              Google Maps → Compartir → <strong style="color:var(--pp-gold);">Insertar mapa</strong> → copia la URL del campo <code style="background:rgba(212,175,55,.1); padding:.1rem .3rem; border-radius:3px;">src="..."</code> del código iframe
+            </div>
           </div>
           <div class="col-12">
             <label class="form-label">Plano GEO <span style="color:var(--pp-muted); font-size:.8rem;">(PDF)</span></label>
