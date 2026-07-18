@@ -93,6 +93,10 @@ def _enviar_notificacion(consulta):
         pass
 
 
+def links(request):
+    return render(request, 'core/links.html')
+
+
 def robots_txt(request):
     content = "User-agent: *\nAllow: /\nDisallow: /admin-panel/\nDisallow: /django-admin/\n\nSitemap: https://puntoparcelas.cl/sitemap.xml\n"
     return HttpResponse(content, content_type='text/plain')
