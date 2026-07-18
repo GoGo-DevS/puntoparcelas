@@ -99,6 +99,10 @@ class Parcela(models.Model):
         return m.group(1) if m else ''
 
     @property
+    def video_id(self):
+        return self._youtube_id()
+
+    @property
     def video_embed_url(self):
         vid = self._youtube_id()
         return f"https://www.youtube.com/embed/{vid}" if vid else ''
