@@ -107,7 +107,7 @@ def sitemap_xml(request):
         f"  <url><loc>{base}/reserva/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>",
     ]
     for slug in parcelas:
-        urls.append(f"  <url><loc>{base}/parcela/{slug}/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>")
+        urls.append(f"  <url><loc>{base}/catalogo/{slug}/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>")
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     xml += '\n'.join(urls)
     xml += '\n</urlset>'

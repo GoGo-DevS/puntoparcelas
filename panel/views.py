@@ -118,6 +118,17 @@ def foto_delete(request, pk):
     return redirect('panel:parcela_edit', pk=parcela_pk)
 
 
+@login_required(login_url='panel:login')
+def foto_replace(request, pk):
+    foto = get_object_or_404(FotoParcela, pk=pk)
+    if request.method == 'POST' and request.FILES.get('imagen'):
+        foto.imagen.delete(save=False)
+        foto.imagen = request.FILES['imagen']
+        foto.save(update_fields=['imagen'])
+        messages.success(request, 'Foto reemplazada.')
+    return redirect('panel:parcela_edit', pk=foto.parcela_id)
+
+
 def _procesar_fotos(request, parcela):
     nuevas = []
     for f in request.FILES.getlist('fotos_nuevas'):

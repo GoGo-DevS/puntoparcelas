@@ -95,7 +95,7 @@ class Parcela(models.Model):
         if not self.video_url:
             return ''
         import re
-        m = re.search(r'(?:v=|youtu\.be/|embed/)([A-Za-z0-9_-]{11})', self.video_url)
+        m = re.search(r'(?:v=|youtu\.be/|embed/|shorts/|live/)([A-Za-z0-9_-]{11})', self.video_url)
         if m:
             return f"https://www.youtube.com/embed/{m.group(1)}"
         return ''

@@ -13,7 +13,8 @@ urlpatterns = [
     path('parcelas/nueva/',        views.parcela_create,    name='parcela_create'),
     path('parcelas/<int:pk>/editar/',   views.parcela_edit,      name='parcela_edit'),
     path('parcelas/<int:pk>/eliminar/', views.parcela_delete,    name='parcela_delete'),
-    path('parcelas/fotos/<int:pk>/eliminar/', views.foto_delete, name='foto_delete'),
+    path('parcelas/fotos/<int:pk>/eliminar/',   views.foto_delete,   name='foto_delete'),
+    path('parcelas/fotos/<int:pk>/reemplazar/', views.foto_replace,  name='foto_replace'),
 
     # Consultas
     path('consultas/',             views.consultas_lista,   name='consultas_lista'),

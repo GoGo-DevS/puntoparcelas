@@ -126,14 +126,21 @@
           <div class="foto-item">
             <img src="{{ foto.imagen.url }}" alt="">
             <input type="radio" name="foto_principal" value="{{ foto.pk }}" class="foto-principal-radio"
-                   {% if foto.principal %}checked{% endif %} title="Principal">
+                   {% if foto.principal %}checked{% endif %} title="Marcar como principal">
             <a href="{% url 'panel:foto_delete' foto.pk %}" class="foto-del" title="Eliminar"
                onclick="return confirm('¿Eliminar esta foto?')">×</a>
+            <label title="Reemplazar foto"
+                   style="position:absolute;bottom:3px;right:24px;width:20px;height:20px;border-radius:50%;background:#D4AF37;color:#000;cursor:pointer;font-size:.6rem;display:flex;align-items:center;justify-content:center;margin:0;">
+              <i class="bi bi-arrow-repeat"></i>
+              <input type="file" accept="image/*" style="display:none;"
+                     data-url="{% url 'panel:foto_replace' foto.pk %}"
+                     onchange="reemplazarFoto(this)">
+            </label>
           </div>
           {% endfor %}
         </div>
         <div style="font-size:.75rem; color:var(--pp-muted); margin-bottom:.75rem;">
-          <i class="bi bi-info-circle me-1"></i>Selecciona el círculo para marcar como foto principal.
+          <i class="bi bi-info-circle me-1"></i>Círculo = foto principal · <i class="bi bi-arrow-repeat" style="color:var(--pp-gold);"></i> = reemplazar · × = eliminar.
         </div>
         {% endif %}
 
@@ -176,6 +183,14 @@ function mostrarVista(input) {
     img.src = URL.createObjectURL(f);
     prev.appendChild(img);
   });
+}
+function reemplazarFoto(input) {
+  if (!input.files[0]) return;
+  const fd = new FormData();
+  fd.append('imagen', input.files[0]);
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch(input.dataset.url, { method: 'POST', body: fd })
+    .then(() => location.reload());
 }
 </script>
 {% endblock %}
