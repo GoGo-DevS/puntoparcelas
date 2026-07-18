@@ -134,12 +134,33 @@ class Parcela(models.Model):
         if self.rol_propio:         attrs.append(('rol',     'bi-file-earmark-check-fill','Rol propio'))
         return attrs
 
+    def _mapa_coords(self):
+        """Extract (lat, lng) from a Google Maps embed pb URL."""
+        if not self.mapa_embed_url:
+            return None, None
+        import re
+        m = re.search(r'!2d(-?\d+\.?\d*)!3d(-?\d+\.?\d*)', self.mapa_embed_url)
+        if m:
+            return m.group(2), m.group(1)  # lat, lng
+        return None, None
+
     @property
     def mapa_embed_url_valid(self):
-        """Only return embed URL if it's actually a Google Maps embed URL (not a share link)."""
+        """Return a reliable embed URL derived from coordinates in the pb URL."""
+        lat, lng = self._mapa_coords()
+        if lat and lng:
+            return f'https://maps.google.com/maps?q={lat},{lng}&output=embed&hl=es'
         if self.mapa_embed_url and 'google.com/maps/embed' in self.mapa_embed_url:
             return self.mapa_embed_url
         return ''
+
+    @property
+    def geo_pdf_viewer_url(self):
+        """Google Docs Viewer URL for opening the PDF in a new tab."""
+        if not self.geo_pdf:
+            return ''
+        from urllib.parse import quote
+        return f"https://docs.google.com/viewer?url={quote(self.geo_pdf.url, safe='')}"
 
     @property
     def estado_color(self):
