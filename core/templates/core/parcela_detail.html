@@ -240,14 +240,14 @@
             </div>
           </div>
           <div class="mt-2" style="display:flex; justify-content:flex-end;">
-            <a href="{{ parcela.geo_pdf.url }}" target="_blank" rel="noopener" download
+            <a href="{% url 'core:parcela_geo_pdf' parcela.slug %}" target="_blank" rel="noopener"
                style="font-size:.76rem; color:var(--pp-muted); text-decoration:none; display:flex; align-items:center; gap:.3rem;">
               <i class="bi bi-download"></i> Descargar PDF
             </a>
           </div>
           <script>
           (function(){
-            var PDF_URL = '{{ parcela.geo_pdf.url|escapejs }}';
+            var PDF_URL = '{% url "core:parcela_geo_pdf" parcela.slug %}';
             var cid = 'geoViewer_{{ parcela.pk }}';
             function renderPDF() {
               var container = document.getElementById(cid);

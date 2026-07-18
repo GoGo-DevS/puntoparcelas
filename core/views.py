@@ -1,9 +1,11 @@
+import urllib.request
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sitemaps import Sitemap
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import ConsultaForm
@@ -116,3 +118,18 @@ def sitemap_xml(request):
     xml += '\n'.join(urls)
     xml += '\n</urlset>'
     return HttpResponse(xml, content_type='application/xml')
+
+
+def parcela_geo_pdf(request, slug):
+    """Proxy: sirve el PDF de Cloudinary same-origin para evitar CORS/Content-Disposition."""
+    parcela = get_object_or_404(Parcela, slug=slug)
+    if not parcela.geo_pdf:
+        raise Http404
+    try:
+        with urllib.request.urlopen(parcela.geo_pdf.url, timeout=20) as resp:
+            content = resp.read()
+    except Exception:
+        raise Http404
+    response = HttpResponse(content, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="plano-geo.pdf"'
+    return response
