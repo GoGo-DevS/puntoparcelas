@@ -129,10 +129,13 @@
     .valor-bar-item:last-child { border-bottom: none; }
   }
   @media (max-width: 575px) {
-    .hero-title { letter-spacing: 0; line-height: 1.05; font-size: clamp(2.4rem, 11vw, 3rem); }
-    .hero-content { padding: 1rem 0 2rem; }
-    .hero-line1 { margin-bottom: .4rem; }
+    .hero { min-height: 100svh; min-height: 100vh; align-items: flex-start; }
+    .hero-content { padding: 5.5rem 0 3rem; }
+    .hero-title { letter-spacing: 0.015em !important; line-height: 1.1 !important; font-size: clamp(2rem, 9vw, 2.6rem) !important; }
+    .hero-line1 { font-size: .85rem; margin-bottom: .5rem; }
     .hero-sub { margin-bottom: 1.5rem; }
+    .hero-ctas { gap: .6rem; }
+    .hero-ctas a { font-size: .8rem !important; padding: .75rem 1.4rem !important; }
   }
 </style>
 {% endblock %}
