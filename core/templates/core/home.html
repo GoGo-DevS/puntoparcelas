@@ -129,8 +129,10 @@
     .valor-bar-item:last-child { border-bottom: none; }
   }
   @media (max-width: 575px) {
-    .hero-title { letter-spacing: 0; line-height: 1.05; }
-    .hero-content { padding: 6rem 0 3.5rem; }
+    .hero-title { letter-spacing: 0; line-height: 1.05; font-size: clamp(2.4rem, 11vw, 3rem); }
+    .hero-content { padding: 1rem 0 2rem; }
+    .hero-line1 { margin-bottom: .4rem; }
+    .hero-sub { margin-bottom: 1.5rem; }
   }
 </style>
 {% endblock %}

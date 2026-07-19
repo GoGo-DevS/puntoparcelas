@@ -254,6 +254,17 @@
             var proxyUrl = '{% url "core:parcela_geo_pdf" parcela.slug %}';
             var loadEl  = document.getElementById('geoLoad_{{ parcela.pk }}');
             var frameEl = document.getElementById('geoFrame_{{ parcela.pk }}');
+            var btnStyle = 'display:inline-flex;align-items:center;gap:.6rem;padding:.85rem 1.6rem;' +
+              'background:rgba(212,175,55,.1);border:1.5px solid rgba(212,175,55,.35);' +
+              'border-radius:10px;color:var(--pp-gold);text-decoration:none;' +
+              'font-family:Montserrat,sans-serif;font-weight:700;font-size:.88rem;';
+            // Mobile browsers can't render PDF in iframe via blob — show button instead
+            var isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
+            if (isMobile) {
+              loadEl.innerHTML = '<a href="' + proxyUrl + '" target="_blank" rel="noopener" style="' + btnStyle + '">' +
+                '<i class="bi bi-file-earmark-pdf" style="font-size:1.1rem;"></i>Ver plano GEO</a>';
+              return;
+            }
             fetch(proxyUrl)
               .then(function(r){
                 if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -267,9 +278,8 @@
               })
               .catch(function(){
                 loadEl.innerHTML =
-                  '<i class="bi bi-exclamation-circle" style="font-size:1.5rem;display:block;margin-bottom:.5rem;"></i>' +
-                  'No se pudo mostrar el plano. ' +
-                  '<a href="' + proxyUrl + '" target="_blank" style="color:var(--pp-gold);">Abrir en nueva pestaña</a>';
+                  '<a href="' + proxyUrl + '" target="_blank" rel="noopener" style="' + btnStyle + '">' +
+                  '<i class="bi bi-file-earmark-pdf" style="font-size:1.1rem;"></i>Ver plano GEO</a>';
               });
           })();
           </script>
