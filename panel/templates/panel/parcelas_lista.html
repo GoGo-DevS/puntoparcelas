@@ -84,6 +84,21 @@
 {% endblock %}
 
 {% block content %}
+<!-- SEARCH -->
+<form method="get" action="" style="margin-bottom:1rem;">
+  {% if estado_activo %}<input type="hidden" name="estado" value="{{ estado_activo }}">{% endif %}
+  <div style="display:flex; gap:.5rem; max-width:420px;">
+    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre o sector..."
+           style="flex:1; background:var(--pp-surface2); border:1px solid var(--pp-border);
+                  border-radius:8px; padding:.5rem 1rem; color:var(--pp-text); font-size:.88rem; outline:none;"
+           onfocus="this.style.borderColor='var(--pp-gold)'" onblur="this.style.borderColor='var(--pp-border)'">
+    <button type="submit" style="background:var(--pp-gold); border:none; border-radius:8px;
+            padding:.5rem 1rem; color:#0D0D0D; cursor:pointer;"><i class="bi bi-search"></i></button>
+    {% if q %}<a href="?{% if estado_activo %}estado={{ estado_activo }}{% endif %}"
+       style="display:flex; align-items:center; padding:.5rem .6rem; color:var(--pp-muted); text-decoration:none;">
+      <i class="bi bi-x-lg"></i></a>{% endif %}
+  </div>
+</form>
 <!-- FILTER -->
 <div class="parcelas-filter d-flex gap-2 mb-4 flex-wrap">
   <a href="{% url 'panel:parcelas_lista' %}" class="btn-pp-ghost {% if not estado_activo %}active{% endif %}"

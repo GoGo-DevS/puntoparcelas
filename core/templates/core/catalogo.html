@@ -106,12 +106,29 @@
 <!-- FILTER BAR -->
 <div class="filter-bar">
   <div class="container">
+    <form method="get" action="{% url 'core:catalogo' %}" style="margin-bottom:.65rem;">
+      {% if region_activa %}<input type="hidden" name="region" value="{{ region_activa }}">{% endif %}
+      <div style="display:flex; gap:.5rem;">
+        <input type="text" name="q" value="{{ q }}" placeholder="Buscar parcela por nombre, sector..."
+               style="flex:1; background:var(--pp-surface2); border:1px solid var(--pp-border);
+                      border-radius:8px; padding:.5rem 1rem; color:var(--pp-text); font-size:.88rem;
+                      outline:none; min-width:0;"
+               onfocus="this.style.borderColor='var(--pp-gold)'" onblur="this.style.borderColor='var(--pp-border)'">
+        <button type="submit" style="background:var(--pp-gold); border:none; border-radius:8px;
+                padding:.5rem 1.1rem; color:#0D0D0D; cursor:pointer; font-size:1rem;">
+          <i class="bi bi-search"></i>
+        </button>
+        {% if q %}<a href="?{% if region_activa %}region={{ region_activa }}{% endif %}"
+           style="display:flex; align-items:center; padding:.5rem .75rem; color:var(--pp-muted);
+                  text-decoration:none; font-size:.85rem;"><i class="bi bi-x-lg"></i></a>{% endif %}
+      </div>
+    </form>
     <div class="filter-pills-wrap">
-      <a href="{% url 'core:catalogo' %}" class="filter-pill {% if not region_activa %}active{% endif %}">
+      <a href="{% url 'core:catalogo' %}{% if q %}?q={{ q }}{% endif %}" class="filter-pill {% if not region_activa %}active{% endif %}">
         Todas las regiones
       </a>
       {% for val, label in regiones %}
-      <a href="?region={{ val }}" class="filter-pill {% if region_activa == val %}active{% endif %}">
+      <a href="?{% if q %}q={{ q }}&{% endif %}region={{ val }}" class="filter-pill {% if region_activa == val %}active{% endif %}">
         {{ label }}
       </a>
       {% endfor %}

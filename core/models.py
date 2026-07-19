@@ -261,6 +261,21 @@ class Testimonio(models.Model):
         return range(self.estrellas)
 
 
+class SiteConfig(models.Model):
+    foto_contacto = models.ImageField(upload_to='config/', blank=True, help_text='Foto de Leonardo en /contacto/')
+
+    class Meta:
+        verbose_name = 'Configuración del sitio'
+
+    def __str__(self):
+        return 'Configuración del sitio'
+
+    @classmethod
+    def get(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class Consulta(models.Model):
     ESTADO_CHOICES = [
         ('nueva',       'Nueva'),

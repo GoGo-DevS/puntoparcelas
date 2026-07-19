@@ -42,15 +42,20 @@ def dashboard(request):
 
 @login_required(login_url='panel:login')
 def parcelas_lista(request):
+    from django.db.models import Q
     estado = request.GET.get('estado', '')
+    q = request.GET.get('q', '').strip()
     qs = Parcela.objects.all()
     if estado:
         qs = qs.filter(estado=estado)
+    if q:
+        qs = qs.filter(Q(nombre__icontains=q) | Q(sector__icontains=q))
     return render(request, 'panel/parcelas_lista.html', {
         'active': 'parcelas',
         'parcelas': qs,
         'estado_activo': estado,
         'estado_choices': Parcela.ESTADO_CHOICES,
+        'q': q,
     })
 
 

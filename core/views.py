@@ -9,7 +9,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import ConsultaForm
-from .models import REGIONES, Consulta, Parcela, Testimonio
+from .models import REGIONES, Consulta, Parcela, SiteConfig, Testimonio
 
 
 def home(request):
@@ -22,8 +22,9 @@ def home(request):
 
 
 def catalogo(request):
-    from django.db.models import Case, IntegerField, Value, When
+    from django.db.models import Case, IntegerField, Q, Value, When
     region = request.GET.get('region', '').strip()
+    q = request.GET.get('q', '').strip()
     estado_order = Case(
         When(estado='disponible', then=Value(0)),
         When(estado='reservada',  then=Value(1)),
@@ -33,6 +34,8 @@ def catalogo(request):
     qs = Parcela.objects.annotate(estado_order=estado_order).order_by('-destacada', 'estado_order', 'precio')
     if region:
         qs = qs.filter(region=region)
+    if q:
+        qs = qs.filter(Q(nombre__icontains=q) | Q(sector__icontains=q) | Q(descripcion__icontains=q))
 
     paginator = Paginator(qs, 15)
     page_obj = paginator.get_page(request.GET.get('page'))
@@ -40,6 +43,7 @@ def catalogo(request):
     return render(request, 'core/catalogo.html', {
         'page_obj': page_obj,
         'region_activa': region,
+        'q': q,
         'regiones': REGIONES,
         'total': qs.count(),
     })
@@ -61,15 +65,22 @@ def parcela_detail(request, slug):
 
 
 def reserva(request):
-    form = ConsultaForm()
+    config = SiteConfig.get()
     if request.method == 'POST':
+        if request.user.is_authenticated and 'foto_contacto' in request.FILES:
+            config.foto_contacto = request.FILES['foto_contacto']
+            config.save()
+            messages.success(request, 'Foto actualizada.')
+            return redirect('core:reserva')
         form = ConsultaForm(request.POST)
         if form.is_valid():
             consulta = form.save()
             _enviar_notificacion(consulta)
             messages.success(request, '¡Mensaje enviado! Leonardo te contactará pronto.')
             return redirect('core:reserva')
-    return render(request, 'core/reserva.html', {'form': form})
+    else:
+        form = ConsultaForm()
+    return render(request, 'core/reserva.html', {'form': form, 'config': config})
 
 
 def _enviar_notificacion(consulta):

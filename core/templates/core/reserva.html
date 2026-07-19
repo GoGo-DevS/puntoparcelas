@@ -147,8 +147,24 @@
 
       <!-- LEFT — Leonardo -->
       <div class="col-lg-5 anim-left">
-        <img src="{% static 'img/foto-leo.jpeg' %}" alt="Leonardo Valencia" class="mb-4"
-             style="width:100%; max-width:340px; border-radius:12px; display:block; object-fit:cover; aspect-ratio:3/4; border:1px solid rgba(212,175,55,.2);">
+        <div style="position:relative; display:inline-block; width:100%; max-width:340px;">
+          <img src="{% if config.foto_contacto %}{{ config.foto_contacto.url }}{% else %}{% static 'img/foto-leo.jpeg' %}{% endif %}"
+               alt="Leonardo Valencia" class="mb-2"
+               style="width:100%; border-radius:12px; display:block; object-fit:cover; aspect-ratio:3/4; border:1px solid rgba(212,175,55,.2);">
+          {% if user.is_authenticated %}
+          <form method="post" enctype="multipart/form-data" style="margin-bottom:.75rem;">
+            {% csrf_token %}
+            <label style="display:inline-flex; align-items:center; gap:.4rem; cursor:pointer;
+                          background:rgba(212,175,55,.12); border:1px solid rgba(212,175,55,.3);
+                          border-radius:7px; padding:.4rem .9rem; font-size:.78rem; color:var(--pp-gold);
+                          font-family:'Montserrat',sans-serif; font-weight:700;">
+              <i class="bi bi-camera-fill"></i> Cambiar foto
+              <input type="file" name="foto_contacto" accept="image/*" style="display:none;"
+                     onchange="this.form.submit()">
+            </label>
+          </form>
+          {% endif %}
+        </div>
 
         <h2 style="font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.5rem; text-transform:uppercase; letter-spacing:.02em; margin-bottom:.2rem;">
           Leonardo Valencia
