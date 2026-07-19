@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +11,8 @@
     body { background:var(--bg); color:#F0EDE4; font-family:'Roboto',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; }
     .login-wrap { width:100%; max-width:400px; padding:1rem; }
     .login-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:2.5rem 2.2rem; }
-    .logo { font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.4rem; text-align:center; margin-bottom:2rem; }
-    .logo span { color:var(--gold); }
+    .logo { text-align:center; margin-bottom:2rem; }
+    .logo img { height:72px; width:auto; }
     .form-control { background:#1E1E1E!important; border:1px solid var(--border)!important; color:#F0EDE4!important; border-radius:8px; padding:.8rem 1rem; }
     .form-control:focus { border-color:var(--gold)!important; box-shadow:0 0 0 3px rgba(212,175,55,.1)!important; }
     .form-control::placeholder { color:rgba(240,237,228,.35); }
@@ -24,7 +24,7 @@
 <body>
 <div class="login-wrap">
   <div class="login-card">
-    <div class="logo">PUNTO<span>.</span>PARCELAS</div>
+    <div class="logo"><img src="{% static 'img/logo-isotipo.png' %}" alt="Punto Parcelas"></div>
     <p style="text-align:center; color:rgba(240,237,228,.5); font-size:.85rem; margin-bottom:1.8rem;">Panel de administración</p>
 
     {% if form.errors %}

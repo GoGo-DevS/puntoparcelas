@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -35,12 +35,12 @@
       overflow-y: auto;
     }
     .pp-sidebar-logo {
-      padding: 1.5rem 1.25rem 1rem;
-      font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.1rem;
+      padding: 1.25rem 1.25rem .75rem;
+      display: flex; align-items: center;
       letter-spacing:-.02em; text-decoration:none;
       color: var(--pp-text); display:block;
     }
-    .pp-sidebar-logo span { color:var(--pp-gold); }
+    .pp-sidebar-logo img { height:52px; width:auto; }
     .pp-sidebar-section {
       font-size:.65rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
       color:var(--pp-muted); padding:.75rem 1.25rem .3rem;
@@ -165,7 +165,9 @@
 
 <!-- SIDEBAR -->
 <aside class="pp-sidebar" id="ppSidebar">
-  <a href="{% url 'panel:dashboard' %}" class="pp-sidebar-logo">PUNTO<span>.</span>PARCELAS</a>
+  <a href="{% url 'panel:dashboard' %}" class="pp-sidebar-logo">
+    <img src="{% static 'img/logo-isotipo.png' %}" alt="Punto Parcelas">
+  </a>
 
   <div class="pp-sidebar-section">Principal</div>
   <a href="{% url 'panel:dashboard' %}" class="pp-nav-item {% if active == 'dashboard' %}active{% endif %}">
