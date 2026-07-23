@@ -95,30 +95,6 @@ def _parcela_schema(request, parcela):
                    f'Parcela de {parcela.superficie_display} en '
                    f'{parcela.get_region_display()}.').strip()
 
-    product = {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
-        'name': parcela.nombre,
-        'description': descripcion[:300],
-        'category': 'Parcela / Terreno de inversión',
-        'url': url,
-        'brand': {'@type': 'Brand', 'name': 'Punto Parcelas'},
-    }
-    if imagenes:
-        product['image'] = imagenes
-    # Offer solo con moneda ISO válida (CLP). "UF" no es ISO 4217 y Google lo
-    # rechaza como "ficha de comerciante no válida". Para parcelas en UF se
-    # omite el precio del schema (el Product sigue siendo válido sin Offer).
-    if parcela.precio and parcela.moneda == 'CLP':
-        product['offers'] = {
-            '@type': 'Offer',
-            'price': str(parcela.precio),
-            'priceCurrency': 'CLP',
-            'availability': disponibilidad,
-            'url': url,
-            'seller': {'@type': 'RealEstateAgent', 'name': 'Punto Parcelas'},
-        }
-
     breadcrumb = {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
@@ -128,7 +104,35 @@ def _parcela_schema(request, parcela):
             {'@type': 'ListItem', 'position': 3, 'name': parcela.nombre, 'item': url},
         ],
     }
-    return _json.dumps([product, breadcrumb], ensure_ascii=False)
+    schemas = [breadcrumb]
+
+    # Product SOLO para parcelas en CLP con precio: Google exige que un Product
+    # tenga offers/review/aggregateRating, y el Offer requiere moneda ISO (CLP,
+    # no UF). Para parcelas en UF se omite el Product (no puede mostrar precio
+    # en Google igual); igual quedan el breadcrumb y el negocio (RealEstateAgent).
+    if parcela.precio and parcela.moneda == 'CLP':
+        product = {
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            'name': parcela.nombre,
+            'description': descripcion[:300],
+            'category': 'Parcela / Terreno de inversión',
+            'url': url,
+            'brand': {'@type': 'Brand', 'name': 'Punto Parcelas'},
+            'offers': {
+                '@type': 'Offer',
+                'price': str(parcela.precio),
+                'priceCurrency': 'CLP',
+                'availability': disponibilidad,
+                'url': url,
+                'seller': {'@type': 'RealEstateAgent', 'name': 'Punto Parcelas'},
+            },
+        }
+        if imagenes:
+            product['image'] = imagenes
+        schemas.insert(0, product)
+
+    return _json.dumps(schemas, ensure_ascii=False)
 
 
 def reserva(request):
