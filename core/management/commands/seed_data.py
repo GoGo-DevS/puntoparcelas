@@ -243,17 +243,17 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         created_parcelas = 0
         updated_parcelas = 0
+        # SOLO crea parcelas que no existen. NUNCA sobreescribe una parcela ya
+        # cargada: Leonardo edita nombres/precios desde el panel y esos cambios
+        # deben sobrevivir a cada deploy. (Antes esto pisaba sus ediciones con el
+        # seed en cada build → sus cambios "revertían" solos.)
         for data in PARCELAS:
             slug = data.pop('slug')
-            obj, created = Parcela.objects.get_or_create(slug=slug, defaults={**data, 'slug': slug})
-            if not created:
-                for k, v in data.items():
-                    setattr(obj, k, v)
-                obj.slug = slug
-                obj.save()
-                updated_parcelas += 1
-            else:
+            _, created = Parcela.objects.get_or_create(slug=slug, defaults={**data, 'slug': slug})
+            if created:
                 created_parcelas += 1
+            else:
+                updated_parcelas += 1  # existente: se deja INTACTA
 
         created_testimonios = 0
         for data in TESTIMONIOS:
@@ -292,6 +292,6 @@ class Command(BaseCommand):
             self.stdout.write(f'Superusuario "{username}" actualizado desde variables PANEL_.')
 
         self.stdout.write(self.style.SUCCESS(
-            f'Seed OK — {created_parcelas} parcelas creadas, {updated_parcelas} actualizadas, '
+            f'Seed OK — {created_parcelas} parcelas creadas, {updated_parcelas} ya existían (intactas), '
             f'{created_testimonios} testimonios.'
         ))
