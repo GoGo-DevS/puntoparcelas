@@ -117,15 +117,21 @@ def robots_txt(request):
 
 
 def manifest_webmanifest(request):
-    """Web App Manifest para que al 'agregar al inicio' salga el logo, no un ícono genérico.
-    Se sirve por vista (no archivo estático) para resolver el hash de {% static %} del logo."""
+    """Web App Manifest para instalar la web como app con el logo.
+    Se sirve por vista (no archivo estático) para resolver el hash de {% static %}.
+
+    ?app=panel → la app de Leonardo: abre directo /admin-panel/ (gestión), no el
+    sitio público. El manifest solo se enlaza desde el panel, así el "Instalar"
+    no le aparece a los visitantes del sitio."""
+    es_panel = request.GET.get('app') == 'panel'
     icon = request.build_absolute_uri(static_url('img/logo-isotipo.png'))
     return JsonResponse({
-        'name': 'Punto Parcelas',
-        'short_name': 'Punto Parcelas',
-        'description': 'Parcelas de inversión en Chile. Tu parcela, tu futuro.',
-        'start_url': '/',
-        'scope': '/',
+        'name': 'Punto Parcelas — Panel' if es_panel else 'Punto Parcelas',
+        'short_name': 'PP Panel' if es_panel else 'Punto Parcelas',
+        'description': ('Panel de gestión de Punto Parcelas.' if es_panel
+                        else 'Parcelas de inversión en Chile. Tu parcela, tu futuro.'),
+        'start_url': '/admin-panel/' if es_panel else '/',
+        'scope': '/admin-panel/' if es_panel else '/',
         'display': 'standalone',
         'background_color': '#0D0D0D',
         'theme_color': '#0D0D0D',
