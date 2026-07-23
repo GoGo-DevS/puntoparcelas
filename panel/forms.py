@@ -24,7 +24,7 @@ class ParcelaForm(forms.ModelForm):
             'descripcion', 'destacada', 'estado',
             'tiene_luz', 'tiene_agua', 'tiene_acceso', 'vista_privilegiada',
             'tiene_cercado', 'tiene_porton', 'es_turistico', 'bosque_nativo', 'rol_propio',
-            'video_url', 'mapa_url', 'mapa_embed_url', 'geo_pdf',
+            'video_url', 'mapa_url', 'mapa_embed_url', 'geo_pdf', 'imagen_credito',
         ]
         widgets = {
             'nombre':      forms.TextInput(attrs={'class': 'form-control'}),
@@ -39,6 +39,7 @@ class ParcelaForm(forms.ModelForm):
             'mapa_url':       forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://maps.app.goo.gl/...'}),
             'mapa_embed_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://www.google.com/maps/embed?pb=...'}),
             'geo_pdf':        forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': '.pdf'}),
+            'imagen_credito': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
         }
 
 

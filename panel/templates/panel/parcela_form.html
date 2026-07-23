@@ -116,6 +116,17 @@
             {{ form.geo_pdf }}
             <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>PDF con el plano de loteo del proyecto (máx 10 MB)</div>
           </div>
+          <div class="col-12">
+            <label class="form-label">Imagen de valores / financiamiento <span style="color:var(--pp-muted); font-size:.8rem;">(opcional)</span></label>
+            {% if parcela.imagen_credito %}
+            <div style="display:flex; align-items:center; gap:.75rem; background:var(--pp-surface); border:1px solid var(--pp-border); border-radius:8px; padding:.6rem .9rem; margin-bottom:.5rem;">
+              <img src="{{ parcela.imagen_credito.url }}" alt="Valores" style="width:44px; height:44px; object-fit:cover; border-radius:6px;">
+              <a href="{{ parcela.imagen_credito.url }}" target="_blank" style="color:var(--pp-gold); font-size:.85rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Ver imagen actual</a>
+            </div>
+            {% endif %}
+            {{ form.imagen_credito }}
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;"><i class="bi bi-info-circle me-1"></i>Se muestra en su propia sección (como el plano GEO), NO se mezcla en la galería de fotos. Súbela solo en parcelas que lo ameriten.</div>
+          </div>
         </div>
       </div>
 

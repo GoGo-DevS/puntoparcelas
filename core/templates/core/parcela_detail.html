@@ -285,6 +285,23 @@
           </script>
         </div>
         {% endif %}
+
+        {% if parcela.imagen_credito %}
+        <div class="mt-4">
+          <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-cash-stack me-2" style="color:var(--pp-gold);"></i>Valores y financiamiento</h3>
+          <a href="{{ parcela.imagen_credito.url }}" target="_blank" rel="noopener"
+             style="display:block; border-radius:var(--pp-radius); overflow:hidden; border:1px solid var(--pp-border);">
+            <img src="{{ parcela.imagen_credito.url }}" alt="Valores y financiamiento — {{ parcela.nombre }}"
+                 loading="lazy" style="width:100%; height:auto; display:block;">
+          </a>
+          <div class="mt-2" style="display:flex; justify-content:flex-end;">
+            <a href="{{ parcela.imagen_credito.url }}" target="_blank" rel="noopener"
+               style="font-size:.76rem; color:var(--pp-muted); text-decoration:none; display:flex; align-items:center; gap:.3rem;">
+              <i class="bi bi-box-arrow-up-right"></i> Ver en grande
+            </a>
+          </div>
+        </div>
+        {% endif %}
       </div>
 
       <!-- SIDEBAR CONSULTA -->

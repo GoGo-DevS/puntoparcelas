@@ -53,6 +53,8 @@ class Parcela(models.Model):
     mapa_embed_url = models.URLField(blank=True, help_text='URL embed de Google Maps (para mostrar el mapa en la web)')
     geo_pdf        = models.FileField(upload_to='geo/', blank=True, help_text='Plano GEO en PDF',
                                       storage=_geo_pdf_storage)
+    imagen_credito = models.ImageField(upload_to='credito/', blank=True,
+                                       help_text='Imagen de valores/financiamiento (crédito). Se muestra individual, NO en la galería. Solo para parcelas que lo ameriten.')
 
     # Atributos booleanos
     tiene_luz           = models.BooleanField(default=False, verbose_name='Luz eléctrica')

@@ -5,8 +5,9 @@ from django.contrib import messages
 from django.contrib.sitemaps import Sitemap
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.templatetags.static import static as static_url
 
 from .forms import ConsultaForm
 from .models import REGIONES, Consulta, Parcela, SiteConfig, Testimonio
@@ -113,6 +114,26 @@ def links(request):
 def robots_txt(request):
     content = "User-agent: *\nAllow: /\nDisallow: /admin-panel/\nDisallow: /django-admin/\n\nSitemap: https://puntoparcelas.cl/sitemap.xml\n"
     return HttpResponse(content, content_type='text/plain')
+
+
+def manifest_webmanifest(request):
+    """Web App Manifest para que al 'agregar al inicio' salga el logo, no un ícono genérico.
+    Se sirve por vista (no archivo estático) para resolver el hash de {% static %} del logo."""
+    icon = request.build_absolute_uri(static_url('img/logo-isotipo.png'))
+    return JsonResponse({
+        'name': 'Punto Parcelas',
+        'short_name': 'Punto Parcelas',
+        'description': 'Parcelas de inversión en Chile. Tu parcela, tu futuro.',
+        'start_url': '/',
+        'scope': '/',
+        'display': 'standalone',
+        'background_color': '#0D0D0D',
+        'theme_color': '#0D0D0D',
+        'icons': [
+            {'src': icon, 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
+            {'src': icon, 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
+        ],
+    }, content_type='application/manifest+json')
 
 
 def sitemap_xml(request):
