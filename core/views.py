@@ -62,7 +62,70 @@ def parcela_detail(request, slug):
         'parcela': parcela,
         'form': form,
         'relacionadas': relacionadas,
+        'schema_json': _parcela_schema(request, parcela),
     })
+
+
+def _parcela_schema(request, parcela):
+    """JSON-LD Product+Offer + BreadcrumbList para rich results en Google.
+    Se arma con json.dumps (no en el template) para no romper el JSON con
+    comillas o saltos de línea de la descripción."""
+    import json as _json
+
+    url = request.build_absolute_uri(parcela.get_absolute_url()) \
+        if hasattr(parcela, 'get_absolute_url') \
+        else request.build_absolute_uri(f'/catalogo/{parcela.slug}/')
+    home = request.build_absolute_uri('/')
+    catalogo = request.build_absolute_uri('/catalogo/')
+
+    imagenes = []
+    for foto in parcela.fotos.all()[:5]:
+        try:
+            imagenes.append(request.build_absolute_uri(foto.imagen.url))
+        except ValueError:
+            pass
+
+    disponibilidad = {
+        'disponible': 'https://schema.org/InStock',
+        'reservada':  'https://schema.org/LimitedAvailability',
+        'vendida':    'https://schema.org/SoldOut',
+    }.get(parcela.estado, 'https://schema.org/InStock')
+
+    descripcion = (parcela.descripcion or
+                   f'Parcela de {parcela.superficie_display} en '
+                   f'{parcela.get_region_display()}.').strip()
+
+    product = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        'name': parcela.nombre,
+        'description': descripcion[:300],
+        'category': 'Parcela / Terreno de inversión',
+        'url': url,
+        'brand': {'@type': 'Brand', 'name': 'Punto Parcelas'},
+    }
+    if imagenes:
+        product['image'] = imagenes
+    if parcela.precio:
+        product['offers'] = {
+            '@type': 'Offer',
+            'price': str(parcela.precio),
+            'priceCurrency': 'CLP' if parcela.moneda == 'CLP' else parcela.moneda,
+            'availability': disponibilidad,
+            'url': url,
+            'seller': {'@type': 'RealEstateAgent', 'name': 'Punto Parcelas'},
+        }
+
+    breadcrumb = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'Inicio', 'item': home},
+            {'@type': 'ListItem', 'position': 2, 'name': 'Catálogo', 'item': catalogo},
+            {'@type': 'ListItem', 'position': 3, 'name': parcela.nombre, 'item': url},
+        ],
+    }
+    return _json.dumps([product, breadcrumb], ensure_ascii=False)
 
 
 def reserva(request):

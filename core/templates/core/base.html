@@ -17,6 +17,31 @@
   <meta property="og:site_name"   content="Punto Parcelas">
   <meta name="twitter:card"       content="summary_large_image">
 
+  <!-- Canonical (sin query params: evita contenido duplicado con filtros) -->
+  <link rel="canonical" href="{% block canonical %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}">
+
+  <!-- Schema del negocio (aparece en todo el sitio) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "Punto Parcelas",
+    "description": "Venta de parcelas de inversión en Chile. Rol propio, acceso pavimentado y documentación al día.",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/",
+    "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo-isotipo.png' %}",
+    "image": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo-isotipo.png' %}",
+    "telephone": "+56964090173",
+    "areaServed": { "@type": "Country", "name": "Chile" },
+    "sameAs": [
+      "https://www.instagram.com/punto_parcelas/",
+      "https://www.facebook.com/puntoparcelas1",
+      "https://www.youtube.com/@PuntoParcelas",
+      "https://www.tiktok.com/@puntoparcelas.cl"
+    ]
+  }
+  </script>
+  {% block schema %}{% endblock %}
+
   <!-- Favicon (sin manifest: el "Instalar app" es solo para el panel de Leonardo) -->
   <link rel="icon" type="image/png" href="{% static 'img/logo-isotipo.png' %}">
   <link rel="apple-touch-icon" href="{% static 'img/logo-isotipo.png' %}">

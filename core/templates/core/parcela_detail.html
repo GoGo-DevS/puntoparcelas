@@ -1,5 +1,13 @@
 {% extends "core/base.html" %}
-{% block title %}{{ parcela.nombre }} — Punto Parcelas{% endblock %}
+{% block title %}{{ parcela.nombre }} en {{ parcela.get_region_display }} — {{ parcela.superficie_display }} | Punto Parcelas{% endblock %}
+{% block meta_desc %}{{ parcela.nombre }}, parcela de {{ parcela.superficie_display }} en {{ parcela.get_region_display }}{% if parcela.sector %}, {{ parcela.sector }}{% endif %}. Valor {{ parcela.precio_clp }}. {{ parcela.descripcion|striptags|truncatechars:100 }} Agenda tu visita hoy.{% endblock %}
+{% block og_title %}{{ parcela.nombre }} en {{ parcela.get_region_display }} — {{ parcela.precio_clp }}{% endblock %}
+{% block og_desc %}Parcela de {{ parcela.superficie_display }} en {{ parcela.get_region_display }}{% if parcela.sector %}, {{ parcela.sector }}{% endif %}. {{ parcela.get_estado_display }}. Agenda tu visita con Punto Parcelas.{% endblock %}
+{% block og_image %}{% if parcela.foto_principal_url %}{{ parcela.foto_principal_url }}{% else %}https://puntoparcelas.cl/static/img/og-cover.jpg{% endif %}{% endblock %}
+
+{% block schema %}
+{% if schema_json %}<script type="application/ld+json">{{ schema_json|safe }}</script>{% endif %}
+{% endblock %}
 
 {% block extra_head %}
 <style>
