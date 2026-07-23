@@ -106,11 +106,14 @@ def _parcela_schema(request, parcela):
     }
     if imagenes:
         product['image'] = imagenes
-    if parcela.precio:
+    # Offer solo con moneda ISO válida (CLP). "UF" no es ISO 4217 y Google lo
+    # rechaza como "ficha de comerciante no válida". Para parcelas en UF se
+    # omite el precio del schema (el Product sigue siendo válido sin Offer).
+    if parcela.precio and parcela.moneda == 'CLP':
         product['offers'] = {
             '@type': 'Offer',
             'price': str(parcela.precio),
-            'priceCurrency': 'CLP' if parcela.moneda == 'CLP' else parcela.moneda,
+            'priceCurrency': 'CLP',
             'availability': disponibilidad,
             'url': url,
             'seller': {'@type': 'RealEstateAgent', 'name': 'Punto Parcelas'},
