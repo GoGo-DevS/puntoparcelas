@@ -9,6 +9,7 @@ urlpatterns = [
     path('django-admin/', admin.site.urls),
     path('admin-panel/', include('panel.urls', namespace='panel')),
     path('robots.txt', core_views.robots_txt),
+    path('google7385daff3a5a9bec.html', core_views.google_verify),
     path('sitemap.xml', core_views.sitemap_xml),
     path('site.webmanifest', core_views.manifest_webmanifest, name='manifest'),
     path('', include('core.urls', namespace='core')),

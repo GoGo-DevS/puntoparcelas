@@ -179,6 +179,12 @@ def robots_txt(request):
     return HttpResponse(content, content_type='text/plain')
 
 
+def google_verify(request):
+    """Verificación de Google Search Console (archivo HTML)."""
+    return HttpResponse('google-site-verification: google7385daff3a5a9bec.html',
+                        content_type='text/html')
+
+
 def manifest_webmanifest(request):
     """Web App Manifest para instalar la web como app con el logo.
     Se sirve por vista (no archivo estático) para resolver el hash de {% static %}.
