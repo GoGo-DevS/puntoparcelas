@@ -247,7 +247,11 @@ def parcela_geo_pdf(request, slug):
         m = re.search(r'/raw/upload/(?:s--[^/]+--/)?(?:v\d+/)?(.+)', raw_url)
         if not m:
             return HttpResponse(f'No public_id en URL: {raw_url}', status=500, content_type='text/plain')
-        public_id = m.group(1)
+        # geo_pdf.url viene URL-encodeada (ej. ñ -> %C3%B1). El public_id real en Cloudinary
+        # NO esta encodeado, asi que hay que decodificar o no matchea (404 en nombres con
+        # ñ/tildes/espacios como "Viñas de Cauquenes").
+        from urllib.parse import unquote
+        public_id = unquote(m.group(1))
         # private_download_url autentica con API key+secret en query params
         # (bypass de Auth Tokens y URL-signature restrictions)
         download_url = cloudinary.utils.private_download_url(
