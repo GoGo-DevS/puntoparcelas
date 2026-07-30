@@ -455,6 +455,11 @@
       .section { padding: 3.5rem 0; }
       .pp-nav { padding: .7rem 0; }
     }
+  
+    /* Descripción de la parcela: separa los párrafos que escribe el cliente en el
+       panel. Antes salía todo pegado porque el HTML colapsa los saltos de línea. */
+    .pp-descripcion p{ margin:0 0 1rem; }
+    .pp-descripcion p:last-child{ margin-bottom:0; }
   </style>
   {% block extra_head %}{% endblock %}
 </head>

@@ -149,7 +149,9 @@
         {% if parcela.descripcion %}
         <div class="mt-4">
           <h3 style="font-size:1.1rem; margin-bottom:.75rem;">Descripción</h3>
-          <p style="color:var(--pp-muted); line-height:1.75;">{{ parcela.descripcion }}</p>
+          {# linebreaks respeta los párrafos y los saltos que escribe Leonardo en el
+             panel. Sin esto el HTML colapsa los saltos y sale todo pegado. #}
+          <div class="pp-descripcion" style="color:var(--pp-muted); line-height:1.75;">{{ parcela.descripcion|linebreaks }}</div>
         </div>
         {% endif %}
 
