@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
-from core.models import Consulta, FotoParcela, Parcela, Testimonio
+from core.models import Consulta, FotoParcela, Parcela, SiteConfig, Testimonio
 
 
 class PanelLoginForm(AuthenticationForm):
@@ -73,4 +73,23 @@ class ConsultaEstadoForm(forms.ModelForm):
         widgets = {
             'estado': forms.Select(attrs={'class': 'form-select'}),
             'notas':  forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+
+class MedicionForm(forms.ModelForm):
+    """Los ID de medicion los pega Leonardo, con SUS cuentas.
+
+    No van en el codigo a proposito: si se hardcodean, las cuentas terminan
+    siendo de GoGoDevS y el cliente queda amarrado -- mismo criterio que con el
+    dominio. Dejar un campo vacio APAGA esa etiqueta, no la deja a medias.
+    """
+
+    class Meta:
+        model = SiteConfig
+        fields = ['ga4_id', 'meta_pixel_id', 'meta_verificacion', 'google_verificacion']
+        widgets = {
+            'ga4_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'G-ABC1234567'}),
+            'meta_pixel_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '1234567890123456'}),
+            'meta_verificacion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Lo entrega Meta'}),
+            'google_verificacion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opcional'}),
         }

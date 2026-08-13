@@ -1,0 +1,89 @@
+{% extends 'panel/base_panel.html' %}
+
+{% block title %}Medición — Panel{% endblock %}
+{% block topbar_title %}Medición{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h3 mb-1">Medición de campañas</h1>
+    <p class="text-muted mb-0">Para saber qué avisos te traen consultas de verdad.</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% for campo in form %}
+          <div class="mb-4">
+            <label for="{{ campo.id_for_label }}" class="form-label fw-semibold">
+              {{ campo.label }}
+              {% if campo.value %}
+              <span class="badge bg-success ms-1">activo</span>
+              {% else %}
+              <span class="badge bg-secondary ms-1">apagado</span>
+              {% endif %}
+            </label>
+            {{ campo }}
+            {% if campo.help_text %}
+            <div class="form-text">{{ campo.help_text }}</div>
+            {% endif %}
+            {% for e in campo.errors %}
+            <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-check-lg"></i> Guardar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold mb-3">¿Para qué sirve esto?</h2>
+        <p class="small text-muted mb-3">
+          Sin estos códigos, tus avisos funcionan a ciegas: se gasta el presupuesto
+          pero no hay forma de saber qué anuncio trajo cada consulta.
+        </p>
+        <ul class="small text-muted mb-0 ps-3">
+          <li class="mb-2">
+            <strong>Google Analytics</strong> — cuánta gente entra, de dónde viene
+            y qué parcelas mira.
+          </li>
+          <li class="mb-2">
+            <strong>Pixel de Meta</strong> — le enseña a Instagram y Facebook a
+            quién mostrar tus avisos.
+          </li>
+          <li>
+            <strong>Verificación de dominio</strong> — Meta la exige antes de
+            dejarte invertir.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card border-0 bg-light">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold mb-2">Un dato importante</h2>
+        <p class="small text-muted mb-0">
+          Estas cuentas son <strong>tuyas</strong>, no nuestras. Por eso los códigos
+          se pegan acá y no van escritos en el sitio: si algún día cambias de
+          agencia, tu historial de datos se queda contigo.
+        </p>
+        <p class="small text-muted mb-0 mt-2">
+          Un campo vacío simplemente apaga esa medición. No rompe nada.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -7,6 +7,7 @@ urlpatterns = [
     path('login/',  views.PanelLoginView.as_view(),  name='login'),
     path('logout/', views.PanelLogoutView.as_view(), name='logout'),
     path('',                   views.dashboard,         name='dashboard'),
+    path('medicion/',          views.medicion,          name='medicion'),
 
     # Parcelas
     path('parcelas/',              views.parcelas_lista,    name='parcelas_lista'),

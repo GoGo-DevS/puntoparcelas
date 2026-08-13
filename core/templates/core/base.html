@@ -462,6 +462,41 @@
     .pp-descripcion p:last-child{ margin-bottom:0; }
   </style>
   {% block extra_head %}{% endblock %}
+
+  {% comment %}
+    Medicion de campañas. Los ID se cargan desde el panel (Configuracion), NO
+    van escritos aca: son cuentas de Leonardo y tienen que poder cambiarse sin
+    un deploy. Si un campo esta vacio su etiqueta no se dibuja, para no dejar
+    una a medias -- medir mal es peor que no medir.
+  {% endcomment %}
+  {% if SITE_CONFIG.google_verificacion %}
+  <meta name="google-site-verification" content="{{ SITE_CONFIG.google_verificacion }}">
+  {% endif %}
+  {% if SITE_CONFIG.meta_verificacion %}
+  <meta name="facebook-domain-verification" content="{{ SITE_CONFIG.meta_verificacion }}">
+  {% endif %}
+  {% if SITE_CONFIG.ga4_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ SITE_CONFIG.ga4_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ SITE_CONFIG.ga4_id }}');
+  </script>
+  {% endif %}
+  {% if SITE_CONFIG.meta_pixel_id %}
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '{{ SITE_CONFIG.meta_pixel_id }}');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id={{ SITE_CONFIG.meta_pixel_id }}&ev=PageView&noscript=1"></noscript>
+  {% endif %}
 </head>
 <body>
 

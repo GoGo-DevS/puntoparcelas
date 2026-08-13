@@ -266,6 +266,28 @@ class Testimonio(models.Model):
 class SiteConfig(models.Model):
     foto_contacto = models.ImageField(upload_to='config/', blank=True, help_text='Foto de Leonardo en /contacto/')
 
+    # MEDICION DE CAMPAÑAS (12-08-2026)
+    # El sitio se entrego sin ninguna etiqueta: Leonardo pagaba Google Ads sin
+    # saber que clics terminaban en consulta, y Meta le mando un correo pidiendo
+    # verificar el dominio antes de dejarlo invertir. Van aca y no en el codigo
+    # para que EL pegue los ID de SUS cuentas: si se hardcodean, las cuentas
+    # terminan siendo de GoGoDevS y el cliente queda amarrado (mismo criterio
+    # que con el dominio).
+    # Si un campo esta vacio, su etiqueta NO se dibuja. Una etiqueta a medias
+    # mide mal, que es peor que no medir.
+    ga4_id = models.CharField(
+        'ID de Google Analytics', max_length=30, blank=True,
+        help_text='Empieza con G- (ej: G-ABC1234567). Lo entrega Google Analytics.')
+    meta_pixel_id = models.CharField(
+        'ID del pixel de Meta', max_length=30, blank=True,
+        help_text='Solo numeros. Lo entrega el Administrador Comercial de Meta.')
+    meta_verificacion = models.CharField(
+        'Codigo de verificacion de dominio (Meta)', max_length=120, blank=True,
+        help_text='El codigo que pide Meta para confirmar que el sitio es tuyo.')
+    google_verificacion = models.CharField(
+        'Codigo de verificacion de Google', max_length=120, blank=True,
+        help_text='Opcional. Solo si Google Search Console lo pide por etiqueta.')
+
     class Meta:
         verbose_name = 'Configuración del sitio'
 

@@ -4,11 +4,12 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 
-from core.models import Consulta, FotoParcela, Parcela, Testimonio
+from core.models import Consulta, FotoParcela, Parcela, SiteConfig, Testimonio
 
 from .forms import (
     ConsultaEstadoForm,
     FotoParcelaForm,
+    MedicionForm,
     PanelLoginForm,
     ParcelaForm,
     TestimonioForm,
@@ -238,4 +239,21 @@ def testimonio_delete(request, pk):
         'active': 'testimonios',
         'titulo': f'Eliminar testimonio de {obj.nombre}',
         'volver_url': reverse_lazy('panel:testimonios_lista'),
+    })
+
+
+@login_required
+def medicion(request):
+    """Pantalla para pegar los ID de Google Analytics y del pixel de Meta."""
+    cfg = SiteConfig.get()
+    if request.method == 'POST':
+        form = MedicionForm(request.POST, instance=cfg)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Guardado. Los cambios quedan activos al instante.')
+            return redirect('panel:medicion')
+    else:
+        form = MedicionForm(instance=cfg)
+    return render(request, 'panel/medicion.html', {
+        'active': 'medicion', 'form': form, 'cfg': cfg,
     })
