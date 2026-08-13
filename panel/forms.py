@@ -86,10 +86,13 @@ class MedicionForm(forms.ModelForm):
 
     class Meta:
         model = SiteConfig
-        fields = ['ga4_id', 'meta_pixel_id', 'meta_verificacion', 'google_verificacion']
+        fields = ['ga4_id', 'meta_pixel_id', 'meta_verificacion', 'google_verificacion',
+                  'imagen_compartir']
         widgets = {
             'ga4_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'G-ABC1234567'}),
             'meta_pixel_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '1234567890123456'}),
             'meta_verificacion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Lo entrega Meta'}),
             'google_verificacion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opcional'}),
+            'imagen_compartir': forms.ClearableFileInput(attrs={'class': 'form-control',
+                                                                'accept': 'image/*'}),
         }

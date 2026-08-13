@@ -280,6 +280,18 @@ class Testimonio(models.Model):
 class SiteConfig(models.Model):
     foto_contacto = models.ImageField(upload_to='config/', blank=True, help_text='Foto de Leonardo en /contacto/')
 
+    # IMAGEN AL COMPARTIR (13-08-2026)
+    # og:image apuntaba a static/img/og-cover.jpg, un archivo que NUNCA existio:
+    # devolvia 404 y Meta respondia "tipo de contenido no valido", asi que la
+    # vista previa caia de vuelta en el logo. Leonardo comparte su link por
+    # WhatsApp, Instagram y Facebook -- esa miniatura ES su publicidad, no un
+    # detalle. Ahora la sube el desde el panel y, si no sube ninguna, se usa un
+    # logo que SI existe: nunca mas un 404 en la etiqueta.
+    imagen_compartir = models.ImageField(
+        'Imagen al compartir el link', upload_to='config/', blank=True,
+        help_text='La foto que se ve cuando mandas tu sitio por WhatsApp, Instagram o '
+                  'Facebook. Ideal 1200x630 px. Si la dejas vacia se muestra el logo.')
+
     # MEDICION DE CAMPAÑAS (12-08-2026)
     # El sitio se entrego sin ninguna etiqueta: Leonardo pagaba Google Ads sin
     # saber que clics terminaban en consulta, y Meta le mando un correo pidiendo

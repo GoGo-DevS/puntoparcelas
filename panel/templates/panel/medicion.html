@@ -15,7 +15,9 @@
   <div class="col-lg-7">
     <div class="card border-0 shadow-sm">
       <div class="card-body p-4">
-        <form method="post" novalidate>
+        {# enctype OBLIGATORIO: sin el, la imagen al compartir no llega al
+           servidor y la pantalla igual responde "Guardado". #}
+        <form method="post" enctype="multipart/form-data" novalidate>
           {% csrf_token %}
 
           {% for campo in form %}
@@ -63,11 +65,33 @@
             <strong>Pixel de Meta</strong> — le enseña a Instagram y Facebook a
             quién mostrar tus avisos.
           </li>
-          <li>
+          <li class="mb-2">
             <strong>Verificación de dominio</strong> — Meta la exige antes de
             dejarte invertir.
           </li>
+          <li>
+            <strong>Imagen al compartir</strong> — la foto que ve la gente
+            cuando les mandas tu link por WhatsApp.
+          </li>
         </ul>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold mb-3">Así se ve tu link al compartirlo</h2>
+        <div class="border rounded overflow-hidden">
+          <img src="{{ OG_IMAGE }}" alt="Vista previa al compartir"
+               class="w-100" style="aspect-ratio:1200/630; object-fit:cover; background:#eee;">
+          <div class="p-2 bg-white">
+            <div class="small text-muted text-uppercase">puntoparcelas.cl</div>
+            <div class="small fw-semibold">Punto Parcelas — Tu inversión hoy, tu patrimonio mañana</div>
+          </div>
+        </div>
+        <p class="small text-muted mb-0 mt-2">
+          Sube una foto de tus parcelas (ideal 1200×630) y esta vista previa
+          cambia. Mientras no subas ninguna, se muestra tu logo.
+        </p>
       </div>
     </div>
 

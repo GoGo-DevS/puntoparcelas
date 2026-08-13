@@ -247,7 +247,10 @@ def medicion(request):
     """Pantalla para pegar los ID de Google Analytics y del pixel de Meta."""
     cfg = SiteConfig.get()
     if request.method == 'POST':
-        form = MedicionForm(request.POST, instance=cfg)
+        # request.FILES es obligatorio desde que el formulario acepta la imagen
+        # al compartir: sin el, el archivo se descarta EN SILENCIO y la pantalla
+        # igual dice "Guardado".
+        form = MedicionForm(request.POST, request.FILES, instance=cfg)
         if form.is_valid():
             form.save()
             messages.success(request, 'Guardado. Los cambios quedan activos al instante.')
