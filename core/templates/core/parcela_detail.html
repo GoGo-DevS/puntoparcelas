@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load imagenes %}
 {% block title %}{{ parcela.nombre }} en {{ parcela.get_region_display }} — {{ parcela.superficie_display }} | Punto Parcelas{% endblock %}
 {% block meta_desc %}{{ parcela.nombre }}, parcela de {{ parcela.superficie_display }} en {{ parcela.get_region_display }}{% if parcela.sector %}, {{ parcela.sector }}{% endif %}. Valor {{ parcela.precio_clp }}. {{ parcela.descripcion|striptags|truncatechars:100 }} Agenda tu visita hoy.{% endblock %}
 {% block og_title %}{{ parcela.nombre }} en {{ parcela.get_region_display }} — {{ parcela.precio_clp }}{% endblock %}
@@ -133,9 +134,10 @@
           {% if fotos|length > 1 %}
           <div class="d-flex gap-2 flex-wrap">
             {% for f in fotos %}
-            <img src="{{ f.imagen.url }}" class="gallery-thumb {% if f.principal %}active{% endif %}"
+            <img src="{{ f.imagen.url|achicar:300 }}" class="gallery-thumb {% if f.principal %}active{% endif %}"
                  style="width:80px;" alt="foto"
-                 onclick="var u=this.src; document.getElementById('mainPhoto').src=u; document.getElementById('galleryWrap').style.backgroundImage='url('+u+')'; document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
+                 data-full="{{ f.imagen.url|achicar:1600 }}"
+                 onclick="var u=this.dataset.full; document.getElementById('mainPhoto').src=u; document.getElementById('galleryWrap').style.backgroundImage='url('+u+')'; document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
             {% endfor %}
           </div>
           {% endif %}
@@ -303,7 +305,7 @@
           <h3 style="font-size:1.1rem; margin-bottom:.75rem;"><i class="bi bi-cash-stack me-2" style="color:var(--pp-gold);"></i>Valores y financiamiento</h3>
           <a href="{{ parcela.imagen_credito.url }}" target="_blank" rel="noopener"
              style="display:block; border-radius:var(--pp-radius); overflow:hidden; border:1px solid var(--pp-border);">
-            <img src="{{ parcela.imagen_credito.url }}" alt="Valores y financiamiento — {{ parcela.nombre }}"
+            <img src="{{ parcela.imagen_credito.url|achicar:1200 }}" alt="Valores y financiamiento — {{ parcela.nombre }}"
                  loading="lazy" style="width:100%; height:auto; display:block;">
           </a>
           <div class="mt-2" style="display:flex; justify-content:flex-end;">

@@ -4,6 +4,20 @@ from django.db import models
 from django.utils.text import slugify
 
 
+def _cloudinary_achicada(url, ancho=1200):
+    """Inserta una transformacion Cloudinary (f_auto,q_auto,w_<ancho>) en la
+    URL de entrega si es una URL de Cloudinary. Baja ~90% el peso servido sin
+    tocar el archivo original ni migrar nada - medido el 17-08-2026 en
+    puntoparcelas.cl: 29,6 MB por visita (fotos sin redimensionar), causa
+    unica de la cuenta Cloudinary pasada al 159% del cupo gratis.
+    Si no es Cloudinary (dev local con FileSystemStorage), devuelve tal cual."""
+    marcador = '/image/upload/'
+    if marcador not in url:
+        return url
+    transformacion = f'f_auto,q_auto,w_{ancho},c_limit'
+    return url.replace(marcador, f'{marcador}{transformacion}/', 1)
+
+
 def _geo_pdf_storage():
     """Use RawMediaCloudinaryStorage in production so PDFs upload as raw (not image)."""
     if os.environ.get('CLOUDINARY_URL'):
@@ -94,7 +108,7 @@ class Parcela(models.Model):
         foto = self.fotos.filter(principal=True).first() or self.fotos.first()
         if foto and foto.imagen:
             try:
-                return foto.imagen.url
+                return _cloudinary_achicada(foto.imagen.url)
             except ValueError:
                 pass
         return ''
