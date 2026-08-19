@@ -12,10 +12,13 @@
   <meta property="og:description" content="{% block og_desc %}Parcelas de inversión en Chile. Seguridad, plusvalía y confianza en cada terreno. Leonardo Valencia, especialista en inversión.{% endblock %}">
   <meta property="og:type"        content="website">
   <meta property="og:url"         content="{{ request.build_absolute_uri }}">
-  {# La imagen que se ve al mandar el link por WhatsApp/Instagram/Facebook.
-     Antes apuntaba a static/img/og-cover.jpg, que NUNCA existio: 404, y Meta
-     lo rechazaba por "tipo de contenido no valido". Ahora la sube Leonardo
-     desde el panel; si no hay ninguna, se usa un logo que SI existe. #}
+  {% comment %}
+    La imagen que se ve al mandar el link por WhatsApp/Instagram/Facebook.
+    Antes apuntaba a static/img/og-cover.jpg, que NUNCA existio: 404, y Meta
+    lo rechazaba por "tipo de contenido no valido". Ahora la sube Leonardo
+    desde el panel; si no hay ninguna, se usa un logo que SI existe.
+    OJO: {# #} es de UNA sola linea. Multilinea se IMPRIME en la pagina.
+  {% endcomment %}
   <meta property="og:image"       content="{% block og_image %}{{ OG_IMAGE }}{% endblock %}">
   <meta property="og:locale"      content="es_CL">
   <meta property="og:site_name"   content="Punto Parcelas">

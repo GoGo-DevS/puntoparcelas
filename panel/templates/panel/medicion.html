@@ -15,8 +15,11 @@
   <div class="col-lg-7">
     <div class="card border-0 shadow-sm">
       <div class="card-body p-4">
-        {# enctype OBLIGATORIO: sin el, la imagen al compartir no llega al
-           servidor y la pantalla igual responde "Guardado". #}
+        {% comment %}
+          enctype OBLIGATORIO: sin el, la imagen al compartir no llega al
+          servidor y la pantalla igual responde "Guardado".
+          OJO: {# #} es de UNA sola linea. Multilinea se IMPRIME en la pagina.
+        {% endcomment %}
         <form method="post" enctype="multipart/form-data" novalidate>
           {% csrf_token %}
 
