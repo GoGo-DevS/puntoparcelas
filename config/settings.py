@@ -97,26 +97,66 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+_ESTATICOS = {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'}
+
+# ── DONDE VIVEN LAS FOTOS ────────────────────────────────────────────────────
+# 20-08-2026: la cuenta de Cloudinary de este sitio quedo DESHABILITADA por
+# pasarse del cupo gratis. Medido en vivo: cada foto devolvia
+#     HTTP 401 · X-Cld-Error: cloud_name dd1ps0y8f is disabled
+# o sea el sitio de un cliente pagado, en produccion y con dominio propio,
+# quedo sin UNA sola foto.
+#
+# Cloudinary no cobra por GUARDAR sino por SERVIR, asi que el costo sube justo
+# cuando al cliente le va bien. Cloudflare R2 no cobra egreso NUNCA: 10 GB
+# gratis y despues US$0,015 por GB. Es la misma migracion que ya se hizo en
+# Medina4x4, Villarreal y Popi.
+#
+# Cloudinary se deja como segunda opcion y NO se borra: si algun dia hay que
+# volver, es cambiar una variable de entorno, no un despliegue.
+R2_ACCESS_KEY = os.environ.get('R2_ACCESS_KEY_ID', '')
+R2_SECRET_KEY = os.environ.get('R2_SECRET_ACCESS_KEY', '')
+R2_BUCKET = os.environ.get('R2_BUCKET', '')
+R2_ENDPOINT = os.environ.get('R2_ENDPOINT', '')
+# URL publica del bucket (dominio propio de R2 o el r2.dev). Sin esto las fotos
+# se guardan pero el navegador no sabe de donde bajarlas.
+R2_PUBLIC_URL = os.environ.get('R2_PUBLIC_URL', '').rstrip('/')
+
 CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', '')
 
-if CLOUDINARY_URL:
+if R2_ACCESS_KEY and R2_SECRET_KEY and R2_BUCKET and R2_ENDPOINT:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'storages.backends.s3.S3Storage',
+            'OPTIONS': {
+                'access_key': R2_ACCESS_KEY,
+                'secret_key': R2_SECRET_KEY,
+                'bucket_name': R2_BUCKET,
+                'endpoint_url': R2_ENDPOINT,
+                # R2 no usa regiones como S3, pero boto3 exige una.
+                'region_name': 'auto',
+                # Las fotos de las parcelas son publicas: sin esto cada <img>
+                # tendria que ir firmada y con vencimiento.
+                'querystring_auth': False,
+                'default_acl': None,      # R2 no implementa las ACL de S3
+                'file_overwrite': False,  # no pisar una foto por nombre repetido
+                'custom_domain': R2_PUBLIC_URL.replace('https://', '')
+                                 .replace('http://', '') or None,
+            },
+        },
+        'staticfiles': _ESTATICOS,
+    }
+elif CLOUDINARY_URL:
     INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
     STORAGES = {
-        'default': {
-            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
-        },
-        'staticfiles': {
-            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-        },
+        'default': {'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'},
+        'staticfiles': _ESTATICOS,
     }
 else:
+    # Disco local. En Render esto se BORRA en cada despliegue: sirve para
+    # desarrollo, no para produccion.
     STORAGES = {
-        'default': {
-            'BACKEND': 'django.core.files.storage.FileSystemStorage',
-        },
-        'staticfiles': {
-            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-        },
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        'staticfiles': _ESTATICOS,
     }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

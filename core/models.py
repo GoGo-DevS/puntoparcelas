@@ -19,7 +19,17 @@ def _cloudinary_achicada(url, ancho=1200):
 
 
 def _geo_pdf_storage():
-    """Use RawMediaCloudinaryStorage in production so PDFs upload as raw (not image)."""
+    """Donde se guarda el PDF del plano.
+
+    Con R2 configurado se usa el storage por defecto (S3Storage), que sirve
+    cualquier tipo de archivo. Ese chequeo va PRIMERO: si se preguntara por
+    CLOUDINARY_URL antes, un sitio ya migrado a R2 pero que conserva la
+    variable de Cloudinary (que se deja a proposito, como segunda opcion)
+    seguiria mandando los PDF a la cuenta caida.
+    """
+    if os.environ.get('R2_BUCKET') and os.environ.get('R2_ENDPOINT'):
+        from django.core.files.storage import default_storage
+        return default_storage
     if os.environ.get('CLOUDINARY_URL'):
         from cloudinary_storage.storage import RawMediaCloudinaryStorage
         return RawMediaCloudinaryStorage()
