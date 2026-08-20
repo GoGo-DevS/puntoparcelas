@@ -89,6 +89,14 @@ class Command(BaseCommand):
                             help='Sin esto es un ensayo y no escribe nada.')
         parser.add_argument('--ancho', type=int, default=1600,
                             help='Ancho maximo en pixeles (default 1600).')
+        # PRIMERO SE RESCATA, DESPUES SE MIGRA. Bajar los archivos a disco es lo
+        # unico irreversible que hay que apurar: la cuenta esta caida y no hay
+        # respaldo en ninguna parte. Subir a R2 puede esperar a que exista el
+        # bucket. Y hacerlo en un solo paso seria PELIGROSO: sin R2 configurado
+        # el storage por defecto es el disco local, asi que reescribir la base
+        # dejaria a produccion apuntando a archivos que en Render no existen.
+        parser.add_argument('--solo-descargar', metavar='CARPETA',
+                            help='Baja los originales a esa carpeta y NO toca la base de datos.')
 
     def handle(self, *args, **op):
         for s in (self.stdout, self.stderr):
@@ -98,7 +106,12 @@ class Command(BaseCommand):
                 pass
 
         escribir, ancho = op['confirmar'], op['ancho']
-        if not escribir:
+        carpeta = op.get('solo_descargar')
+        if carpeta:
+            os.makedirs(carpeta, exist_ok=True)
+            self.stdout.write(self.style.WARNING(
+                f'MODO RESCATE: bajo los originales a {carpeta} y NO toco la base.\n'))
+        elif not escribir:
             self.stdout.write(self.style.WARNING('ENSAYO — no se escribe nada. Usa --confirmar.\n'))
 
         cred = _credenciales()
@@ -147,7 +160,7 @@ class Command(BaseCommand):
                     continue
 
                 nombre = os.path.basename(f.name)
-                if not escribir:
+                if not escribir and not carpeta:
                     self.stdout.write(f'  {modelo.__name__}#{obj.pk}.{campo}  {nombre[:44]}')
                     ok += 1
                     continue
@@ -169,6 +182,21 @@ class Command(BaseCommand):
                     continue
 
                 bytes_antes += len(datos)
+
+                if carpeta:
+                    # Rescate puro: el original tal cual, sin achicar ni tocar la
+                    # base. El nombre lleva el pk para poder reconstruir despues
+                    # que archivo era de quien.
+                    destino = os.path.join(
+                        carpeta, f'{modelo.__name__}-{obj.pk}-{campo}-{nombre}')
+                    with open(destino, 'wb') as fh:
+                        fh.write(datos)
+                    bytes_despues += len(datos)
+                    ok += 1
+                    self.stdout.write(f'  v {modelo.__name__}#{obj.pk}.{campo}  '
+                                      f'{len(datos)/1024:.0f} KB  {nombre[:38]}')
+                    continue
+
                 chico, ext = _achicar(datos, ancho)
                 bytes_despues += len(chico)
                 base = nombre.rsplit('.', 1)[0]
