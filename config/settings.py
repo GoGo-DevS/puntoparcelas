@@ -146,6 +146,26 @@ if R2_ACCESS_KEY and R2_SECRET_KEY and R2_BUCKET and R2_ENDPOINT:
         'staticfiles': _ESTATICOS,
     }
 elif CLOUDINARY_URL:
+    # ESTA RAMA YA NO ES UNA RED. Caer aca no degrada el servicio: lo rompe
+    # igual, porque la cuenta de Cloudinary se va a cancelar apenas terminemos
+    # de migrar y va a volver a devolver 401 en cada foto.
+    #
+    # Se avisa FUERTE porque el modo de fallo es silencioso: con 4 de las 5
+    # variables de R2 puestas, el sitio arranca sin un solo error y sirve todas
+    # las fotos rotas. Eso es exactamente lo que paso el 20-08-2026.
+    if any([R2_ACCESS_KEY, R2_SECRET_KEY, R2_BUCKET, R2_ENDPOINT]):
+        faltan = [n for n, v in (('R2_ACCESS_KEY_ID', R2_ACCESS_KEY),
+                                 ('R2_SECRET_ACCESS_KEY', R2_SECRET_KEY),
+                                 ('R2_BUCKET', R2_BUCKET),
+                                 ('R2_ENDPOINT', R2_ENDPOINT)) if not v]
+        import sys as _sys
+        print('*' * 72, file=_sys.stderr)
+        print('AVISO GRAVE: hay variables de R2 puestas pero FALTAN ' + ', '.join(faltan),
+              file=_sys.stderr)
+        print('Las fotos se van a servir desde Cloudinary, que esta por cancelarse.',
+              file=_sys.stderr)
+        print('Completa las 5 variables o el sitio queda sin imagenes.', file=_sys.stderr)
+        print('*' * 72, file=_sys.stderr)
     INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
     STORAGES = {
         'default': {'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'},

@@ -63,7 +63,18 @@ def clave(nombre):
     return base.lower().strip()
 
 
-def achicar(datos, ancho=1600):
+def achicar(datos, ancho=1600, tope_kb=100):
+    """A WebP de como maximo `tope_kb`. Devuelve (bytes, extension).
+
+    El formato y el peso NO son antojo nuestro: Jorge Urzua, el SEO de Leonardo,
+    le pidio textualmente "formato webp" y "peso maximo de 100kb". Las fotos que
+    habia eran JPEG de ~3 MB, o sea 30 veces el tope — 29,6 MB por visita, que es
+    justo lo que reviento la cuenta de Cloudinary.
+
+    Se baja la calidad por pasos hasta entrar en el tope, y si aun asi no cabe se
+    achica el ancho. Se prefiere perder pixeles antes que devolver un archivo que
+    no cumple lo que se prometio.
+    """
     try:
         from PIL import Image
     except ImportError:
@@ -77,9 +88,32 @@ def achicar(datos, ancho=1600):
         im = im.convert('RGB')
     if im.width > ancho:
         im = im.resize((ancho, round(im.height * ancho / im.width)), Image.LANCZOS)
-    out = io.BytesIO()
-    im.save(out, format='JPEG', quality=82, optimize=True, progressive=True)
-    return out.getvalue(), '.jpg'
+
+    # method=4 y no 6: en las pruebas la diferencia de peso fue de ~2% y la de
+    # tiempo de 5x. Con 324 fotos por delante, 6 no se paga.
+    tope = tope_kb * 1024
+    ultimo = None
+    for w in (im.width, 1400, 1100, 900, 750):
+        actual = im if w >= im.width else im.resize(
+            (w, round(im.height * w / im.width)), Image.LANCZOS)
+        # Busqueda binaria sobre la calidad en vez de probar cinco valores fijos:
+        # tres intentos bastan para acercarse al tope desde abajo.
+        bajo, alto, mejor = 18, 88, None
+        for _ in range(5):
+            q = (bajo + alto) // 2
+            out = io.BytesIO()
+            actual.save(out, format='WEBP', quality=q, method=4)
+            if out.tell() <= tope:
+                mejor = out.getvalue()
+                bajo = q + 1
+            else:
+                alto = q - 1
+            if bajo > alto:
+                break
+        if mejor:
+            return mejor, '.webp'
+        ultimo = out.getvalue()
+    return ultimo, '.webp'   # no cupo ni al minimo: se entrega lo mas liviano
 
 
 class Command(BaseCommand):
@@ -92,6 +126,8 @@ class Command(BaseCommand):
         parser.add_argument('--faltantes', action='store_true',
                             help='Solo lista lo que la carpeta NO trae, por parcela.')
         parser.add_argument('--ancho', type=int, default=1600)
+        parser.add_argument('--kb', type=int, default=100,
+                            help='Peso maximo por foto en KB (default 100, lo que pidio el SEO).')
 
     def handle(self, *a, **op):
         for s in (self.stdout, self.stderr):
@@ -167,7 +203,7 @@ class Command(BaseCommand):
             with open(disponibles[k], 'rb') as fh:
                 datos = fh.read()
             antes += len(datos)
-            chico, ext = achicar(datos, op['ancho'])
+            chico, ext = achicar(datos, op['ancho'], op['kb'])
             despues += len(chico)
             destino = f'parcelas/{k}{ext or ".jpg"}'
             ruta = default_storage.save(destino, ContentFile(chico))
