@@ -235,39 +235,67 @@ def sitemap_xml(request):
 
 
 def parcela_geo_pdf(request, slug):
-    """Proxy: sirve el PDF firmado de Cloudinary same-origin (bypasea access restrictions)."""
+    """Sirve el plano GEO desde nuestro dominio, venga de donde venga.
+
+    POR QUE EXISTE ESTA VISTA
+    Nacio para saltarse las restricciones de entrega de PDF de Cloudinary
+    firmando la URL. Cuando las fotos se migraron a R2 (20-08) esta vista quedo
+    atras: buscaba `/raw/upload/` con una expresion regular y una URL de R2 no
+    lo trae nunca, asi que TODO plano moria con "No public_id en URL".
+
+    Se sigue sirviendo por aca en vez de enlazar el archivo directo por dos
+    motivos concretos:
+      · R2 devuelve estos PDF con Content-Type `image/jpeg` (asi quedaron al
+        subirlos). El navegador intenta dibujar un PDF como imagen y no muestra
+        nada. Aca se manda `application/pdf` y se ve.
+      · El enlace queda en puntoparcelas.cl y no expone el bucket.
+    """
     parcela = get_object_or_404(Parcela, slug=slug)
     if not parcela.geo_pdf:
         raise Http404
+
+    raw_url = parcela.geo_pdf.url
+    url = raw_url
+
+    # Camino viejo: los planos que todavia apunten a Cloudinary necesitan la
+    # URL firmada. Si la URL no es de Cloudinary este bloque no corre.
+    if '/raw/upload/' in raw_url:
+        try:
+            import re
+            from urllib.parse import unquote
+
+            import cloudinary.utils
+            m = re.search(r'/raw/upload/(?:s--[^/]+--/)?(?:v\d+/)?(.+)', raw_url)
+            # `.url` viene URL-encodeada (ñ -> %C3%B1) y el public_id real no,
+            # asi que sin decodificar no calza ("Viñas de Cauquenes").
+            public_id = unquote(m.group(1))
+            url = cloudinary.utils.private_download_url(
+                public_id, '', resource_type='raw', type='upload', attachment=False)
+        except Exception as e:
+            return HttpResponse(f'Sign error: {e}', status=500,
+                                content_type='text/plain')
+
     try:
-        import re
-        import cloudinary.utils
-        # Extraer public_id desde la URL (ej: media/geo/filename.pdf)
-        raw_url = parcela.geo_pdf.url
-        m = re.search(r'/raw/upload/(?:s--[^/]+--/)?(?:v\d+/)?(.+)', raw_url)
-        if not m:
-            return HttpResponse(f'No public_id en URL: {raw_url}', status=500, content_type='text/plain')
-        # geo_pdf.url viene URL-encodeada (ej. ñ -> %C3%B1). El public_id real en Cloudinary
-        # NO esta encodeado, asi que hay que decodificar o no matchea (404 en nombres con
-        # ñ/tildes/espacios como "Viñas de Cauquenes").
-        from urllib.parse import unquote
-        public_id = unquote(m.group(1))
-        # private_download_url autentica con API key+secret en query params
-        # (bypass de Auth Tokens y URL-signature restrictions)
-        download_url = cloudinary.utils.private_download_url(
-            public_id,
-            '',
-            resource_type='raw',
-            type='upload',
-            attachment=False,
-        )
-    except Exception as e:
-        return HttpResponse(f'Sign error: {e}', status=500, content_type='text/plain')
-    try:
-        r = http_requests.get(download_url, timeout=30)
+        r = http_requests.get(url, timeout=30)
         r.raise_for_status()
+        contenido = r.content
     except Exception as e:
-        return HttpResponse(f'Fetch error [{download_url}]: {e}', status=500, content_type='text/plain')
-    response = HttpResponse(r.content, content_type='application/pdf')
+        # Ultimo recurso: leerlo por el propio storage. Sirve si el bucket
+        # dejara de ser publico o si la URL quedara mal guardada.
+        try:
+            parcela.geo_pdf.open('rb')
+            contenido = parcela.geo_pdf.read()
+            parcela.geo_pdf.close()
+        except Exception:
+            return HttpResponse(f'No se pudo leer el plano: {e}', status=502,
+                                content_type='text/plain')
+
+    if not contenido[:5].startswith(b'%PDF'):
+        # Se avisa en vez de entregar bytes que el visor va a mostrar en blanco.
+        return HttpResponse('El archivo guardado como plano no es un PDF.',
+                            status=500, content_type='text/plain')
+
+    response = HttpResponse(contenido, content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="plano-geo.pdf"'
+    response['Cache-Control'] = 'public, max-age=3600'
     return response
