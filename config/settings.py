@@ -68,8 +68,23 @@ DATABASE_URL = os.environ.get('DATABASE_URL', '')
 if DATABASE_URL:
     import dj_database_url
 
+    # conn_max_age=0 A PROPOSITO, no es un descuido.
+    #
+    # 26-08-2026: Neon aviso al 80% de las 100 CU-horas del plan gratis, con el
+    # grafico mostrando compute activo de 2 AM a 10 PM. No era trafico: era esto.
+    # Con conn_max_age=600 cada visita dejaba la conexion viva 10 minutos, y Neon
+    # NO SUSPENDE el compute mientras haya una conexion abierta. Con cualquier
+    # monitor pinchando el sitio cada 5 minutos, la conexion se renovaba antes de
+    # expirar y el reloj no paraba nunca — 24 horas facturadas por dia.
+    #
+    # En 0, la conexion se cierra al terminar cada request y el compute puede
+    # suspender a los 5 minutos de inactividad REAL. El costo de reabrir es bajo
+    # porque el pooling lo hace Neon del otro lado.
+    #
+    # OJO: esto asume que DATABASE_URL apunta al endpoint con `-pooler` en el
+    # host. Sin pooler, cada request paga el handshake completo contra Postgres.
     DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=0, ssl_require=True)
     }
 else:
     DATABASES = {
