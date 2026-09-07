@@ -1,8 +1,8 @@
 {% extends "core/base.html" %}
 {% load imagenes %}
-{% block title %}{{ parcela.nombre }} en {{ parcela.get_region_display }} — {{ parcela.superficie_display }} | Punto Parcelas{% endblock %}
+{% block title %}{% if parcela.seo_title %}{{ parcela.seo_title }}{% else %}{{ parcela.nombre }} en {{ parcela.get_region_display }} — {{ parcela.superficie_display }} | Punto Parcelas{% endif %}{% endblock %}
 {% block meta_desc %}{{ parcela.nombre }}, parcela de {{ parcela.superficie_display }} en {{ parcela.get_region_display }}{% if parcela.sector %}, {{ parcela.sector }}{% endif %}. Valor {{ parcela.precio_clp }}. {{ parcela.descripcion|striptags|truncatechars:100 }} Agenda tu visita hoy.{% endblock %}
-{% block og_title %}{{ parcela.nombre }} en {{ parcela.get_region_display }} — {{ parcela.precio_clp }}{% endblock %}
+{% block og_title %}{{ parcela.seo_h1|default:parcela.nombre }} — {{ parcela.precio_clp }}{% endblock %}
 {% block og_desc %}Parcela de {{ parcela.superficie_display }} en {{ parcela.get_region_display }}{% if parcela.sector %}, {{ parcela.sector }}{% endif %}. {{ parcela.get_estado_display }}. Agenda tu visita con Punto Parcelas.{% endblock %}
 {% block og_image %}{% if parcela.foto_principal_url %}{{ parcela.foto_principal_url }}{% else %}https://puntoparcelas.cl/static/img/og-cover.jpg{% endif %}{% endblock %}
 
@@ -111,7 +111,7 @@
       <div class="flex-grow-1">
         <span class="badge-region mb-2">{{ parcela.get_region_display }}</span>
         {% if parcela.sector %}<span style="color:var(--pp-muted); font-size:.85rem; margin-left:.5rem;"><i class="bi bi-geo-alt me-1"></i>{{ parcela.sector }}</span>{% endif %}
-        <h1 style="font-size:clamp(1.8rem,4vw,2.6rem); margin:.4rem 0 .2rem;">{{ parcela.nombre }}</h1>
+        <h1 style="font-size:clamp(1.8rem,4vw,2.6rem); margin:.4rem 0 .2rem;">{{ parcela.seo_h1|default:parcela.nombre }}</h1>
         <div style="font-size:1.8rem; font-family:'Montserrat',sans-serif; font-weight:900; color:var(--pp-gold);">{{ parcela.precio_clp }}</div>
       </div>
       <span class="badge-estado badge-{{ parcela.estado }} align-self-start" style="font-size:.9rem; padding:.35rem 1rem;">{{ parcela.get_estado_display }}</span>

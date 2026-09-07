@@ -12,6 +12,27 @@ from django.templatetags.static import static as static_url
 from .forms import ConsultaForm
 from .models import REGIONES, Consulta, Parcela, SiteConfig, Testimonio
 
+# 04/09-2026, auditoria SEO de Jorge Urzua: las paginas de region pasan de
+# `?region=los_lagos` (parametro, Google no las indexaba bien) a URL
+# estatica `/catalogo/los-lagos/`. El slug de la URL usa guion (como pidio
+# Jorge); la key real en Parcela.region usa guion bajo (REGIONES) -- este
+# dict es el puente entre los dos, mas el title/H1 propios de cada region.
+REGIONES_SEO = {
+    'los-lagos':     ('los_lagos',     'Parcelas en venta en Los Lagos | Punto Parcelas',      'Parcelas en Los Lagos'),
+    'araucania':     ('araucania',     'Parcelas en venta en Araucanía | Punto Parcelas',      'Parcelas en Araucanía'),
+    'metropolitana': ('metropolitana', 'Parcelas en venta en Santiago | Punto Parcelas',       'Parcelas en Santiago'),
+    'ohiggins':      ('ohiggins',      "Parcelas en venta en O'Higgins | Punto Parcelas",      "Parcelas en O'Higgins"),
+    'nuble':         ('nuble',         'Parcelas en venta en Ñuble | Punto Parcelas',          'Parcelas en Ñuble'),
+    'coquimbo':      ('coquimbo',      'Parcelas en venta en Coquimbo | Punto Parcelas',       'Parcelas en Coquimbo'),
+    'los-rios':      ('los_rios',      'Parcelas en venta en Los Ríos | Punto Parcelas',       'Parcelas en Los Ríos'),
+    'valparaiso':    ('valparaiso',    'Parcelas en venta en Valparaíso | Punto Parcelas',     'Parcelas en Valparaíso'),
+    'maule':         ('maule',         'Parcelas en venta en Maule | Punto Parcelas',          'Parcelas en Maule'),
+    'biobio':        ('biobio',        'Parcelas en venta en Biobío | Punto Parcelas',         'Parcelas en Biobío'),
+    'aysen':         ('aysen',         'Parcelas en venta en Aysén | Punto Parcelas',          'Parcelas en Aysén'),
+}
+# key real -> slug de URL (para armar los links de los pills sin repetir el dict de arriba)
+REGION_KEY_A_SLUG = {key: slug for slug, (key, _, _) in REGIONES_SEO.items()}
+
 
 def home(request):
     destacadas = Parcela.objects.filter(destacada=True, estado='disponible')[:6]
@@ -22,9 +43,21 @@ def home(request):
     })
 
 
-def catalogo(request):
+def catalogo(request, region_url=None):
     from django.db.models import Case, IntegerField, Q, Value, When
-    region = request.GET.get('region', '').strip()
+
+    seo_title, seo_h1 = None, None
+    if region_url:
+        # /catalogo/<region-slug>/ -- URL estatica pedida por Jorge (antes
+        # era ?region=, que Google no indexaba bien). Un slug que no calza
+        # con ninguna region conocida es un 404 real, no un catalogo vacio.
+        info = REGIONES_SEO.get(region_url)
+        if not info:
+            raise Http404
+        region, seo_title, seo_h1 = info
+    else:
+        region = request.GET.get('region', '').strip()
+
     q = request.GET.get('q', '').strip()
     estado_order = Case(
         When(estado='disponible', then=Value(0)),
@@ -41,11 +74,20 @@ def catalogo(request):
     paginator = Paginator(qs, 15)
     page_obj = paginator.get_page(request.GET.get('page'))
 
+    # (val, label, slug_url) por region: slug_url es None para 'otro' (no
+    # tiene pagina SEO propia) -- se arma aca, no en el template, porque
+    # Django templates no traen forma nativa de indexar un dict por
+    # variable ({{ dict|lookup:var }} necesitaria un filtro custom).
+    regiones_con_slug = [(val, label, REGION_KEY_A_SLUG.get(val)) for val, label in REGIONES]
+
     return render(request, 'core/catalogo.html', {
         'page_obj': page_obj,
         'region_activa': region,
+        'region_url_activa': region_url,
+        'seo_title': seo_title,
+        'seo_h1': seo_h1,
         'q': q,
-        'regiones': REGIONES,
+        'regiones_con_slug': regiones_con_slug,
         'total': qs.count(),
     })
 

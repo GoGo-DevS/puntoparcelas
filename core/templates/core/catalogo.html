@@ -1,8 +1,8 @@
 {% extends "core/base.html" %}
 
-{% block title %}Catálogo de Parcelas — Punto Parcelas{% endblock %}
+{% block title %}{% if seo_title %}{{ seo_title }}{% else %}Catálogo de parcelas en venta en Chile | Punto Parcelas{% endif %}{% endblock %}
 {% block meta_desc %}Encuentra tu parcela ideal en Chile. Filtra por región y descubre oportunidades de inversión en terrenos a lo largo del país.{% endblock %}
-{% block og_title %}Catálogo de Parcelas — Punto Parcelas{% endblock %}
+{% block og_title %}{{ seo_title|default:"Catálogo de parcelas en venta en Chile | Punto Parcelas" }}{% endblock %}
 {% block og_desc %}Explora nuestras parcelas disponibles por región. Seguridad, plusvalía y asesoría experta en cada terreno.{% endblock %}
 
 {% block extra_head %}
@@ -99,7 +99,11 @@
   <div class="catalog-hero-overlay"></div>
   <div class="container catalog-hero-content">
     <span class="catalog-sub" style="animation:ppFadeIn .8s ease .2s both;">Punto Parcelas · Chile</span>
+    {% if seo_h1 %}
+    <h1 class="catalog-title" style="animation:ppFadeUp .9s ease .4s both;">{{ seo_h1 }}</h1>
+    {% else %}
     <h1 class="catalog-title" style="animation:ppFadeUp .9s ease .4s both;">Nuestras<br>Parcelas</h1>
+    {% endif %}
   </div>
 </section>
 
@@ -127,10 +131,17 @@
       <a href="{% url 'core:catalogo' %}{% if q %}?q={{ q }}{% endif %}" class="filter-pill {% if not region_activa %}active{% endif %}">
         Todas las regiones
       </a>
-      {% for val, label in regiones %}
+      {% for val, label, slug_url in regiones_con_slug %}
+      {% if slug_url %}
+      <a href="{% url 'core:catalogo_region' slug_url %}{% if q %}?q={{ q }}{% endif %}"
+         class="filter-pill {% if region_activa == val %}active{% endif %}">
+        {{ label }}
+      </a>
+      {% else %}
       <a href="?{% if q %}q={{ q }}&{% endif %}region={{ val }}" class="filter-pill {% if region_activa == val %}active{% endif %}">
         {{ label }}
       </a>
+      {% endif %}
       {% endfor %}
     </div>
   </div>

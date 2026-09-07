@@ -23,6 +23,17 @@
     background: linear-gradient(105deg, rgba(13,13,13,.88) 0%, rgba(13,13,13,.45) 60%, rgba(13,13,13,.1) 100%);
   }
   .hero-content { position: relative; z-index: 1; padding-top: 8rem; padding-bottom: 5rem; }
+  /* 04/09-2026, pedido de Jorge (SEO): la home no tenia un H1 real -- el
+     unico <h1> era "tu patrimonio mañana", la mitad del eslogan, no la
+     frase que la gente busca en Google ("parcelas en venta en Chile",
+     6.600 busquedas/mes). Se agrega un H1 real chico arriba SOLO para
+     Google; el eslogan grande sigue siendo lo primero que ve una persona,
+     ahora como parrafo. */
+  .hero-seo-h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--pp-gold); opacity: .85; margin: 0 0 .6rem;
+  }
   .hero-line1 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700; font-size: clamp(1rem, 2.5vw, 1.4rem);
@@ -147,8 +158,9 @@
   <div class="container hero-content">
     <div class="row">
       <div class="col-lg-9 col-xl-8">
+        <h1 class="hero-seo-h1">Parcelas en venta en Chile</h1>
         <span class="hero-line1">Tu inversión hoy,</span>
-        <h1 class="hero-title">tu patrimonio<br>mañana</h1>
+        <p class="hero-title">tu patrimonio<br>mañana</p>
         <p class="hero-sub">Parcelas premium en Chile, de norte a sur</p>
         <div class="hero-ctas">
           <a href="{% url 'core:catalogo' %}" class="btn-gold" style="padding:.85rem 2.2rem; font-size:.85rem;">

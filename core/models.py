@@ -64,6 +64,16 @@ class Parcela(models.Model):
     slug         = models.SlugField(max_length=200, unique=True, blank=True)
     region       = models.CharField(max_length=20, choices=REGIONES, default='metropolitana')
     sector       = models.CharField(max_length=120, blank=True, help_text='Ej: Colina, Pirque, Lampa')
+    ciudad       = models.CharField(max_length=80, blank=True,
+                                    help_text='Ciudad/comuna para agrupar por catálogo de ciudad (SEO). Ej: Frutillar')
+    # SEO (04/09-2026, auditoria de Jorge Urzua): titulo/H1 de la ficha son
+    # editables aca para no depender de reescribir el nombre real de la
+    # parcela solo por afinar el meta-title. Vacios = se arma automatico
+    # (nombre + region + superficie), igual que siempre.
+    seo_title    = models.CharField('Título SEO (opcional)', max_length=250, blank=True,
+                                    help_text='Si se deja vacío, se arma automático desde nombre/región/superficie.')
+    seo_h1       = models.CharField('H1 SEO (opcional)', max_length=200, blank=True,
+                                    help_text='Si se deja vacío, se usa el nombre de la parcela.')
     MONEDA_CHOICES = [('CLP', 'CLP ($)'), ('UF', 'UF')]
 
     precio       = models.BigIntegerField(default=0, help_text='Número sin puntos ni comas')
