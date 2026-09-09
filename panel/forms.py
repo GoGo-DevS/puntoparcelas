@@ -19,9 +19,16 @@ class PanelLoginForm(AuthenticationForm):
 class ParcelaForm(forms.ModelForm):
     class Meta:
         model = Parcela
+        # 09-09-2026: ciudad/seo_title/seo_h1 entraron con la auditoria de Jorge
+        # (04-09) pero NUNCA se agregaron aca. Resultado: el titulo de la ficha
+        # lo manda seo_h1, y Leonardo no tenia donde verlo ni cambiarlo. Reporto
+        # exactamente eso: "me meto a modificarlo y no me aparece donde tengo
+        # escrito San Fernando, no lo puedo encontrar" -- la parcela Hacienda don
+        # Danilo quedo titulada en San Fernando cuando esta en Litueche.
         fields = [
-            'nombre', 'region', 'sector', 'precio', 'moneda', 'superficie',
+            'nombre', 'region', 'sector', 'ciudad', 'precio', 'moneda', 'superficie',
             'descripcion', 'destacada', 'estado',
+            'seo_h1', 'seo_title',
             'tiene_luz', 'tiene_agua', 'tiene_acceso', 'vista_privilegiada',
             'tiene_cercado', 'tiene_porton', 'es_turistico', 'bosque_nativo', 'rol_propio',
             'video_url', 'mapa_url', 'mapa_embed_url', 'geo_pdf', 'imagen_credito',
@@ -30,6 +37,11 @@ class ParcelaForm(forms.ModelForm):
             'nombre':      forms.TextInput(attrs={'class': 'form-control'}),
             'region':      forms.Select(attrs={'class': 'form-select'}),
             'sector':      forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Colina, Pirque...'}),
+            'ciudad':      forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Litueche'}),
+            'seo_h1':      forms.TextInput(attrs={'class': 'form-control',
+                                                  'placeholder': 'Vacío = se usa el nombre de la parcela'}),
+            'seo_title':   forms.TextInput(attrs={'class': 'form-control',
+                                                  'placeholder': 'Vacío = se arma solo (nombre + región + superficie)'}),
             'precio':      forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Número sin puntos'}),
             'moneda':      forms.Select(attrs={'class': 'form-select'}),
             'superficie':  forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Superficie en m²'}),

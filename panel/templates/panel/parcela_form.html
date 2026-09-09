@@ -52,6 +52,13 @@
             <label class="form-label">Sector / Localidad</label>
             {{ form.sector }}
           </div>
+          <div class="col-md-6">
+            <label class="form-label">Ciudad / Comuna</label>
+            {{ form.ciudad }}
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;">
+              <i class="bi bi-info-circle me-1"></i>La comuna donde está la parcela. Agrupa el catálogo por ciudad.
+            </div>
+          </div>
           <div class="col-md-4">
             <label class="form-label">Precio *</label>
             {{ form.precio }}
@@ -77,6 +84,34 @@
           <div class="col-12">
             <label class="form-label">Descripción</label>
             {{ form.descripcion }}
+          </div>
+        </div>
+      </div>
+
+      <!-- TÍTULO EN GOOGLE (SEO) -->
+      <div class="section-card">
+        <div class="section-card-title"><i class="bi bi-search me-2"></i>Título de la ficha y de Google</div>
+        <div class="row g-3">
+          <div class="col-12">
+            <div style="background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.3); border-radius:8px; padding:.7rem .9rem; font-size:.8rem; color:var(--pp-text);">
+              <i class="bi bi-exclamation-triangle me-1" style="color:var(--pp-gold);"></i>
+              Si estos campos tienen texto, <strong style="color:var(--pp-gold);">mandan ellos</strong>: es lo que se ve arriba de la ficha y en Google,
+              aunque cambies el nombre o el sector más arriba. Si los dejas vacíos, el título se arma solo con el nombre de la parcela.
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Título grande de la ficha</label>
+            {{ form.seo_h1 }}
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;">
+              <i class="bi bi-info-circle me-1"></i>El titular que ve la persona al entrar a la parcela.
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Título que aparece en Google</label>
+            {{ form.seo_title }}
+            <div style="font-size:.75rem; color:var(--pp-muted); margin-top:.3rem;">
+              <i class="bi bi-info-circle me-1"></i>El que sale en el resultado de búsqueda. Conviene que no pase de ~60 caracteres.
+            </div>
           </div>
         </div>
       </div>
