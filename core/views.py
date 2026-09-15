@@ -1,9 +1,10 @@
+import logging
 import requests as http_requests
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sitemaps import Sitemap
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -33,6 +34,8 @@ REGIONES_SEO = {
 # key real -> slug de URL (para armar los links de los pills sin repetir el dict de arriba)
 REGION_KEY_A_SLUG = {key: slug for slug, (key, _, _) in REGIONES_SEO.items()}
 
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     destacadas = Parcela.objects.filter(destacada=True, estado='disponible')[:6]
@@ -197,6 +200,20 @@ def reserva(request):
 
 
 def _enviar_notificacion(consulta):
+    """Le avisa a Leonardo que entró una consulta.
+
+    Antes esto fallaba EN SILENCIO: sin las variables de SMTP en Render, Django
+    usa el backend de consola, el correo se "envía" a los logs y nadie se
+    entera. Leonardo (reunión 15-09-2026): las consultas las veía solo entrando
+    al panel. Ahora queda escrito en el log qué pasó, y el aviso lleva
+    `reply_to` con el correo del interesado para responderle de una.
+    """
+    if 'console' in settings.EMAIL_BACKEND or not settings.EMAIL_HOST_USER:
+        logger.error(
+            'CONSULTA %s SIN AVISO POR CORREO: falta configurar el SMTP en Render '
+            '(EMAIL_BACKEND, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD). La consulta SÍ '
+            'quedó guardada y se ve en el panel.', consulta.pk)
+        return False
     try:
         asunto = f"Nueva consulta — {consulta.nombre}"
         cuerpo = (
@@ -209,14 +226,22 @@ def _enviar_notificacion(consulta):
             f"Parcela consultada: {consulta.parcela or '—'}\n\n"
             f"Mensaje:\n{consulta.mensaje}"
         )
-        send_mail(
-            asunto, cuerpo,
-            settings.DEFAULT_FROM_EMAIL,
-            [settings.EMAIL_DESTINO],
-            fail_silently=True,
+        mensaje = EmailMessage(
+            subject=asunto,
+            body=cuerpo,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[d.strip() for d in settings.EMAIL_DESTINO.split(',') if d.strip()],
+            # Responder el aviso le contesta al interesado, no a la casilla del envío.
+            reply_to=[consulta.email] if consulta.email else None,
         )
+        mensaje.send(fail_silently=False)
+        logger.info('Aviso de la consulta %s enviado a %s', consulta.pk, settings.EMAIL_DESTINO)
+        return True
     except Exception:
-        pass
+        # La consulta ya está guardada: el envío no puede botar la respuesta al
+        # visitante. Pero se registra con traza para poder diagnosticarlo.
+        logger.exception('No se pudo enviar el aviso de la consulta %s', consulta.pk)
+        return False
 
 
 def links(request):
