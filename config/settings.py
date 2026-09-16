@@ -210,7 +210,9 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-EMAIL_DESTINO = os.environ.get('EMAIL_DESTINO', 'hola@puntoparcelas.cl')
+# 'hola@puntoparcelas.cl' NO existe: probado el 16-09-2026, rebota con
+# '550 User does not exist'. La casilla que el sitio publica es contacto@.
+EMAIL_DESTINO = os.environ.get('EMAIL_DESTINO', 'contacto@puntoparcelas.cl')
 # El remitente NO puede salir de EMAIL_HOST_USER (16-09-2026): con un proveedor
 # como Brevo ese valor es el usuario de conexion (b99393001@smtp-brevo.com), no
 # una direccion valida para enviar. Brevo rechazaba los avisos con
