@@ -211,4 +211,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_DESTINO = os.environ.get('EMAIL_DESTINO', 'hola@puntoparcelas.cl')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER or 'noreply@puntoparcelas.cl'
+# El remitente NO puede salir de EMAIL_HOST_USER (16-09-2026): con un proveedor
+# como Brevo ese valor es el usuario de conexion (b99393001@smtp-brevo.com), no
+# una direccion valida para enviar. Brevo rechazaba los avisos con
+# "the sender you used is not valid" y Leonardo no recibia nada.
+DEFAULT_FROM_EMAIL = (
+    os.environ.get('DEFAULT_FROM_EMAIL')
+    or 'Punto Parcelas <no-responder@puntoparcelas.cl>'
+)

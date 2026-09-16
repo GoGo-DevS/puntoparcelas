@@ -50,3 +50,35 @@ class SinSmtpTests(TestCase):
             self.assertFalse(_enviar_notificacion(_consulta()))
         self.assertIn('SIN AVISO POR CORREO', registro.output[0])
         self.assertEqual(len(mail.outbox), 0)
+
+
+class RemitenteTests(TestCase):
+    """El remitente no puede salir del usuario de conexion (16-09-2026).
+
+    `DEFAULT_FROM_EMAIL = EMAIL_HOST_USER or ...` funcionaba con Gmail, donde el
+    usuario ES la direccion. Con Brevo el usuario es b99393001@smtp-brevo.com y
+    no sirve como remitente: Brevo rechazo los tres avisos con "the sender you
+    used is not valid" y Leonardo no recibio nada.
+    """
+
+    def test_el_remitente_no_es_el_usuario_de_conexion(self):
+        import importlib
+        import os
+        from unittest.mock import patch
+
+        with patch.dict(os.environ, {"EMAIL_HOST_USER": "b99393001@smtp-brevo.com"}):
+            os.environ.pop("DEFAULT_FROM_EMAIL", None)
+            from config import settings as s
+            importlib.reload(s)
+            self.assertNotIn("smtp-brevo.com", s.DEFAULT_FROM_EMAIL)
+            self.assertIn("puntoparcelas.cl", s.DEFAULT_FROM_EMAIL)
+
+    def test_el_remitente_se_puede_definir_por_entorno(self):
+        import importlib
+        import os
+        from unittest.mock import patch
+
+        with patch.dict(os.environ, {"DEFAULT_FROM_EMAIL": "Punto Parcelas <hola@puntoparcelas.cl>"}):
+            from config import settings as s
+            importlib.reload(s)
+            self.assertEqual(s.DEFAULT_FROM_EMAIL, "Punto Parcelas <hola@puntoparcelas.cl>")
