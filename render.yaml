@@ -22,6 +22,25 @@ services:
         sync: false
       - key: PANEL_EMAIL
         value: "l.valencia@ctpchile.cl"
+      # ── Correo (16-09-2026) ────────────────────────────────────────
+      # Las consultas de la web se avisan por correo desde aca. Van escritas
+      # en el blueprint A PROPOSITO: si se cargan solo en el dashboard, una
+      # sincronizacion del blueprint puede borrarlas y Leonardo deja de
+      # recibir avisos sin que nadie se entere (el envio falla en silencio).
+      # Las credenciales SI van solo en el dashboard: son secretas.
+      - key: EMAIL_BACKEND
+        value: "django.core.mail.backends.smtp.EmailBackend"
+      - key: EMAIL_HOST
+        value: "smtp-relay.brevo.com"
+      # 2525 y no 587: el 587 lo bloquean los planes Free de Render, y este
+      # servicio puede volver a Free en cualquier momento. Brevo acepta los dos.
+      - key: EMAIL_PORT
+        value: "2525"
+      - key: DEFAULT_FROM_EMAIL
+        value: "Punto Parcelas <no-responder@puntoparcelas.cl>"
+      # Acepta varios correos separados por coma.
+      - key: EMAIL_DESTINO
+        value: "hola@puntoparcelas.cl,l.valencia@ctpchile.cl,diegodinamarca.a@gmail.com"
       - key: EMAIL_HOST_USER
         sync: false
       - key: EMAIL_HOST_PASSWORD
