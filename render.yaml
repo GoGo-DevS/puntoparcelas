@@ -44,10 +44,11 @@ services:
         value: "Punto Parcelas <no-responder@puntoparcelas.cl>"
       # Acepta varios correos separados por coma.
       - key: EMAIL_DESTINO
-        # Solo direcciones PROBADAS: hola@ no existe y rebotaba duro, y un
-        # rebote deja la direccion bloqueada en Brevo. contacto@ se suma
-        # cuando este confirmado que la casilla existe.
-        value: "l.valencia@ctpchile.cl,diegodinamarca.a@gmail.com"
+        # contacto@ es la casilla real de Leonardo (montada en Zoho, va incluida
+        # en su mantencion) y es la que publica el sitio. La que NO existe es
+        # hola@puntoparcelas.cl: era un valor por defecto del codigo y rebotaba
+        # duro, lo que ademas deja la direccion bloqueada en Brevo.
+        value: "contacto@puntoparcelas.cl,l.valencia@ctpchile.cl,diegodinamarca.a@gmail.com"
       - key: EMAIL_HOST_USER
         sync: false
       - key: EMAIL_HOST_PASSWORD
