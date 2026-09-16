@@ -2,7 +2,11 @@ services:
   - type: web
     name: puntoparcelas
     env: python
-    plan: free
+    # Starter y NO free (16-09-2026): el servicio estaba en Starter pagado y
+    # este archivo decia 'free', asi que al sincronizar el blueprint Render le
+    # bajo el plan. En Free el sitio se duerme y la primera visita espera ~50 s
+    # — en un sitio que vende parcelas, esa visita se va.
+    plan: starter
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate && python manage.py seed_data
     startCommand: gunicorn config.wsgi:application --workers 2 --bind 0.0.0.0:$PORT
     envVars:
