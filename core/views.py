@@ -38,16 +38,23 @@ REGION_KEY_A_SLUG = {key: slug for slug, (key, _, _) in REGIONES_SEO.items()}
 logger = logging.getLogger(__name__)
 
 def home(request):
+    from . import seo as _seo
+
     destacadas = Parcela.objects.filter(destacada=True, estado='disponible')[:6]
     testimonios = Testimonio.objects.filter(activo=True)[:3]
     return render(request, 'core/home.html', {
         'destacadas': destacadas,
         'testimonios': testimonios,
+        # El negocio se declara SOLO aca (punto 2.2 de Jorge). Hasta el 17-09
+        # estaba en base.html, o sea repetido en las 40 y tantas paginas.
+        'schema_json': _seo.a_json([_seo.schema_negocio(request)]),
     })
 
 
-def catalogo(request, region_url=None):
+def catalogo(request, region_url=None, ciudad_url=None):
     from django.db.models import Case, IntegerField, Q, Value, When
+
+    from . import seo as _seo
 
     seo_title, seo_h1 = None, None
     if region_url:
@@ -71,6 +78,21 @@ def catalogo(request, region_url=None):
     qs = Parcela.objects.annotate(estado_order=estado_order).order_by('-destacada', 'estado_order', 'precio')
     if region:
         qs = qs.filter(region=region)
+
+    # --- ciudad (punto 1 de Jorge) -----------------------------------------
+    ciudad_nombre = None
+    if ciudad_url:
+        # Un slug de ciudad sin parcelas es 404, no un catálogo vacío: una
+        # página vacía con estado 200 la indexa Google igual y queda compitiendo
+        # contra las que sí tienen contenido.
+        ciudad_nombre = _seo.ciudad_por_slug(region, ciudad_url)
+        if not ciudad_nombre:
+            raise Http404
+        qs = qs.filter(ciudad__iexact=ciudad_nombre)
+        etiqueta_region = _seo.REGION_LABEL.get(region, region)
+        seo_title = f'Parcelas en venta en {ciudad_nombre}, {etiqueta_region} | Punto Parcelas'
+        seo_h1 = f'Parcelas en {ciudad_nombre}'
+
     if q:
         qs = qs.filter(Q(nombre__icontains=q) | Q(sector__icontains=q) | Q(descripcion__icontains=q))
 
@@ -83,14 +105,47 @@ def catalogo(request, region_url=None):
     # variable ({{ dict|lookup:var }} necesitaria un filtro custom).
     regiones_con_slug = [(val, label, REGION_KEY_A_SLUG.get(val)) for val, label in REGIONES]
 
+    # --- enlazado interno a ciudades + migas + CollectionPage ---------------
+    # Las ciudades solo se listan estando dentro de una region: en el catalogo
+    # general serian decenas de enlaces sueltos sin jerarquia, que es lo
+    # contrario del "traspaso de autoridad" que pide Jorge.
+    ciudades = _seo.ciudades_de_region(region) if (region_url and not ciudad_url) else []
+
+    etiqueta_region = _seo.REGION_LABEL.get(region, region) if region else None
+    tramos = [('Catálogo', '/catalogo/')]
+    ruta_actual = '/catalogo/'
+    if region_url:
+        ruta_actual = _seo.ruta_region(region_url)
+        tramos.append((etiqueta_region, ruta_actual))
+    if ciudad_url:
+        ruta_actual = _seo.ruta_ciudad(region_url, ciudad_url)
+        tramos.append((ciudad_nombre, ruta_actual))
+
+    schemas = [_seo.migas(request, tramos)]
+    if region_url:
+        schemas.append(_seo.schema_coleccion(
+            request,
+            nombre=seo_h1 or f'Parcelas en {etiqueta_region}',
+            descripcion=(f'Parcelas en venta en {ciudad_nombre}, {etiqueta_region}.'
+                         if ciudad_url else
+                         f'Parcelas en venta en {etiqueta_region}, Chile.'),
+            ruta=ruta_actual,
+            parcelas=page_obj.object_list,
+        ))
+
     return render(request, 'core/catalogo.html', {
         'page_obj': page_obj,
         'region_activa': region,
         'region_url_activa': region_url,
+        'ciudad_url_activa': ciudad_url,
+        'ciudad_activa': ciudad_nombre,
+        'ciudades': ciudades,
+        'etiqueta_region': etiqueta_region,
         'seo_title': seo_title,
         'seo_h1': seo_h1,
         'q': q,
         'regiones_con_slug': regiones_con_slug,
+        'schema_json': _seo.a_json(schemas),
         'total': qs.count(),
     })
 
@@ -140,16 +195,35 @@ def _parcela_schema(request, parcela):
                    f'Parcela de {parcela.superficie_display} en '
                    f'{parcela.get_region_display()}.').strip()
 
-    breadcrumb = {
+    # 17/09-2026: la miga ahora pasa por REGION y CIUDAD. Antes era
+    # Inicio > Catalogo > Parcela, o sea saltaba justo los dos niveles a los
+    # que Jorge quiere traspasar autoridad.
+    from . import seo as _seo
+
+    tramos = [('Catálogo', '/catalogo/')]
+    slug_region = REGION_KEY_A_SLUG.get(parcela.region)
+    if slug_region:
+        tramos.append((_seo.REGION_LABEL.get(parcela.region, parcela.region),
+                       _seo.ruta_region(slug_region)))
+        if parcela.ciudad:
+            tramos.append((parcela.ciudad,
+                           _seo.ruta_ciudad(slug_region, _seo.slug_ciudad(parcela.ciudad))))
+    tramos.append((parcela.nombre, parcela.get_absolute_url()))
+
+    schemas = [_seo.migas(request, tramos)]
+
+    # RealEstateAgent en la ficha (punto 2.3). Se referencia por @id al negocio
+    # declarado en la home en vez de repetir sus datos: asi Google entiende que
+    # es LA MISMA entidad y no 43 agencias distintas, una por parcela.
+    schemas.append({
         '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        'itemListElement': [
-            {'@type': 'ListItem', 'position': 1, 'name': 'Inicio', 'item': home},
-            {'@type': 'ListItem', 'position': 2, 'name': 'Catálogo', 'item': catalogo},
-            {'@type': 'ListItem', 'position': 3, 'name': parcela.nombre, 'item': url},
-        ],
-    }
-    schemas = [breadcrumb]
+        '@type': 'RealEstateAgent',
+        '@id': home + '#negocio',
+        'name': 'Punto Parcelas',
+        'url': home,
+        'telephone': '+56964090173',
+        'areaServed': {'@type': 'Country', 'name': 'Chile'},
+    })
 
     # Product SOLO para parcelas en CLP con precio: Google exige que un Product
     # tenga offers/review/aggregateRating, y el Offer requiere moneda ISO (CLP,
@@ -286,13 +360,30 @@ def manifest_webmanifest(request):
 
 
 def sitemap_xml(request):
+    """El mapa del sitio. Si una URL no está acá, Google puede no encontrarla.
+
+    17/09-2026: faltaban las 11 páginas de región —las que se crearon el 04-09
+    justamente para posicionar— y ahora se suman las de ciudad. Sin esto, el
+    enlazado interno que pidió Jorge es lo único que las descubre.
+    """
+    from . import seo as _seo
+
     parcelas = Parcela.objects.filter(estado='disponible').values_list('slug', flat=True)
     base = "https://puntoparcelas.cl"
     urls = [
         f"  <url><loc>{base}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>",
         f"  <url><loc>{base}/catalogo/</loc><changefreq>daily</changefreq><priority>0.9</priority></url>",
-        f"  <url><loc>{base}/reserva/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>",
+        # Era /reserva/, que devuelve 404: el name de la vista es `reserva`
+        # pero la ruta publicada es /contacto/. Se le estaba dando una URL
+        # muerta a Google desde que existe el sitemap.
+        f"  <url><loc>{base}/contacto/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>",
     ]
+    for slug_region, (key, _t, _h) in REGIONES_SEO.items():
+        urls.append(f"  <url><loc>{base}/catalogo/{slug_region}/</loc>"
+                    f"<changefreq>weekly</changefreq><priority>0.85</priority></url>")
+        for ciudad in _seo.ciudades_de_region(key):
+            urls.append(f"  <url><loc>{base}/catalogo/{slug_region}/{ciudad['slug']}/</loc>"
+                        f"<changefreq>weekly</changefreq><priority>0.8</priority></url>")
     for slug in parcelas:
         urls.append(f"  <url><loc>{base}/catalogo/{slug}/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>")
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

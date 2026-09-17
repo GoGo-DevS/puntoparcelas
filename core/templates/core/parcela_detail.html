@@ -6,9 +6,8 @@
 {% block og_desc %}Parcela de {{ parcela.superficie_display }} en {{ parcela.get_region_display }}{% if parcela.sector %}, {{ parcela.sector }}{% endif %}. {{ parcela.get_estado_display }}. Agenda tu visita con Punto Parcelas.{% endblock %}
 {% block og_image %}{% if parcela.foto_principal_url %}{{ parcela.foto_principal_url }}{% else %}https://puntoparcelas.cl/static/img/og-cover.jpg{% endif %}{% endblock %}
 
-{% block schema %}
-{% if schema_json %}<script type="application/ld+json">{{ schema_json|safe }}</script>{% endif %}
-{% endblock %}
+{% comment %} El JSON-LD lo pinta base.html desde `schema_json` (17/09-2026). Antes iba
+   aca; dejarlo en los dos lados imprimia el mismo bloque dos veces. {% endcomment %}
 
 {% block extra_head %}
 <style>

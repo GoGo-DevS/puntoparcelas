@@ -112,6 +112,12 @@ class Parcela(models.Model):
     def __str__(self):
         return f"{self.nombre} — {self.get_region_display()}"
 
+    def get_absolute_url(self):
+        """La URL canónica de la ficha. Vive en el modelo y no repetida en cada
+        vista: el día que cambie el patrón de la URL, cambia en un solo lugar."""
+        from django.urls import reverse
+        return reverse('core:parcela_detail', args=[self.slug])
+
     def save(self, *args, **kwargs):
         if not self.slug:
             base = slugify(self.nombre)[:180] or 'parcela'

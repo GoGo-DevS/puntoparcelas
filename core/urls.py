@@ -15,6 +15,12 @@ urlpatterns = [
     path('',                views.home,           name='home'),
     path('catalogo/',       views.catalogo,       name='catalogo'),
     re_path(rf'^catalogo/(?P<region_url>{_REGION_SLUGS})/$', views.catalogo, name='catalogo_region'),
+    # 17/09-2026, punto 1 de Jorge: la ciudad cuelga de su region.
+    # VA ANTES de parcela_detail y con el primer segmento acotado a las 11
+    # regiones REALES; si no, /catalogo/mi-parcela/geo-pdf/ entraria aca y el
+    # PDF del plano dejaria de descargarse, sin que nada lo avise.
+    re_path(rf'^catalogo/(?P<region_url>{_REGION_SLUGS})/(?P<ciudad_url>[-\w]+)/$',
+            views.catalogo, name='catalogo_ciudad'),
     path('catalogo/<slug:slug>/',          views.parcela_detail, name='parcela_detail'),
     path('catalogo/<slug:slug>/geo-pdf/', views.parcela_geo_pdf, name='parcela_geo_pdf'),
     path('contacto/',       views.reserva,        name='reserva'),

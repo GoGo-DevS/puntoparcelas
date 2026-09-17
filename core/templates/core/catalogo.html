@@ -65,6 +65,18 @@
     content: ''; display: block; min-width: 1rem; flex-shrink: 0;
   }
 
+  /* ── CIUDADES (17/09-2026, punto 1 de Jorge) ── */
+  .ciudades-wrap { margin-top: .85rem; }
+  .ciudades-titulo {
+    margin: 0 0 .5rem; font-size: .75rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--pp-muted); font-weight: 700;
+  }
+  .ciudad-n {
+    display: inline-block; margin-left: .35rem; padding: 0 .35rem;
+    border-radius: 999px; background: rgba(212,175,55,.14);
+    color: var(--pp-gold); font-size: .72rem; font-weight: 700;
+  }
+
   /* ── CATALOG GRID ── */
   .catalog-grid {
     display: grid;
@@ -144,6 +156,32 @@
       {% endif %}
       {% endfor %}
     </div>
+
+    {% comment %} 17/09-2026, punto 1 de Jorge: al elegir una región se despliegan sus
+       ciudades, con href real, para traspasarles autoridad. Solo aparece si
+       esa región TIENE ciudades cargadas: un bloque vacío se lee como que el
+       sitio está roto. {% endcomment %}
+    {% if ciudades %}
+    <div class="ciudades-wrap">
+      <p class="ciudades-titulo">Parcelas por ciudad en {{ etiqueta_region }}</p>
+      <div class="filter-pills-wrap">
+        {% for c in ciudades %}
+        <a href="{% url 'core:catalogo_ciudad' region_url_activa c.slug %}"
+           class="filter-pill" title="Parcelas en {{ c.nombre }}">
+          {{ c.nombre }} <span class="ciudad-n">{{ c.total }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if ciudad_activa %}
+    <div class="ciudades-wrap">
+      <a href="{% url 'core:catalogo_region' region_url_activa %}" class="filter-pill">
+        <i class="bi bi-arrow-left"></i> Ver toda la región de {{ etiqueta_region }}
+      </a>
+    </div>
+    {% endif %}
   </div>
 </div>
 
