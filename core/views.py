@@ -35,6 +35,21 @@ REGIONES_SEO = {
 REGION_KEY_A_SLUG = {key: slug for slug, (key, _, _) in REGIONES_SEO.items()}
 
 
+def _regiones_con_parcelas():
+    """Las regiones que tienen al menos una parcela, vendidas incluidas.
+
+    22-09-2026: la lista de REGIONES_SEO es fija, asi que Araucania, Los Rios,
+    Biobio y Aysen salian en el sitemap y en los botones con su pagina VACIA
+    (200 y "0 parcelas"). Google las indexa igual. Las ciudades ya tenian esta
+    regla desde el 17-09; ahora las regiones tambien, y sale de los DATOS: si
+    Leonardo carga una parcela en la Araucania, la region vuelve sola.
+
+    Las vendidas cuentan: una region con solo vendidas muestra lo vendido, y
+    eso tambien es contenido (trayectoria).
+    """
+    return set(Parcela.objects.values_list('region', flat=True).distinct())
+
+
 logger = logging.getLogger(__name__)
 
 def home(request):
@@ -65,6 +80,9 @@ def catalogo(request, region_url=None, ciudad_url=None):
         if not info:
             raise Http404
         region, seo_title, seo_h1 = info
+        # Region sin ninguna parcela: 404, igual que una ciudad sin parcelas.
+        if region not in _regiones_con_parcelas():
+            raise Http404
     else:
         region = request.GET.get('region', '').strip()
 
@@ -103,7 +121,11 @@ def catalogo(request, region_url=None, ciudad_url=None):
     # tiene pagina SEO propia) -- se arma aca, no en el template, porque
     # Django templates no traen forma nativa de indexar un dict por
     # variable ({{ dict|lookup:var }} necesitaria un filtro custom).
-    regiones_con_slug = [(val, label, REGION_KEY_A_SLUG.get(val)) for val, label in REGIONES]
+    # Solo las regiones con parcelas: un boton que lleva a una pagina vacia es
+    # un clic perdido. La region que se esta mirando se deja siempre.
+    con_parcelas = _regiones_con_parcelas()
+    regiones_con_slug = [(val, label, REGION_KEY_A_SLUG.get(val)) for val, label in REGIONES
+                         if val in con_parcelas or val == region]
 
     # --- enlazado interno a ciudades + migas + CollectionPage ---------------
     # Las ciudades solo se listan estando dentro de una region: en el catalogo
@@ -378,7 +400,12 @@ def sitemap_xml(request):
         # muerta a Google desde que existe el sitemap.
         f"  <url><loc>{base}/contacto/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>",
     ]
+    con_parcelas = _regiones_con_parcelas()
     for slug_region, (key, _t, _h) in REGIONES_SEO.items():
+        # Una region vacia es 404: publicarla en el sitemap le daria a Google
+        # una URL muerta (22-09-2026).
+        if key not in con_parcelas:
+            continue
         urls.append(f"  <url><loc>{base}/catalogo/{slug_region}/</loc>"
                     f"<changefreq>weekly</changefreq><priority>0.85</priority></url>")
         for ciudad in _seo.ciudades_de_region(key):
