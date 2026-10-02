@@ -101,6 +101,17 @@ class Parcela(models.Model):
     bosque_nativo       = models.BooleanField(default=False, verbose_name='Bosque nativo')
     rol_propio          = models.BooleanField(default=False, verbose_name='Rol propio / Escriturado')
 
+    # --- las 4 de la planilla SEO que NO se pueden deducir -----------------
+    # Las otras seis caracteristicas (sur de Chile, baratas, rol propio, agua
+    # y luz, de campo, de agrado) se calculan solas desde datos que ya estan
+    # en esta ficha. Estas cuatro no: no hay nada en el modelo de donde
+    # sacarlas, y la region no sirve -- Vive Ovalle tiene vista al mar y las
+    # otras cuatro parcelas de Coquimbo no. Ver core/caracteristicas.py.
+    cerca_playa         = models.BooleanField(default=False, verbose_name='A menos de 30 min de la playa')
+    vista_mar           = models.BooleanField(default=False, verbose_name='Vista al mar')
+    vista_lago          = models.BooleanField(default=False, verbose_name='Vista al lago')
+    credito_directo     = models.BooleanField(default=False, verbose_name='Crédito directo / pie cero')
+
     creado      = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)
 

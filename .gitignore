@@ -9,3 +9,8 @@ staticfiles/
 *.log
 .DS_Store
 rescate/
+
+# Credenciales y volcados: NUNCA a git (02-10-2026, un `git add -A` se los llevo)
+.env.nueva
+.env.*
+respaldos/

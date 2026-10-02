@@ -113,6 +113,11 @@
     <span class="catalog-sub" style="animation:ppFadeIn .8s ease .2s both;">Punto Parcelas · Chile</span>
     {% if seo_h1 %}
     <h1 class="catalog-title" style="animation:ppFadeUp .9s ease .4s both;">{{ seo_h1 }}</h1>
+    {% endif %}
+    {% if bajada_caracteristica %}
+    <p class="catalog-sub" style="max-width:62ch;margin:.6rem auto 0;opacity:.9;animation:ppFadeUp .9s ease .5s both;">{{ bajada_caracteristica }}</p>
+    {% endif %}
+    {% if seo_h1 %}
     {% else %}
     <h1 class="catalog-title" style="animation:ppFadeUp .9s ease .4s both;">Nuestras<br>Parcelas</h1>
     {% endif %}
@@ -168,6 +173,22 @@
         {% for c in ciudades %}
         <a href="{% url 'core:catalogo_ciudad' region_url_activa c.slug %}"
            class="filter-pill" title="Parcelas en {{ c.nombre }}">
+          {{ c.nombre }} <span class="ciudad-n">{{ c.total }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} 02/10-2026, hoja 04 de Indexo: enlazado interno a las paginas por
+       caracteristica. Solo las que tienen parcelas -- la vista devuelve 404 a las
+       vacias, asi que enlazarlas seria mandar al cliente a una pagina muerta. {% endcomment %}
+    {% if caracteristicas and not caracteristica_activa %}
+    <div class="ciudades-wrap">
+      <p class="ciudades-titulo">Buscar por lo que te importa</p>
+      <div class="filter-pills-wrap">
+        {% for c in caracteristicas %}
+        <a href="/catalogo/{{ c.slug }}/" class="filter-pill" title="{{ c.nombre }}">
           {{ c.nombre }} <span class="ciudad-n">{{ c.total }}</span>
         </a>
         {% endfor %}

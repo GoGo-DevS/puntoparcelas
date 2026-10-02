@@ -1,4 +1,5 @@
 from django.urls import path, re_path
+from . import caracteristicas as _car
 from . import views
 
 app_name = 'core'
@@ -11,6 +12,15 @@ app_name = 'core'
 # /catalogo/region/los-lagos/.
 _REGION_SLUGS = 'los-lagos|araucania|metropolitana|ohiggins|nuble|coquimbo|los-rios|valparaiso|maule|biobio|aysen'
 
+# 02/10-2026, hoja "04 Caracteristicas" de la planilla de Indexo: el tercer
+# tipo de pagina de catalogo. Las dos URLs que Jorge probo el 01-10 daban 404
+# porque este patron no existia.
+#
+# MISMO cuidado que con las regiones: la lista va acotada a los slugs REALES y
+# el patron VA ANTES de parcela_detail. Si fuera un [-\w]+ suelto, se tragaria
+# todas las fichas de parcela.
+_CARACTERISTICA_SLUGS = '|'.join(_car.SLUGS)
+
 urlpatterns = [
     path('',                views.home,           name='home'),
     path('catalogo/',       views.catalogo,       name='catalogo'),
@@ -21,6 +31,8 @@ urlpatterns = [
     # PDF del plano dejaria de descargarse, sin que nada lo avise.
     re_path(rf'^catalogo/(?P<region_url>{_REGION_SLUGS})/(?P<ciudad_url>[-\w]+)/$',
             views.catalogo, name='catalogo_ciudad'),
+    re_path(rf'^catalogo/(?P<caracteristica_url>{_CARACTERISTICA_SLUGS})/$',
+            views.catalogo, name='catalogo_caracteristica'),
     path('catalogo/<slug:slug>/',          views.parcela_detail, name='parcela_detail'),
     path('catalogo/<slug:slug>/geo-pdf/', views.parcela_geo_pdf, name='parcela_geo_pdf'),
     path('contacto/',       views.reserva,        name='reserva'),

@@ -66,12 +66,48 @@ def home(request):
     })
 
 
-def catalogo(request, region_url=None, ciudad_url=None):
+def _caracteristicas_con_parcelas():
+    """Las caracteristicas que HOY tienen al menos una parcela, con su conteo.
+
+    Es el "traspaso de autoridad" que pide Jorge: la pagina de catalogo enlaza
+    a cada una con href real. Solo las que tienen contenido -- un enlace a una
+    pagina que devuelve 404 es un clic perdido y una senal mala para Google.
+    """
+    from . import caracteristicas as _car
+
+    vivas = Parcela.objects.exclude(estado='vendida')
+    salida = []
+    for slug in _car.SLUGS:
+        n = vivas.filter(_car.filtro(slug)).count()
+        if n:
+            salida.append({'slug': slug, 'nombre': _car.ficha(slug)[0], 'total': n})
+    return salida
+
+
+def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None):
     from django.db.models import Case, IntegerField, Q, Value, When
 
     from . import seo as _seo
 
+    from . import caracteristicas as _car
+
     seo_title, seo_h1 = None, None
+    caracteristica, filtro_car, bajada_car = None, None, None
+    if caracteristica_url:
+        # /catalogo/<caracteristica>/ -- hoja 04 de la planilla de Indexo, el
+        # tercer tipo de pagina de catalogo. Las dos URLs que Jorge probo el
+        # 01-10 daban 404 porque este patron no existia.
+        #
+        # El slug ya viene acotado por la URL, pero igual se comprueba aca: si
+        # alguien saca una caracteristica de _FICHAS y se olvida de la URL,
+        # esto queda en un 404 limpio en vez del catalogo completo con un
+        # titulo que no corresponde.
+        datos = _car.ficha(caracteristica_url)
+        filtro_car = _car.filtro(caracteristica_url)
+        if not datos or filtro_car is None:
+            raise Http404
+        seo_h1, seo_title, bajada_car = datos
+        caracteristica = caracteristica_url
     if region_url:
         # /catalogo/<region-slug>/ -- URL estatica pedida por Jorge (antes
         # era ?region=, que Google no indexaba bien). Un slug que no calza
@@ -96,6 +132,13 @@ def catalogo(request, region_url=None, ciudad_url=None):
     qs = Parcela.objects.annotate(estado_order=estado_order).order_by('-destacada', 'estado_order', 'precio')
     if region:
         qs = qs.filter(region=region)
+    if caracteristica:
+        # Una caracteristica sin NINGUNA parcela es 404, igual que una ciudad
+        # vacia: una pagina en blanco con estado 200 la indexa Google lo mismo
+        # y queda compitiendo contra las que si tienen contenido.
+        qs = qs.filter(filtro_car)
+        if not qs.exists():
+            raise Http404
 
     # --- ciudad (punto 1 de Jorge) -----------------------------------------
     ciudad_nombre = None
@@ -142,6 +185,9 @@ def catalogo(request, region_url=None, ciudad_url=None):
     if ciudad_url:
         ruta_actual = _seo.ruta_ciudad(region_url, ciudad_url)
         tramos.append((ciudad_nombre, ruta_actual))
+    if caracteristica_url:
+        ruta_actual = f'/catalogo/{caracteristica_url}/'
+        tramos.append((seo_h1, ruta_actual))
 
     schemas = [_seo.migas(request, tramos)]
     if region_url:
@@ -169,6 +215,9 @@ def catalogo(request, region_url=None, ciudad_url=None):
         'regiones_con_slug': regiones_con_slug,
         'schema_json': _seo.a_json(schemas),
         'total': qs.count(),
+        'caracteristica_activa': caracteristica,
+        'bajada_caracteristica': bajada_car,
+        'caracteristicas': _caracteristicas_con_parcelas(),
     })
 
 
@@ -411,6 +460,16 @@ def sitemap_xml(request):
         for ciudad in _seo.ciudades_de_region(key):
             urls.append(f"  <url><loc>{base}/catalogo/{slug_region}/{ciudad['slug']}/</loc>"
                         f"<changefreq>weekly</changefreq><priority>0.8</priority></url>")
+    # Paginas por caracteristica (hoja 04 de Indexo, 02-10-2026).
+    # Solo las que HOY tienen al menos una parcela: la vista las devuelve 404
+    # cuando quedan vacias, asi que publicarlas igual seria mandarle a Google
+    # una URL muerta -- el mismo error que tenia /reserva/.
+    from . import caracteristicas as _car
+    vivas = Parcela.objects.exclude(estado='vendida')
+    for slug_car in _car.SLUGS:
+        if vivas.filter(_car.filtro(slug_car)).exists():
+            urls.append(f"  <url><loc>{base}/catalogo/{slug_car}/</loc>"
+                        f"<changefreq>weekly</changefreq><priority>0.85</priority></url>")
     for slug in parcelas:
         urls.append(f"  <url><loc>{base}/catalogo/{slug}/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>")
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
