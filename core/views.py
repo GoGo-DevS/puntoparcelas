@@ -200,6 +200,22 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
             ruta=ruta_actual,
             parcelas=page_obj.object_list,
         ))
+    if caracteristica:
+        # Las paginas por caracteristica tambien son un listado de parcelas y
+        # no lo estaban declarando: solo las de region lo hacian.
+        schemas.append(_seo.schema_coleccion(
+            request,
+            nombre=seo_h1,
+            descripcion=bajada_car or seo_h1,
+            ruta=ruta_actual,
+            parcelas=page_obj.object_list,
+        ))
+        # FAQPage solo con lo que se VE en la pagina: las mismas preguntas se
+        # dibujan debajo de la grilla. Declarar una que no esta es marcado
+        # engañoso y Google lo sanciona a mano.
+        explicacion = _car.explicacion(caracteristica)
+        if explicacion:
+            schemas.append(_seo.schema_preguntas(explicacion))
 
     return render(request, 'core/catalogo.html', {
         'page_obj': page_obj,
@@ -217,6 +233,10 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
         'total': qs.count(),
         'caracteristica_activa': caracteristica,
         'bajada_caracteristica': bajada_car,
+        # El texto propio de la pagina. Sin esto, parcela-de-campo y
+        # parcela-de-agrado se publicaban 96% identicas (misma grilla de 116
+        # parcelas, solo cambiaba el H1): Google elige una y degrada las otras.
+        'explicacion_caracteristica': _car.explicacion(caracteristica) if caracteristica else [],
         'caracteristicas': _caracteristicas_con_parcelas(),
     })
 

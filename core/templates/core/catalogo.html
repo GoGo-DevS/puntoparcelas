@@ -312,4 +312,33 @@
   </div>
 </section>
 
+{% if explicacion_caracteristica %}
+{% comment %}
+  EL TEXTO PROPIO DE LA PAGINA. Va DESPUES de la grilla a proposito: quien
+  entra a un catalogo quiere ver parcelas primero, no leer.
+
+  Existe porque parcela-de-campo y parcela-de-agrado se publicaban 96%
+  identicas -- mismas 116 parcelas, solo cambiaba el H1 -- y Google eso lo lee
+  como la misma pagina publicada dos veces: elige una y degrada la otra.
+{% endcomment %}
+<section class="car-explica">
+  <div class="container">
+    {% for titulo, texto in explicacion_caracteristica %}
+    <article class="car-explica__item">
+      <h2 class="car-explica__h">{{ titulo }}</h2>
+      <p class="car-explica__p">{{ texto }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+<style>
+  .car-explica { padding: 2.6rem 0 3.2rem; border-top: 1px solid rgba(0,0,0,.07); }
+  .car-explica .container { max-width: 760px; }
+  .car-explica__item + .car-explica__item { margin-top: 1.8rem; }
+  .car-explica__h { font-size: 1.12rem; font-weight: 700; margin: 0 0 .5rem; line-height: 1.35; }
+  .car-explica__p { margin: 0; line-height: 1.7; opacity: .88; }
+  @media (max-width: 480px) { .car-explica { padding: 2rem 0 2.4rem; } }
+</style>
+{% endif %}
+
 {% endblock %}

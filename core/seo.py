@@ -170,3 +170,21 @@ def ruta_ciudad(slug_region, slug_ciudad_):
 def a_json(schemas):
     """Una lista de schemas en un solo bloque, listo para el template."""
     return json.dumps(schemas, ensure_ascii=False)
+
+
+def schema_preguntas(preguntas):
+    """FAQPage.
+
+    SOLO con preguntas que estan VISIBLES en la pagina. Declarar un FAQPage con
+    contenido que el visitante no ve es marcado engañoso y Google lo sanciona a
+    mano; acá las mismas preguntas se dibujan debajo de la grilla.
+    """
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [
+            {'@type': 'Question', 'name': titulo,
+             'acceptedAnswer': {'@type': 'Answer', 'text': texto}}
+            for titulo, texto in preguntas
+        ],
+    }

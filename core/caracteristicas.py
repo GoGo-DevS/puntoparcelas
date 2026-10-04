@@ -136,3 +136,102 @@ def filtro(slug):
 def ficha(slug):
     """(h1, title, bajada) o None."""
     return _FICHAS.get(slug)
+
+
+# -------------------------------------------------------------------------
+# EL TEXTO PROPIO DE CADA PAGINA
+#
+# Medido en vivo el 04-10: parcela-de-campo y parcela-de-agrado eran 96%
+# identicas, y con-rol-propio 87%. Las tres muestran las mismas 116 parcelas,
+# asi que cambiando solo el H1 y una bajada Google las lee como la misma pagina
+# tres veces: elige una, degrada las otras y compiten entre ellas.
+#
+# Cada bloque responde la pregunta que trae quien busca ese termino. Son datos
+# del marco legal chileno (DL 3.516), publicos y verificables -- NO afirmaciones
+# sobre el negocio de Leonardo. Sin plazos, precios ni promesas suyas, igual que
+# el resto del sitio.
+_EXPLICACIONES = {
+    'parcela-de-agrado': [
+        ('¿Qué es una parcela de agrado?',
+         'Es un terreno rústico subdividido al amparo del Decreto Ley 3.516, que '
+         'permite dividir predios agrícolas en lotes de 5.000 m² (media hectárea) '
+         'como mínimo. Esa superficie es el piso legal: no existen parcelas de '
+         'agrado más chicas. Se compran para construir una casa de descanso o '
+         'para vivir fuera de la ciudad, manteniendo el uso agrícola del suelo.'),
+        ('¿En qué se diferencia de un sitio urbano?',
+         'Una parcela de agrado está fuera del límite urbano, así que no llega '
+         'con urbanización municipal: el agua suele ser de pozo o puntera y la '
+         'electricidad se empalma a la red rural. A cambio, el precio por metro '
+         'es mucho menor y no hay restricciones de constructibilidad urbana.'),
+        ('¿Qué conviene revisar antes de comprar?',
+         'Que el loteo esté aprobado por el SAG, que la parcela tenga rol propio '
+         'o esté en trámite, cómo llega el agua y la luz, y qué dice la '
+         'servidumbre de acceso. Son los puntos que definen si vas a poder '
+         'escriturar y construir sin sorpresas.'),
+    ],
+    'parcela-de-campo': [
+        ('¿Qué es una parcela de campo?',
+         '"Parcela de campo" es como se le dice en el día a día a lo que la ley '
+         'llama parcela de agrado: un terreno rural de media hectárea o más, '
+         'fuera del límite urbano. Los dos nombres se usan para lo mismo, así '
+         'que no hay que buscar dos cosas distintas.'),
+        ('¿Para qué se usan?',
+         'Para casa de fin de semana, para irse a vivir al campo, para plantar o '
+         'para dejarlas como inversión mientras la zona se valoriza. El uso '
+         'manda sobre lo que conviene mirar: quien va a vivir ahí necesita '
+         'resolver agua y luz antes que nada; quien invierte mira la plusvalía '
+         'del sector y el acceso.'),
+        ('¿Se puede construir?',
+         'Sí, con permiso de la Dirección de Obras de la municipalidad. Al estar '
+         'en suelo rural hay limitaciones de superficie construida y de '
+         'subdivisión posterior, que es justamente lo que protege el entorno y '
+         'lo que hace que el campo siga siendo campo.'),
+    ],
+    'parcela-con-rol-propio': [
+        ('¿Qué significa que tenga rol propio?',
+         'Que el Servicio de Impuestos Internos ya le asignó un número de rol a '
+         'esa parcela en particular, separado del predio madre. Es la prueba de '
+         'que la subdivisión está hecha y registrada, no en trámite.'),
+        ('¿Por qué importa al momento de comprar?',
+         'Sin rol propio la parcela todavía es parte de un terreno más grande, y '
+         'la escritura queda sujeta a que la subdivisión termine. Con rol propio '
+         'se escritura a tu nombre de inmediato y puedes pagar tus propias '
+         'contribuciones, pedir empalmes y tramitar permisos sin depender del '
+         'vendedor.'),
+    ],
+    'parcela-con-agua-y-luz': [
+        ('¿Qué significa "con agua y luz" en una parcela?',
+         'Que el terreno ya tiene resuelto el suministro: agua por pozo, puntera '
+         'o APR según el sector, y electricidad empalmada a la red. En suelo '
+         'rural eso no viene por defecto y es lo que más encarece habilitar una '
+         'parcela después de comprarla.'),
+        ('¿Puedo construir de inmediato?',
+         'Tener agua y luz resuelve el servicio, pero construir igual requiere '
+         'el permiso de la Dirección de Obras. Lo que te ahorras es el costo y '
+         'la espera de habilitar los suministros desde cero.'),
+    ],
+    'parcelas-baratas': [
+        ('¿Por qué hay parcelas tan económicas?',
+         'El precio de una parcela depende de la zona, del acceso, de si tiene '
+         'agua y luz, y de si ya está subdividida con rol propio. Una parcela '
+         'más económica suele estar más lejos de la ciudad o tener alguno de '
+         'esos puntos pendientes; no significa que el terreno sea peor.'),
+        ('¿Qué revisar en una parcela de bajo precio?',
+         'Lo mismo que en cualquier otra: loteo aprobado, rol propio o en '
+         'trámite, cómo llega el agua y la luz, y la servidumbre de acceso. Si '
+         'alguno está pendiente, conviene saber cuánto cuesta resolverlo antes '
+         'de comparar precios.'),
+    ],
+    'parcelas-sur-de-chile': [
+        ('¿Qué tiene de particular comprar en el sur?',
+         'El sur tiene más agua y vegetación nativa, y los terrenos suelen ser '
+         'más baratos por metro que en la zona central. A cambio, el clima pide '
+         'otro tipo de construcción y conviene mirar el drenaje del terreno y el '
+         'estado del camino en invierno.'),
+    ],
+}
+
+
+def explicacion(slug):
+    """Los bloques de texto propios de la pagina, o lista vacia."""
+    return _EXPLICACIONES.get(slug, [])
