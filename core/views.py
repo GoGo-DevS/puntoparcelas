@@ -53,16 +53,42 @@ def _regiones_con_parcelas():
 logger = logging.getLogger(__name__)
 
 def home(request):
+    from . import contenido_home as _ch
     from . import seo as _seo
 
     destacadas = Parcela.objects.filter(destacada=True, estado='disponible')[:6]
     testimonios = Testimonio.objects.filter(activo=True)[:3]
+
+    # El bloque de regiones sale de los DATOS, no de la lista de 11 del
+    # documento: cuatro de esas (Araucania, Los Rios, Biobio y Aysen) devuelven
+    # 404 porque no tienen parcelas, y copiarlas habria puesto cuatro enlaces
+    # rotos en la portada. Mismo criterio que los botones del catalogo.
+    con_parcelas = _regiones_con_parcelas()
+    regiones = [
+        {'slug': slug, 'etiqueta': _seo.REGION_LABEL.get(key, key)}
+        for slug, (key, _t, _h) in REGIONES_SEO.items()
+        if key in con_parcelas
+    ]
+
     return render(request, 'core/home.html', {
         'destacadas': destacadas,
         'testimonios': testimonios,
+        'regiones_home': regiones,
+        # Las caracteristicas que HOY tienen parcelas. El texto de la home
+        # enlaza a "parcelas baratas", y esa pagina es 404 cuando ninguna
+        # parcela cumple el filtro -- justo lo que se vino a evitar con las
+        # regiones. Lo cazo el barrido de enlaces de tests_home_seo.
+        'bloques_seo': _ch.bloques_visibles(_caracteristicas_con_parcelas()),
+        'vinetas_seo': _ch.VINETAS,
+        'preguntas': _ch.preguntas_visibles(),
         # El negocio se declara SOLO aca (punto 2.2 de Jorge). Hasta el 17-09
         # estaba en base.html, o sea repetido en las 40 y tantas paginas.
-        'schema_json': _seo.a_json([_seo.schema_negocio(request)]),
+        # El FAQPage va con las MISMAS seis preguntas que se dibujan al pie:
+        # declarar una que no se ve es marcado enganoso.
+        'schema_json': _seo.a_json([
+            _seo.schema_negocio(request),
+            _seo.schema_preguntas(_ch.preguntas_planas()),
+        ]),
     })
 
 
