@@ -312,6 +312,35 @@
   </div>
 </section>
 
+{% if contenido_caracteristica %}
+{% comment %}
+  Intro y "que considerar antes de comprar", del documento del 05-10.
+  Va DESPUES de la grilla, igual que las preguntas: quien entra a un catalogo
+  quiere ver parcelas primero, no leer.
+{% endcomment %}
+<section class="car-intro">
+  <div class="container">
+    {% for parrafo in contenido_caracteristica.intro %}
+    <p class="car-intro__p">{{ parrafo }}</p>
+    {% endfor %}
+    {% if contenido_caracteristica.considerar %}
+    <h2 class="car-intro__h">Qué considerar antes de comprar</h2>
+    <ul class="car-intro__lista">
+      {% for punto in contenido_caracteristica.considerar %}<li>{{ punto }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</section>
+<style>
+  .car-intro { padding: 2.6rem 0 0; }
+  .car-intro .container { max-width: 760px; }
+  .car-intro__p { margin: 0 0 1rem; line-height: 1.75; opacity: .9; }
+  .car-intro__h { font-size: 1.12rem; font-weight: 700; margin: 1.8rem 0 .7rem; }
+  .car-intro__lista { margin: 0 0 0 1.1rem; line-height: 1.9; opacity: .88; }
+  @media (max-width: 480px) { .car-intro { padding: 2rem 0 0; } }
+</style>
+{% endif %}
+
 {% if explicacion_caracteristica %}
 {% comment %}
   EL TEXTO PROPIO DE LA PAGINA. Va DESPUES de la grilla a proposito: quien

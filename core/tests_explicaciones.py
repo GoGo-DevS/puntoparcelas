@@ -122,12 +122,37 @@ class ExplicacionTests(TestCase):
         tipos = [s.get("@type") for s in schemas]
         self.assertIn("CollectionPage", tipos, tipos)
 
-    def test_sin_explicacion_no_se_declara_un_faqpage_vacio(self):
-        """Las caracteristicas marcadas a mano no tienen texto propio todavia.
-        Un FAQPage sin preguntas es marcado invalido."""
+    def test_el_faqpage_solo_declara_preguntas_que_SE_VEN(self):
+        """Antes esta prueba decia: "las caracteristicas marcadas a mano no
+        tienen texto propio TODAVIA" y exigia que vista-al-lago NO declarara
+        FAQPage. Ese todavia se cumplio -- el 05-10 Jorge mando tres preguntas
+        para cada una de las diez paginas, asi que ahora SI declara, y debe.
+
+        Lo que la prueba cuidaba no se pierde: un FAQPage con preguntas que el
+        visitante no ve es marcado enganoso y Google lo sanciona a mano. Eso se
+        sigue midiendo, pero sobre lo que hay, no sobre lo que falta.
+        """
         self.parcela.vista_lago = True
         self.parcela.save(update_fields=["vista_lago"])
-        schemas, _ = self._schemas("/catalogo/parcela-vista-al-lago/")
+        schemas, html = self._schemas("/catalogo/parcela-vista-al-lago/")
+        faqs = [s for s in schemas if s.get("@type") == "FAQPage"]
+        self.assertTrue(faqs, "la pagina tiene preguntas y no declara FAQPage")
+        for faq in faqs:
+            self.assertTrue(faq["mainEntity"], "declara un FAQPage sin preguntas")
+            for q in faq["mainEntity"]:
+                self.assertIn(q["name"], html,
+                              "pregunta declarada y no visible: %s" % q["name"])
+
+    def test_una_pagina_sin_preguntas_no_declara_faqpage(self):
+        """La otra mitad de la regla, que sigue viva: si algun dia se agrega una
+        caracteristica sin texto, no puede declarar un FAQPage vacio."""
+        from unittest import mock
+
+        from . import caracteristicas as _car
+        self.parcela.vista_lago = True
+        self.parcela.save(update_fields=["vista_lago"])
+        with mock.patch.object(_car, "preguntas", return_value=[]):
+            schemas, _ = self._schemas("/catalogo/parcela-vista-al-lago/")
         for s in schemas:
             if s.get("@type") == "FAQPage":
                 self.fail("declara un FAQPage sin preguntas visibles")

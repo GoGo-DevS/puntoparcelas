@@ -235,3 +235,59 @@ _EXPLICACIONES = {
 def explicacion(slug):
     """Los bloques de texto propios de la pagina, o lista vacia."""
     return _EXPLICACIONES.get(slug, [])
+
+
+# ---------------------------------------------------------------------------
+# El contenido largo (Jorge Urzua, 05-10-2026). Vive en su propio modulo
+# porque son ~22.000 caracteres de texto y aca estan las DECISIONES.
+# ---------------------------------------------------------------------------
+
+def contenido(slug):
+    """{title, meta, intro, considerar, preguntas} o None.
+
+    Reemplaza a `explicacion()` donde existe: el documento trae intro, "que
+    considerar antes de comprar" y tres preguntas por pagina, orientadas a la
+    keyword. Las explicaciones del 04-10 se conservan abajo y se usan como
+    respaldo para cualquier slug que el documento no cubra.
+    """
+    from .caracteristicas_contenido import CONTENIDO
+    return CONTENIDO.get(slug)
+
+
+def preguntas(slug):
+    """[(pregunta, respuesta)] para dibujar Y para el FAQPage.
+
+    Son las mismas en los dos lados a proposito: declarar en el schema una
+    pregunta que el visitante no ve es marcado enganoso.
+
+    SE FUSIONAN LAS DOS TANDAS, Y NO GANA LA MAS NUEVA
+    --------------------------------------------------
+    Hay dos fuentes y cada una aporta algo distinto:
+
+      04-10  escritas aca, con el DATO DURO verificable: el Decreto Ley 3.516,
+             el minimo de 5.000 m2, que significa el rol ante el SII.
+      05-10  las del documento de Jorge, escritas para la keyword: responden lo
+             que la gente efectivamente escribe en Google.
+
+    El primer intento dejo solo las de Jorge y una prueba del 04-10 lo cazo: la
+    pagina de parcela de agrado dejaba de mencionar el DL 3.516, que es el dato
+    que la hace util y que no esta en ninguna otra parte del sitio.
+
+    Entonces van las dos: primero las del 04-10 (el dato duro manda) y despues
+    las de Jorge que no repitan una pregunta ya respondida. La comparacion es
+    por texto normalizado, no exacta, porque "¿Que es una parcela de agrado?"
+    aparece en ambas con distinta redaccion.
+    """
+    def clave(pregunta):
+        return ''.join(c for c in pregunta.lower() if c.isalnum())
+
+    base = list(explicacion(slug))
+    vistas = {clave(p) for p, _ in base}
+
+    datos = contenido(slug)
+    if datos:
+        for p, r in datos['preguntas']:
+            if clave(p) not in vistas:
+                base.append((p, r))
+                vistas.add(clave(p))
+    return base

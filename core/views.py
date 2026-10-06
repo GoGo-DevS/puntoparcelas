@@ -239,9 +239,9 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
         # FAQPage solo con lo que se VE en la pagina: las mismas preguntas se
         # dibujan debajo de la grilla. Declarar una que no esta es marcado
         # engañoso y Google lo sanciona a mano.
-        explicacion = _car.explicacion(caracteristica)
-        if explicacion:
-            schemas.append(_seo.schema_preguntas(explicacion))
+        preguntas_car = _car.preguntas(caracteristica)
+        if preguntas_car:
+            schemas.append(_seo.schema_preguntas(preguntas_car))
 
     return render(request, 'core/catalogo.html', {
         'page_obj': page_obj,
@@ -262,7 +262,10 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
         # El texto propio de la pagina. Sin esto, parcela-de-campo y
         # parcela-de-agrado se publicaban 96% identicas (misma grilla de 116
         # parcelas, solo cambiaba el H1): Google elige una y degrada las otras.
-        'explicacion_caracteristica': _car.explicacion(caracteristica) if caracteristica else [],
+        'explicacion_caracteristica': _car.preguntas(caracteristica) if caracteristica else [],
+        # El contenido largo del documento del 05-10: intro y "que considerar
+        # antes de comprar". None para los slugs que el documento no cubre.
+        'contenido_caracteristica': _car.contenido(caracteristica) if caracteristica else None,
         'caracteristicas': _caracteristicas_con_parcelas(),
     })
 
