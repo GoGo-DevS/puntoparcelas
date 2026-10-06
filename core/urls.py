@@ -35,6 +35,12 @@ urlpatterns = [
             views.catalogo, name='catalogo_caracteristica'),
     path('catalogo/<slug:slug>/',          views.parcela_detail, name='parcela_detail'),
     path('catalogo/<slug:slug>/geo-pdf/', views.parcela_geo_pdf, name='parcela_geo_pdf'),
+    # 06/10-2026, documento "Guias informacionales" de Jorge: el sitio tenia 75
+    # URLs y todas de catalogo. Estas 14 responden preguntas (15.890 bus/mes) y
+    # bajan ese trafico al catalogo. Van ANTES de contacto/links por claridad;
+    # no chocan con /catalogo/ porque el prefijo es distinto.
+    path('guias/',               views.guias_indice, name='guias'),
+    path('guias/<slug:slug>/',   views.guia_detalle, name='guia_detalle'),
     path('contacto/',       views.reserva,        name='reserva'),
     path('links/',          views.links,          name='links'),
 ]

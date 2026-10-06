@@ -1,0 +1,76 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ guia.title }}{% endblock %}
+{% block meta_desc %}{{ meta_desc }}{% endblock %}
+{% block og_title %}{{ guia.title }}{% endblock %}
+{% block og_desc %}{{ meta_desc }}{% endblock %}
+
+{% block content %}
+{% comment %}
+  Una guia informacional. El cuerpo llega de core/guias.py ya renderizado:
+  cada [[anchor|ruta]] se convirtio en <a> con la ruta RESUELTA contra la base,
+  asi que una comuna sin parcelas baja sola a su region en vez de publicar un
+  404. Por eso aca va |safe y no se vuelve a escapar: guias.con_enlaces() ya
+  escapo el texto antes de armar el HTML.
+
+  OJO: comentario de varias lineas va en {% comment %} y NO en la otra forma,
+  que se imprime entera en la pagina. Es el bug mas repetido de estos repos.
+{% endcomment %}
+<article class="guia">
+  <div class="container guia__caja">
+
+    <nav class="guia__migas" aria-label="Ruta de navegación">
+      <a href="/">Inicio</a> <span aria-hidden="true">›</span>
+      <a href="/guias/">Guías</a>
+    </nav>
+
+    <h1 class="guia__h1">{{ guia.h1 }}</h1>
+
+    {% for tipo, texto in cuerpo %}
+      {% if tipo == 'h2' %}<h2 class="guia__h2">{{ texto }}</h2>
+      {% elif tipo == 'li' %}<li class="guia__li">{{ texto }}</li>
+      {% else %}<p class="guia__p">{{ texto }}</p>{% endif %}
+    {% endfor %}
+
+    <aside class="guia__cta">
+      <p class="guia__cta-t">¿Buscas una parcela en esta zona?</p>
+      <a class="guia__cta-b" href="/catalogo/">Ver todas las parcelas en venta</a>
+    </aside>
+
+  </div>
+</article>
+
+<style>
+  /* La nav del sitio es position:fixed y mide ~89px, pero NO reserva espacio:
+     todas las demas paginas lo tapan con un hero alto. Las guias son las
+     primeras que extienden base.html sin hero, asi que el H1 y las migas
+     quedaban DEBAJO de la barra (medido: migas en top=38 con la nav llegando
+     hasta 89). De ahi el padding-top grande. */
+  .guia { padding: 8rem 0 3.4rem; }
+  .guia__caja { max-width: 760px; }
+  .guia__migas { font-size: .82rem; opacity: .7; margin-bottom: 1.1rem; }
+  .guia__migas a { color: inherit; text-decoration: none; }
+  .guia__migas a:hover { text-decoration: underline; }
+  .guia__h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 1.4rem; font-weight: 800; }
+  .guia__h2 { font-size: 1.22rem; line-height: 1.35; font-weight: 700; margin: 2.1rem 0 .7rem; }
+  .guia__p  { margin: 0 0 1rem; line-height: 1.75; opacity: .9; }
+  .guia__li { margin: 0 0 .5rem 1.1rem; line-height: 1.7; opacity: .9; }
+  .guia a:not(.guia__cta-b) { color: var(--pp-gold, #D4AF37); }
+  .guia__cta {
+    margin-top: 2.6rem; padding: 1.4rem 1.5rem;
+    border: 1px solid rgba(0,0,0,.1); border-radius: 14px;
+    background: var(--pp-surface, #fafafa);
+  }
+  .guia__cta-t { margin: 0 0 .8rem; font-weight: 700; }
+  .guia__cta-b {
+    display: inline-block; padding: .72rem 1.3rem; border-radius: 999px;
+    background: #0D0D0D; color: #fff; text-decoration: none; font-weight: 600;
+  }
+  /* 1.9rem ya cabe a 320px; se baja igual para que el H1 no coma media pantalla. */
+  @media (max-width: 480px) {
+    .guia { padding: 6.5rem 0 2.6rem; }
+    .guia__h1 { font-size: 1.55rem; }
+    .guia__h2 { font-size: 1.1rem; }
+  }
+</style>
+{% endblock %}

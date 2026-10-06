@@ -490,6 +490,15 @@ def sitemap_xml(request):
         if vivas.filter(_car.filtro(slug_car)).exists():
             urls.append(f"  <url><loc>{base}/catalogo/{slug_car}/</loc>"
                         f"<changefreq>weekly</changefreq><priority>0.85</priority></url>")
+    # Guias informacionales (06-10-2026). Son contenido permanente y no
+    # dependen de ninguna parcela, asi que van siempre: no pueden quedar
+    # vacias como una region o una caracteristica.
+    from . import guias as _guias
+    urls.append(f"  <url><loc>{base}/guias/</loc>"
+                f"<changefreq>monthly</changefreq><priority>0.7</priority></url>")
+    for slug_guia in _guias.SLUGS:
+        urls.append(f"  <url><loc>{base}/guias/{slug_guia}/</loc>"
+                    f"<changefreq>monthly</changefreq><priority>0.7</priority></url>")
     for slug in parcelas:
         urls.append(f"  <url><loc>{base}/catalogo/{slug}/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>")
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -563,3 +572,62 @@ def parcela_geo_pdf(request, slug):
     response['Content-Disposition'] = 'inline; filename="plano-geo.pdf"'
     response['Cache-Control'] = 'public, max-age=3600'
     return response
+
+
+# ---------------------------------------------------------------------------
+# Guias informacionales (Jorge Urzua, 05-10-2026). Ver core/guias.py.
+# ---------------------------------------------------------------------------
+
+def guias_indice(request):
+    """El listado de /guias/. Existe para que la seccion tenga raiz propia.
+
+    Sin esta pagina, /guias/ daria 404 mientras /guias/<algo>/ responde 200, y
+    es lo primero que prueba cualquiera -- incluido Google al rastrear.
+    """
+    from . import guias as _guias
+    from . import seo as _seo
+
+    fichas = [{'slug': s, 'h1': g['h1'], 'keyword': g['keyword'],
+               'meta': _guias.sin_marcadores(g['meta'])}
+              for s, g in _guias.GUIAS.items()]
+
+    return render(request, 'core/guias_indice.html', {
+        'fichas': fichas,
+        'schema_json': _seo.a_json([
+            _seo.migas(request, [('Guías', '/guias/')]),
+            _seo.schema_coleccion(
+                request,
+                nombre='Guías para comprar una parcela en Chile',
+                descripcion=('Guías de las localidades donde hay parcelas en venta y '
+                             'de qué revisar antes de comprar.'),
+                ruta='/guias/',
+                parcelas=[],
+            ),
+        ]),
+    })
+
+
+def guia_detalle(request, slug):
+    from django.http import Http404
+
+    from . import guias as _guias
+    from . import seo as _seo
+
+    guia = _guias.GUIAS.get(slug)
+    if guia is None:
+        raise Http404('guía no encontrada')
+
+    meta = _guias.sin_marcadores(guia['meta'])
+    schemas = [
+        _seo.migas(request, [('Guías', '/guias/'), (guia['h1'], f'/guias/{slug}/')]),
+    ]
+
+    return render(request, 'core/guia_detalle.html', {
+        'guia': guia,
+        'slug': slug,
+        # El cuerpo llega ya con los enlaces resueltos contra la base: una
+        # comuna sin parcelas baja sola a su region. Ver core/guias.py.
+        'cuerpo': _guias.cuerpo_renderizado(slug),
+        'meta_desc': meta,
+        'schema_json': _seo.a_json(schemas),
+    })
