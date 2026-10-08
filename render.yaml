@@ -53,3 +53,7 @@ services:
         sync: false
       - key: EMAIL_HOST_PASSWORD
         sync: false
+      # GA4 de GoGoDevS, al lado del de Leonardo (que va en el panel y vive en
+      # SU cuenta). Es el que lee el reporte semanal del CRM. 08-10-2026.
+      - key: GA4_GOGODEVS_ID
+        sync: false

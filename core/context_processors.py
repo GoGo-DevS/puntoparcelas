@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.templatetags.static import static
 
 from .models import SiteConfig
@@ -32,6 +33,16 @@ def _og_image(request, cfg):
     return f'{request.scheme}://{request.get_host()}{ruta}'
 
 
+def _ga4_ids(cfg):
+    # El de Leonardo (panel) primero y el de GoGoDevS (env) al lado, sin repetir.
+    ids = []
+    for valor in ((cfg.ga4_id if cfg else '') or '', settings.GA4_GOGODEVS_ID):
+        valor = valor.strip()
+        if valor and valor not in ids:
+            ids.append(valor)
+    return ids
+
+
 def site_globals(request):
     # La config se lee una vez por request. Si la tabla todavia no existe
     # (primer deploy, antes de migrar) se devuelve None y las plantillas
@@ -47,4 +58,5 @@ def site_globals(request):
         'SLOGAN': 'Tu inversión hoy, tu patrimonio mañana.',
         'SITE_CONFIG': cfg,
         'OG_IMAGE': _og_image(request, cfg),
+        'GA4_IDS': _ga4_ids(cfg),
     }

@@ -138,6 +138,11 @@ R2_PUBLIC_URL = os.environ.get('R2_PUBLIC_URL', '').rstrip('/')
 
 CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', '')
 
+# Segundo GA4, el de GoGoDevS (08-10-2026). El ga4_id del panel es de Leonardo y
+# vive en SU cuenta de Google: el CRM no puede leerlo para el reporte semanal.
+# Este se suma al lado, no lo reemplaza. Vacio = no se carga nada extra.
+GA4_GOGODEVS_ID = os.environ.get('GA4_GOGODEVS_ID', '').strip()
+
 if R2_ACCESS_KEY and R2_SECRET_KEY and R2_BUCKET and R2_ENDPOINT:
     STORAGES = {
         'default': {

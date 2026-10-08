@@ -469,15 +469,7 @@
   {% if SITE_CONFIG.meta_verificacion %}
   <meta name="facebook-domain-verification" content="{{ SITE_CONFIG.meta_verificacion }}">
   {% endif %}
-  {% if SITE_CONFIG.ga4_id %}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ SITE_CONFIG.ga4_id }}"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ SITE_CONFIG.ga4_id }}');
-  </script>
-  {% endif %}
+  {% include 'core/_ga4.html' %}
   {% if SITE_CONFIG.meta_pixel_id %}
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
