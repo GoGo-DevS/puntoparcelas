@@ -26,14 +26,14 @@ No es un detalle de implementacion, es lo que decide si la pagina miente.
 
 LO QUE NO SE PUBLICA, Y POR QUE
 -------------------------------
-  - "Parcela con casa" (880 busquedas/mes): Leonardo dijo textual "nada por
-    ahora". Es la segunda keyword con mas volumen de la planilla y aun asi no
-    se crea: una pagina sin una sola parcela se indexa igual y queda compitiendo
-    contra las que si tienen. Nace el dia que cargue una.
+  - "Parcela con casa" (880 busquedas/mes) estuvo aca hasta el 13-10-2026:
+    Leonardo dijo "nada por ahora" el 01-10 y no se publico vacia. Ese dia
+    cargo la parcela de Rauco con su cabaña y paso a ser MARCADA (`con_casa`).
+    Igual que todas, si queda sin parcelas vuelve a ser 404 sola.
   - "Parcela rural": Jorge la pide, Leonardo NO la menciono en su lista. No se
     inventa el criterio.
 
-  Las dos quedan abajo en NO_PUBLICADAS para que la proxima sesion sepa que
+  Lo que queda va abajo en NO_PUBLICADAS para que la proxima sesion sepa que
   fueron una decision y no un olvido.
 
 EL CASO DELICADO: "PARCELA EN LA PLAYA"
@@ -83,6 +83,12 @@ _FICHAS = {
         'Parcelas con vista al lago',
         'Parcelas con vista al lago en venta | Punto Parcelas',
         'Parcelas con vista a lagos del sur: Rupanco, Llanquihue y Vichuquén.'),
+    'parcela-con-casa': (
+        # "o cabaña" en el H1 a proposito: la primera que Leonardo marco (Rauco)
+        # tiene una cabaña chica, no una casa. La keyword va igual en el slug.
+        'Parcelas con casa o cabaña',
+        'Parcelas con casa en venta | Punto Parcelas',
+        'Parcelas que ya tienen una casa o cabaña construida en el terreno.'),
     'parcela-en-la-playa': (
         # H1 honesto: ver el bloque de arriba. El slug SI es el de Jorge.
         'Parcelas cerca de la playa',
@@ -100,12 +106,11 @@ _FICHAS = {
 }
 
 # Las 4 que Leonardo marca a mano. El resto se calculan solas.
-CAMPOS_MARCADOS = ('cerca_playa', 'vista_mar', 'vista_lago', 'credito_directo')
+CAMPOS_MARCADOS = ('cerca_playa', 'vista_mar', 'vista_lago', 'credito_directo', 'con_casa')
 
 # Pedidas por Jorge y NO publicadas a proposito. Si alguna deja de estar vacia,
 # se mueve a _FICHAS y listo.
 NO_PUBLICADAS = {
-    'parcela-con-casa': 'Leonardo: "parcelas con casa, nada por ahora" (01-10-2026).',
     'parcela-rural':    'Jorge la pide; Leonardo no la nombro. Falta su criterio.',
 }
 
@@ -125,6 +130,7 @@ def filtro(slug):
         'parcela-vista-al-mar':        Q(vista_mar=True),
         'parcela-vista-al-lago':       Q(vista_lago=True),
         'parcela-en-la-playa':         Q(cerca_playa=True),
+        'parcela-con-casa':            Q(con_casa=True),
         # --- el catalogo completo con otro titulo ---------------------------
         # Leonardo dijo "todas" para las dos. No filtran nada a proposito: lo
         # que aportan es el H1 y el texto, que es lo que se busca en Google.

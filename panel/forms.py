@@ -33,7 +33,7 @@ class ParcelaForm(forms.ModelForm):
             'tiene_cercado', 'tiene_porton', 'es_turistico', 'bosque_nativo', 'rol_propio',
             # Las 4 de la planilla SEO (02-10). Si no estan ACA, la casilla se
             # dibuja, Leonardo la marca, aprieta Guardar y no se guarda nada.
-            'cerca_playa', 'vista_mar', 'vista_lago', 'credito_directo',
+            'cerca_playa', 'vista_mar', 'vista_lago', 'credito_directo', 'con_casa',
             'video_url', 'mapa_url', 'mapa_embed_url', 'geo_pdf', 'imagen_credito',
         ]
         widgets = {

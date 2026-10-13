@@ -111,6 +111,9 @@ class Parcela(models.Model):
     vista_mar           = models.BooleanField(default=False, verbose_name='Vista al mar')
     vista_lago          = models.BooleanField(default=False, verbose_name='Vista al lago')
     credito_directo     = models.BooleanField(default=False, verbose_name='Crédito directo / pie cero')
+    # 13-10-2026: "parcela con casa" (880 busquedas/mes) esperaba a que hubiera
+    # una. Leonardo cargo la de Rauco con su cabaña y anuncio otra con casa.
+    con_casa            = models.BooleanField(default=False, verbose_name='Con casa o cabaña construida')
 
     creado      = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)
@@ -197,6 +200,7 @@ class Parcela(models.Model):
         if self.es_turistico:       attrs.append(('turistico','bi-camera-fill',          'Uso turístico'))
         if self.bosque_nativo:      attrs.append(('bosque',  'bi-tree-fill',             'Bosque nativo'))
         if self.rol_propio:         attrs.append(('rol',     'bi-file-earmark-check-fill','Rol propio'))
+        if self.con_casa:           attrs.append(('casa',    'bi-house-fill',            'Casa o cabaña'))
         return attrs
 
     def _mapa_coords(self):

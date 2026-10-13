@@ -112,3 +112,27 @@ class FichaEnlazaArribaYAlLado(TestCase):
     def test_los_enlaces_hacia_arriba_no_dan_404(self):
         for _texto, ruta in self.client.get(self.p.get_absolute_url()).context['enlaces_arriba']:
             self.assertEqual(self.client.get(ruta).status_code, 200, ruta)
+
+
+@sin_manifiesto
+class ParcelaConCasa(TestCase):
+    """13-10: "parcela con casa" (880 busquedas/mes) nace con la primera marcada."""
+
+    def test_sin_ninguna_marcada_sigue_siendo_404(self):
+        _p('Sin casa')
+        self.assertEqual(self.client.get('/catalogo/parcela-con-casa/').status_code, 404)
+        self.assertNotIn('parcela-con-casa', self.client.get('/sitemap.xml').content.decode('utf8'))
+
+    def test_con_una_marcada_se_publica_y_entra_al_sitemap(self):
+        p = _p('Cabaña y estero en Rauco', region='maule', ciudad='Rauco', con_casa=True)
+        r = self.client.get('/catalogo/parcela-con-casa/')
+        self.assertEqual(r.status_code, 200)
+        html = r.content.decode('utf8')
+        self.assertIn('Parcelas con casa o cabaña', html)
+        self.assertIn(p.nombre, html)
+        self.assertIn('/catalogo/parcela-con-casa/', self.client.get('/sitemap.xml').content.decode('utf8'))
+        self.assertIn('href="/catalogo/parcela-con-casa/"', self.client.get('/').content.decode('utf8'))
+
+    def test_la_ficha_lo_muestra_como_caracteristica(self):
+        p = _p('Con cabaña', con_casa=True)
+        self.assertIn('Casa o cabaña', self.client.get(p.get_absolute_url()).content.decode('utf8'))
