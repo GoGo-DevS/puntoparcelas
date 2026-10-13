@@ -181,3 +181,25 @@ class MiniaturaAlCompartir(_ConMedia):
 
     def test_slug_inexistente_es_404(self):
         self.assertEqual(self.client.get('/catalogo/no-existe/compartir.jpg').status_code, 404)
+
+
+class MetaEnUnaLinea(TestCase):
+    """13-10: con saltos de linea dentro de la meta description, WhatsApp mostraba el link sin titulo ni foto."""
+
+    def test_la_meta_description_de_la_ficha_va_en_una_linea(self):
+        p = Parcela.objects.create(nombre='Rauco', region='maule', precio=1, superficie=5000,
+                                   estado='disponible',
+                                   descripcion='🌿 PARCELA CON CABAÑA\r\n\r\n💰 VALOR: $29.990.000\n\nMas texto')
+        html = self.client.get(p.get_absolute_url()).content.decode('utf8')
+        meta = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
+        self.assertNotIn('\n', meta)
+        self.assertNotIn('\r', meta)
+        self.assertIn('PARCELA CON CABAÑA 💰 VALOR', meta)
+
+    def test_no_escapa_dos_veces(self):
+        p = Parcela.objects.create(nombre='Lomas "del" Rio & Co', region='maule', precio=1,
+                                   superficie=5000, estado='disponible', descripcion='a' + chr(10) + 'b')
+        html = self.client.get(p.get_absolute_url()).content.decode('utf8')
+        meta = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
+        self.assertIn('Lomas &quot;del&quot; Rio &amp; Co', meta)
+        self.assertNotIn('&amp;quot;', meta)
