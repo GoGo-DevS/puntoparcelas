@@ -283,6 +283,28 @@ class FotoParcela(models.Model):
         verbose_name = 'Foto'
         verbose_name_plural = 'Fotos'
 
+    def save(self, *args, **kwargs):
+        # Punto 8 de Jorge: toda foto que entra queda en WebP bajo 100 KB. Se
+        # hace al guardar y no en el panel para que cubra los dos caminos
+        # (subir fotos nuevas y "reemplazar foto") y cualquiera que venga.
+        # `_committed` es False solo cuando llega un archivo nuevo: editar
+        # el orden o la principal no vuelve a convertir nada.
+        archivo = self.imagen
+        if archivo and not getattr(archivo, '_committed', True):
+            from django.core.files.base import ContentFile
+
+            from .imagenes import a_webp, nombre_webp
+            try:
+                self.imagen = ContentFile(a_webp(archivo), name=nombre_webp(archivo.name))
+            except Exception:
+                # Una foto que Pillow no entiende se guarda como vino: es
+                # mejor una foto pesada que perder la que Leonardo subio.
+                import logging
+                logging.getLogger(__name__).exception(
+                    'No se pudo convertir a WebP la foto %s; se guarda original', archivo.name)
+                archivo.seek(0)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Foto #{self.pk} — {self.parcela.nombre}"
 
