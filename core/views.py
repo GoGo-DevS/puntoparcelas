@@ -186,6 +186,22 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
     paginator = Paginator(qs, 15)
     page_obj = paginator.get_page(request.GET.get('page'))
 
+    # Punto 12 de Jorge (05-10-2026): la pagina 2 declaraba como canonical la
+    # 1 y repetia su title. Google la leia como duplicado de la 1 y no seguia
+    # a las parcelas que solo aparecen ahi. Ahora cada pagina se declara a si
+    # misma y lleva "Página N" en el title. La 1 sigue sin ?page=.
+    pagina_num = page_obj.number if page_obj.number > 1 else None
+    # La base de los enlaces de paginacion: conserva la busqueda (antes se
+    # perdia al pasar a la pagina 2) y el ?region= solo cuando la region NO
+    # viene ya en la ruta, porque en /catalogo/los-lagos/ sobra.
+    from urllib.parse import urlencode
+    pag_params = {}
+    if q:
+        pag_params['q'] = q
+    if region and not region_url:
+        pag_params['region'] = region
+    pag_base = urlencode(pag_params) + '&' if pag_params else ''
+
     # (val, label, slug_url) por region: slug_url es None para 'otro' (no
     # tiene pagina SEO propia) -- se arma aca, no en el template, porque
     # Django templates no traen forma nativa de indexar un dict por
@@ -245,6 +261,8 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
 
     return render(request, 'core/catalogo.html', {
         'page_obj': page_obj,
+        'pagina_num': pagina_num,
+        'pag_base': pag_base,
         'region_activa': region,
         'region_url_activa': region_url,
         'ciudad_url_activa': ciudad_url,
@@ -282,8 +300,35 @@ def parcela_detail(request, slug):
         'parcela': parcela,
         'form': form,
         'relacionadas': relacionadas,
+        # Punto 5 de Jorge: las migas que se VEN son las mismas que declara el
+        # schema. Antes la pantalla decia Inicio / Catalogo / Parcela y el
+        # BreadcrumbList pasaba por region y ciudad: dos versiones de lo mismo.
+        'migas': _migas_parcela(parcela),
         'schema_json': _parcela_schema(request, parcela),
     })
+
+
+def _migas_parcela(parcela):
+    """[(nombre, ruta)] de la ficha, sin Inicio: Catalogo > Region > Ciudad > H1.
+
+    17/09-2026: la miga pasa por REGION y CIUDAD (antes saltaba justo los dos
+    niveles a los que Jorge quiere traspasar autoridad). 13-10: el ultimo tramo
+    es el H1 de la ficha, la keyword que Jorge trabaja, y no el nombre corto.
+    """
+    from . import seo as _seo
+
+    tramos = [('Catálogo', '/catalogo/')]
+    slug_region = REGION_KEY_A_SLUG.get(parcela.region)
+    if slug_region:
+        tramos.append((_seo.REGION_LABEL.get(parcela.region, parcela.region),
+                       _seo.ruta_region(slug_region)))
+        # La pagina de la ciudad existe siempre que la ficha tenga ciudad: la
+        # propia parcela es la que la mantiene viva (vendidas incluidas).
+        slug_c = _seo.slug_ciudad(parcela.ciudad)
+        if slug_c:
+            tramos.append((parcela.ciudad.strip(), _seo.ruta_ciudad(slug_region, slug_c)))
+    tramos.append((parcela.seo_h1 or parcela.nombre, parcela.get_absolute_url()))
+    return tramos
 
 
 def _parcela_schema(request, parcela):
@@ -315,22 +360,9 @@ def _parcela_schema(request, parcela):
                    f'Parcela de {parcela.superficie_display} en '
                    f'{parcela.get_region_display()}.').strip()
 
-    # 17/09-2026: la miga ahora pasa por REGION y CIUDAD. Antes era
-    # Inicio > Catalogo > Parcela, o sea saltaba justo los dos niveles a los
-    # que Jorge quiere traspasar autoridad.
     from . import seo as _seo
 
-    tramos = [('Catálogo', '/catalogo/')]
-    slug_region = REGION_KEY_A_SLUG.get(parcela.region)
-    if slug_region:
-        tramos.append((_seo.REGION_LABEL.get(parcela.region, parcela.region),
-                       _seo.ruta_region(slug_region)))
-        if parcela.ciudad:
-            tramos.append((parcela.ciudad,
-                           _seo.ruta_ciudad(slug_region, _seo.slug_ciudad(parcela.ciudad))))
-    tramos.append((parcela.nombre, parcela.get_absolute_url()))
-
-    schemas = [_seo.migas(request, tramos)]
+    schemas = [_seo.migas(request, _migas_parcela(parcela))]
 
     # RealEstateAgent en la ficha (punto 2.3). Se referencia por @id al negocio
     # declarado en la home en vez de repetir sus datos: asi Google entiende que

@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 
-{% block title %}{% if seo_title %}{{ seo_title }}{% else %}Catálogo de parcelas en venta en Chile | Punto Parcelas{% endif %}{% endblock %}
+{% block title %}{% if seo_title %}{{ seo_title }}{% else %}Catálogo de parcelas en venta en Chile | Punto Parcelas{% endif %}{% if pagina_num %} – Página {{ pagina_num }}{% endif %}{% endblock %}
+{% block canonical %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% if pagina_num %}?page={{ pagina_num }}{% endif %}{% endblock %}
 {% block meta_desc %}Encuentra tu parcela ideal en Chile. Filtra por región y descubre oportunidades de inversión en terrenos a lo largo del país.{% endblock %}
 {% block og_title %}{{ seo_title|default:"Catálogo de parcelas en venta en Chile | Punto Parcelas" }}{% endblock %}
 {% block og_desc %}Explora nuestras parcelas disponibles por región. Seguridad, plusvalía y asesoría experta en cada terreno.{% endblock %}
@@ -228,7 +229,7 @@
       <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card anim{% if p.estado == 'vendida' %} parcela-vendida{% endif %}" data-delay="{{ forloop.counter0 }}60">
         <div class="parcela-card-img-wrap">
           {% if p.foto_principal_url %}
-            <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
+            <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.seo_h1|default:p.nombre }}" loading="lazy">
           {% else %}
             <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
           {% endif %}
@@ -240,7 +241,10 @@
           {% endif %}
         </div>
         <div class="parcela-card-body">
-          <div class="parcela-card-nombre">{{ p.nombre }}</div>
+          {% comment %} Punto 15 de Jorge: en las paginas de region, ciudad y caracteristica el nombre de
+             cada parcela es un H2. Era un div, asi que la pagina no tenia ningun
+             encabezado debajo del H1 que dijera QUE parcelas lista. {% endcomment %}
+          <h2 class="parcela-card-nombre">{{ p.nombre }}</h2>
           <div class="parcela-card-attrs">
             {% if p.tiene_luz %}
               <span class="parcela-card-attr"><i class="bi bi-lightning-charge-fill"></i> Luz</span>
@@ -270,7 +274,7 @@
     {% if page_obj.has_other_pages %}
     <div class="mt-5 pp-pagination">
       {% if page_obj.has_previous %}
-        <a href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ page_obj.previous_page_number }}" class="pp-page-link">
+        <a href="?{{ pag_base }}page={{ page_obj.previous_page_number }}" class="pp-page-link">
           <i class="bi bi-chevron-left"></i>
         </a>
       {% else %}
@@ -280,13 +284,13 @@
         {% if num == page_obj.number %}
           <span class="pp-page-link active">{{ num }}</span>
         {% elif num == 1 or num == page_obj.paginator.num_pages %}
-          <a href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ num }}" class="pp-page-link">{{ num }}</a>
+          <a href="?{{ pag_base }}page={{ num }}" class="pp-page-link">{{ num }}</a>
         {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
-          <a href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ num }}" class="pp-page-link">{{ num }}</a>
+          <a href="?{{ pag_base }}page={{ num }}" class="pp-page-link">{{ num }}</a>
         {% endif %}
       {% endfor %}
       {% if page_obj.has_next %}
-        <a href="?{% if region_activa %}region={{ region_activa }}&{% endif %}page={{ page_obj.next_page_number }}" class="pp-page-link">
+        <a href="?{{ pag_base }}page={{ page_obj.next_page_number }}" class="pp-page-link">
           <i class="bi bi-chevron-right"></i>
         </a>
       {% else %}

@@ -575,6 +575,9 @@
           <a href="{% url 'core:home' %}">Inicio</a>
           <a href="{% url 'core:catalogo' %}">Catálogo</a>
           <a href="{% url 'core:reserva' %}">Reserva</a>
+          {% comment %} Punto 14 de Jorge: las guias enlazadas desde todo el sitio. Antes
+             solo se llegaba a /guias/ desde el sitemap y las propias guias. {% endcomment %}
+          <a href="{% url 'core:guias' %}">Guías</a>
         </div>
       </div>
 
@@ -594,23 +597,20 @@
         </div>
       </div>
 
-      <!-- Cobertura Nacional -->
+      <!-- Regiones (punto 6 de Jorge): enlaces reales, el texto es el H1 de cada region -->
       <div class="col-lg-3">
-        <span class="footer-col-title">Cobertura Nacional</span>
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <i class="bi bi-geo-alt-fill" style="color:var(--pp-gold); font-size:1rem;"></i>
-          <span style="font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--pp-gold);">Arica → Magallanes</span>
+        <span class="footer-col-title">Parcelas por región</span>
+        {% if REGIONES_FOOTER %}
+        <div class="d-flex flex-column gap-2" style="font-size:.88rem;">
+          {% for r in REGIONES_FOOTER %}
+          <a href="{{ r.ruta }}">{{ r.h1 }}</a>
+          {% endfor %}
         </div>
+        {% else %}
         <p style="color:var(--pp-muted); font-size:.83rem; line-height:1.6; margin:0;">
           Estamos en todo Chile para ayudarte a invertir en tu futuro patrimonial.
         </p>
-        <div class="d-flex flex-wrap gap-1 mt-3">
-          <span style="font-size:.65rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); color:rgba(212,175,55,.7); padding:.15rem .5rem; border-radius:20px;">R. Metropolitana</span>
-          <span style="font-size:.65rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); color:rgba(212,175,55,.7); padding:.15rem .5rem; border-radius:20px;">Valparaíso</span>
-          <span style="font-size:.65rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); color:rgba(212,175,55,.7); padding:.15rem .5rem; border-radius:20px;">Biobío</span>
-          <span style="font-size:.65rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); color:rgba(212,175,55,.7); padding:.15rem .5rem; border-radius:20px;">Los Lagos</span>
-          <span style="font-size:.65rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); color:rgba(212,175,55,.7); padding:.15rem .5rem; border-radius:20px;">+ más regiones</span>
-        </div>
+        {% endif %}
       </div>
 
     </div>

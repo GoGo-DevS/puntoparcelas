@@ -43,6 +43,27 @@ def _ga4_ids(cfg):
     return ids
 
 
+def _regiones_footer():
+    """Las regiones del footer, con su URL y el H1 de su pagina como texto.
+
+    Punto 6 de Jorge (05-10-2026): el footer decia "R. Metropolitana,
+    Valparaiso, Biobio, Los Lagos" como etiquetas sin enlace, escritas a mano,
+    y Biobio no tiene ni una parcela. Ahora sale de los datos con el mismo
+    criterio que la home y el sitemap: solo las regiones que tienen parcelas,
+    porque las otras son 404.
+    """
+    from .views import REGIONES_SEO, _regiones_con_parcelas
+
+    try:
+        con_parcelas = _regiones_con_parcelas()
+    except Exception:
+        # Igual que la config: una base caida no puede tumbar todas las
+        # paginas por un bloque del footer.
+        return []
+    return [{'ruta': f'/catalogo/{slug}/', 'h1': h1}
+            for slug, (key, _t, h1) in REGIONES_SEO.items() if key in con_parcelas]
+
+
 def site_globals(request):
     # La config se lee una vez por request. Si la tabla todavia no existe
     # (primer deploy, antes de migrar) se devuelve None y las plantillas
@@ -59,4 +80,5 @@ def site_globals(request):
         'SITE_CONFIG': cfg,
         'OG_IMAGE': _og_image(request, cfg),
         'GA4_IDS': _ga4_ids(cfg),
+        'REGIONES_FOOTER': _regiones_footer(),
     }

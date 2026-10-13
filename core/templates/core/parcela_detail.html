@@ -99,12 +99,13 @@
 {% block content %}
 <div class="detail-hero">
   <div class="container">
-    <nav style="font-size:.82rem; margin-bottom:1rem;">
+    <nav aria-label="Migas" style="font-size:.82rem; margin-bottom:1rem;">
       <a href="{% url 'core:home' %}" style="color:var(--pp-muted); text-decoration:none;">Inicio</a>
+      {% for nombre, ruta in migas %}
       <span style="color:var(--pp-border); margin:0 .5rem;">/</span>
-      <a href="{% url 'core:catalogo' %}" style="color:var(--pp-muted); text-decoration:none;">Catálogo</a>
-      <span style="color:var(--pp-border); margin:0 .5rem;">/</span>
-      <span style="color:var(--pp-gold);">{{ parcela.nombre }}</span>
+      {% if forloop.last %}<span style="color:var(--pp-gold);" aria-current="page">{{ nombre }}</span>
+      {% else %}<a href="{{ ruta }}" style="color:var(--pp-muted); text-decoration:none;">{{ nombre }}</a>{% endif %}
+      {% endfor %}
     </nav>
     <div class="d-flex align-items-start gap-3 flex-wrap">
       <div class="flex-grow-1">
@@ -128,13 +129,16 @@
         {% if fotos %}
           <div class="gallery-wrap mb-2" id="galleryWrap"
                style="background-image:url('{{ parcela.foto_principal_url }}')">
-            <img src="{{ parcela.foto_principal_url }}" class="gallery-main" id="mainPhoto" alt="{{ parcela.nombre }}">
+            <img src="{{ parcela.foto_principal_url }}" class="gallery-main" id="mainPhoto" alt="{{ parcela.seo_h1|default:parcela.nombre }}">
           </div>
+          {% comment %} Punto 4 de Jorge: el ALT de cada foto sale del H1 de la ficha, en
+             la plantilla, asi que una parcela nueva lo trae sin que Leonardo
+             escriba nada. Las miniaturas decian alt="foto", las 13. {% endcomment %}
           {% if fotos|length > 1 %}
           <div class="d-flex gap-2 flex-wrap">
             {% for f in fotos %}
             <img src="{{ f.imagen.url|achicar:300 }}" class="gallery-thumb {% if f.principal %}active{% endif %}"
-                 style="width:80px;" alt="foto"
+                 style="width:80px;" alt="{{ parcela.seo_h1|default:parcela.nombre }} — foto {{ forloop.counter }}"
                  data-full="{{ f.imagen.url|achicar:1600 }}"
                  onclick="var u=this.dataset.full; document.getElementById('mainPhoto').src=u; document.getElementById('galleryWrap').style.backgroundImage='url('+u+')'; document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
             {% endfor %}
@@ -454,7 +458,7 @@
           <a href="{% url 'core:parcela_detail' r.slug %}" style="text-decoration:none;">
             <div class="parcela-card">
               {% if r.foto_principal_url %}
-                <img src="{{ r.foto_principal_url }}" class="parcela-card-img" alt="{{ r.nombre }}" loading="lazy">
+                <img src="{{ r.foto_principal_url }}" class="parcela-card-img" alt="{{ r.seo_h1|default:r.nombre }}" loading="lazy">
               {% else %}
                 <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
               {% endif %}
