@@ -70,3 +70,29 @@ def nombre_webp(nombre):
     """'parcelas/290142.jpg' -> '290142.webp' (el upload_to pone la carpeta)."""
     base = nombre.rsplit('/', 1)[-1]
     return (base.rsplit('.', 1)[0] if '.' in base else base) + '.webp'
+
+
+# ---------------------------------------------------------------------------
+# La miniatura al compartir el link (og:image)
+#
+# 13-10-2026, probado por Diego en iPhone y Android: WhatsApp NO muestra la
+# miniatura cuando og:image es WebP. Ese link es la publicidad de Leonardo:
+# lo comparte por WhatsApp, Instagram y Facebook. La foto de la ficha se queda
+# en WebP (pesa la mitad) y la miniatura se arma aparte, en JPEG, al tamaño que
+# piden WhatsApp y Facebook: 1200x630, recortada al centro, bajo 300 KB.
+# ---------------------------------------------------------------------------
+COMPARTIR = (1200, 630)
+LIMITE_COMPARTIR = 300 * 1024
+
+
+def a_jpeg_compartir(origen):
+    """Bytes JPEG de 1200x630 para og:image, recortado al centro y bajo 300 KB."""
+    datos = origen if isinstance(origen, (bytes, bytearray)) else origen.read()
+    img = ImageOps.exif_transpose(Image.open(io.BytesIO(datos))).convert('RGB')
+    img = ImageOps.fit(img, COMPARTIR, Image.LANCZOS, centering=(0.5, 0.5))
+    for calidad in (85, 75, 65, 55):
+        buf = io.BytesIO()
+        img.save(buf, 'JPEG', quality=calidad, optimize=True, progressive=True)
+        if buf.tell() <= LIMITE_COMPARTIR:
+            break
+    return buf.getvalue()

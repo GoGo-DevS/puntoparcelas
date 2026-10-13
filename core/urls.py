@@ -35,6 +35,10 @@ urlpatterns = [
             views.catalogo, name='catalogo_caracteristica'),
     path('catalogo/<slug:slug>/',          views.parcela_detail, name='parcela_detail'),
     path('catalogo/<slug:slug>/geo-pdf/', views.parcela_geo_pdf, name='parcela_geo_pdf'),
+    # La miniatura al compartir, en JPEG: WhatsApp no muestra WebP (13-10-2026).
+    # El punto del nombre impide que la tome el patron de ciudad, que es [-\w]+.
+    path('catalogo/<slug:slug>/compartir.jpg', views.parcela_compartir_jpg,
+         name='parcela_compartir_jpg'),
     # 06/10-2026, documento "Guias informacionales" de Jorge: el sitio tenia 75
     # URLs y todas de catalogo. Estas 14 responden preguntas (15.890 bus/mes) y
     # bajan ese trafico al catalogo. Van ANTES de contacto/links por claridad;

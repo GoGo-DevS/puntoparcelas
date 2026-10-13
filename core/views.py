@@ -664,6 +664,39 @@ def sitemap_xml(request):
     return HttpResponse(xml, content_type='application/xml')
 
 
+def parcela_compartir_jpg(request, slug):
+    """La foto principal en JPEG 1200x630, para og:image. Ver imagenes.a_jpeg_compartir.
+
+    Se arma al pedirla en vez de guardar una segunda copia de cada foto: la
+    piden WhatsApp y Facebook una vez por link (y la guardan en su cache), y
+    asi una parcela nueva la trae sola. Se cachea un dia en el servidor y en
+    quien la pida.
+    """
+    from django.core.cache import cache
+
+    from .imagenes import a_jpeg_compartir
+
+    parcela = get_object_or_404(Parcela, slug=slug)
+    foto = parcela.fotos.filter(principal=True).first() or parcela.fotos.first()
+    if not foto or not foto.imagen:
+        return redirect(static_url('img/logo-tagline.png'))
+
+    clave = f'compartir:{foto.pk}:{foto.imagen.name}'
+    datos = cache.get(clave)
+    if datos is None:
+        try:
+            with foto.imagen.open('rb') as f:
+                datos = a_jpeg_compartir(f.read())
+        except Exception:
+            logger.exception('No se pudo armar la miniatura de %s', slug)
+            return redirect(static_url('img/logo-tagline.png'))
+        cache.set(clave, datos, 60 * 60 * 24)
+
+    response = HttpResponse(datos, content_type='image/jpeg')
+    response['Cache-Control'] = 'public, max-age=86400'
+    return response
+
+
 def parcela_geo_pdf(request, slug):
     """Sirve el plano GEO desde nuestro dominio, venga de donde venga.
 

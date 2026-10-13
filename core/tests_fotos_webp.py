@@ -147,3 +147,37 @@ class ComandoOptimizarFotos(_ConMedia):
 
     def test_el_reporte_dice_que_base_uso(self):
         self.assertIn('Base: sqlite3', self._correr())
+
+
+class MiniaturaAlCompartir(_ConMedia):
+    """13-10: WhatsApp no muestra og:image en WebP (iPhone y Android). Va un JPEG aparte."""
+
+    def setUp(self):
+        super().setUp()
+        self.foto = FotoParcela.objects.create(
+            parcela=self.parcela, principal=True,
+            imagen=SimpleUploadedFile('a.jpg', _foto(3000, 4000), 'image/jpeg'))
+
+    def test_la_foto_guardada_es_webp_pero_og_image_no(self):
+        self.assertTrue(self.foto.imagen.name.endswith('.webp'))
+        html = self.client.get(self.parcela.get_absolute_url()).content.decode('utf8')
+        og = html.split('property="og:image"', 1)[1].split('content="', 1)[1].split('"', 1)[0]
+        self.assertTrue(og.endswith(f'/catalogo/{self.parcela.slug}/compartir.jpg'), og)
+        self.assertTrue(og.startswith('http'), og)  # absoluta: WhatsApp la lee desde afuera
+
+    def test_compartir_jpg_es_jpeg_1200x630_bajo_300_kb(self):
+        r = self.client.get(f'/catalogo/{self.parcela.slug}/compartir.jpg')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r['Content-Type'], 'image/jpeg')
+        img = Image.open(io.BytesIO(r.content))
+        self.assertEqual((img.format, img.size), ('JPEG', (1200, 630)))
+        self.assertLessEqual(len(r.content), 300 * 1024)
+
+    def test_sin_fotos_no_revienta(self):
+        sin = Parcela.objects.create(nombre='Sin fotos', region='maule', precio=1,
+                                     superficie=5000, estado='disponible')
+        r = self.client.get(f'/catalogo/{sin.slug}/compartir.jpg')
+        self.assertEqual(r.status_code, 302)
+
+    def test_slug_inexistente_es_404(self):
+        self.assertEqual(self.client.get('/catalogo/no-existe/compartir.jpg').status_code, 404)

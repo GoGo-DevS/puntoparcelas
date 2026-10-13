@@ -4,12 +4,20 @@
 {% block meta_desc %}{{ parcela.nombre }}, parcela de {{ parcela.superficie_display }} en {{ parcela.get_region_display }}{% if parcela.sector %}, {{ parcela.sector }}{% endif %}. Valor {{ parcela.precio_clp }}. {{ parcela.descripcion|striptags|truncatechars:100 }} Agenda tu visita hoy.{% endblock %}
 {% block og_title %}{{ parcela.seo_h1|default:parcela.nombre }} — {{ parcela.precio_clp }}{% endblock %}
 {% block og_desc %}Parcela de {{ parcela.superficie_display }} en {{ parcela.get_region_display }}{% if parcela.sector %}, {{ parcela.sector }}{% endif %}. {{ parcela.get_estado_display }}. Agenda tu visita con Punto Parcelas.{% endblock %}
-{% block og_image %}{% if parcela.foto_principal_url %}{{ parcela.foto_principal_url }}{% else %}https://puntoparcelas.cl/static/img/og-cover.jpg{% endif %}{% endblock %}
+{% comment %} La miniatura al compartir va en JPEG por una URL propia: WhatsApp no muestra
+   WebP (probado en iPhone y Android el 13-10-2026), y las fotos ahora son WebP.
+   Sin foto cae en la de la config, que antes apuntaba a un og-cover.jpg que nunca existio. {% endcomment %}
+{% block og_image %}{% if parcela.foto_principal_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'core:parcela_compartir_jpg' parcela.slug %}{% else %}{{ OG_IMAGE }}{% endif %}{% endblock %}
 
 {% comment %} El JSON-LD lo pinta base.html desde `schema_json` (17/09-2026). Antes iba
    aca; dejarlo en los dos lados imprimia el mismo bloque dos veces. {% endcomment %}
 
 {% block extra_head %}
+{% if parcela.foto_principal_url %}
+<meta property="og:image:type"   content="image/jpeg">
+<meta property="og:image:width"  content="1200">
+<meta property="og:image:height" content="630">
+{% endif %}
 <style>
   .detail-hero { padding: 7rem 0 3rem; background: var(--pp-surface); border-bottom: 1px solid var(--pp-border); }
   .gallery-wrap {
