@@ -32,6 +32,9 @@
   }
   .gallery-thumb { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:6px; cursor:pointer; opacity:.6; transition:opacity var(--pp-tr); }
   .gallery-thumb:hover, .gallery-thumb.active { opacity:1; }
+  .pp-faq__item { padding:.9rem 0; border-top:1px solid var(--pp-border); }
+  .pp-faq__q { font-size:.95rem; font-weight:700; margin:0 0 .35rem; color:var(--pp-text); line-height:1.4; }
+  .pp-faq__r { margin:0; color:var(--pp-muted); line-height:1.7; font-size:.92rem; }
   .info-card { background:var(--pp-surface); border:1px solid var(--pp-border); border-radius:var(--pp-radius); padding:1.5rem; }
   .attr-badge {
     display:inline-flex; align-items:center; gap:.4rem;
@@ -158,7 +161,23 @@
             linebreaks respeta los párrafos y los saltos que escribe Leonardo en el
             panel. Sin esto el HTML colapsa los saltos y sale todo pegado.
           {% endcomment %}
-          <div class="pp-descripcion" style="color:var(--pp-muted); line-height:1.75;">{{ parcela.descripcion|linebreaks }}</div>
+          <div class="pp-descripcion" style="color:var(--pp-muted); line-height:1.75;">{{ desc_arriba|linebreaks }}</div>
+          {% if preguntas %}
+          {% comment %} Punto 10 de Jorge: las preguntas que Leonardo escribe en la descripcion,
+             cada una como H3, y declaradas en el FAQPage de esta misma pagina. {% endcomment %}
+          <div class="pp-faq mt-4">
+            <h2 style="font-size:1.1rem; margin-bottom:1rem;">Preguntas frecuentes</h2>
+            {% for pregunta, respuesta in preguntas %}
+            <div class="pp-faq__item">
+              <h3 class="pp-faq__q">{{ pregunta }}</h3>
+              <p class="pp-faq__r">{{ respuesta }}</p>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% if desc_abajo %}
+          <div class="pp-descripcion mt-3" style="color:var(--pp-muted); line-height:1.75;">{{ desc_abajo|linebreaks }}</div>
+          {% endif %}
         </div>
         {% endif %}
 

@@ -327,9 +327,16 @@ def parcela_detail(request, slug):
     parcela = get_object_or_404(Parcela, slug=slug)
     form = ConsultaForm(initial={'parcela': parcela.pk})
     zona, similares = _relacionadas(parcela)
+    from . import faq as _faq
+    desc_arriba, preguntas, desc_abajo = _faq.partir(parcela.descripcion)
     return render(request, 'core/parcela_detail.html', {
         'parcela': parcela,
         'form': form,
+        # Punto 10 de Jorge: las preguntas que Leonardo escribe en la
+        # descripcion salen como H3 y con su FAQPage. Ver core/faq.py.
+        'desc_arriba': desc_arriba,
+        'preguntas': preguntas,
+        'desc_abajo': desc_abajo,
         'relacionadas': zona,
         'similares': similares,
         'enlaces_arriba': _enlaces_arriba(parcela),
@@ -337,7 +344,7 @@ def parcela_detail(request, slug):
         # schema. Antes la pantalla decia Inicio / Catalogo / Parcela y el
         # BreadcrumbList pasaba por region y ciudad: dos versiones de lo mismo.
         'migas': _migas_parcela(parcela),
-        'schema_json': _parcela_schema(request, parcela),
+        'schema_json': _parcela_schema(request, parcela, preguntas),
     })
 
 
@@ -415,7 +422,7 @@ def _migas_parcela(parcela):
     return tramos
 
 
-def _parcela_schema(request, parcela):
+def _parcela_schema(request, parcela, preguntas=()):
     """JSON-LD Product+Offer + BreadcrumbList para rich results en Google.
     Se arma con json.dumps (no en el template) para no romper el JSON con
     comillas o saltos de línea de la descripción."""
@@ -486,6 +493,11 @@ def _parcela_schema(request, parcela):
         if imagenes:
             product['image'] = imagenes
         schemas.insert(0, product)
+
+    # FAQPage con las MISMAS preguntas que se dibujan en la ficha: declarar
+    # una que no se ve es marcado engañoso.
+    if preguntas:
+        schemas.append(_seo.schema_preguntas(preguntas))
 
     return _json.dumps(schemas, ensure_ascii=False)
 
