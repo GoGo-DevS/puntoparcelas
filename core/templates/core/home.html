@@ -223,7 +223,7 @@
       <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card anim" data-delay="{{ forloop.counter0 }}00">
         <div class="parcela-card-img-wrap" style="position:relative;">
           {% if p.foto_principal_url %}
-            <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.nombre }}" loading="lazy">
+            <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.seo_h1|default:p.nombre }}" loading="lazy">
           {% else %}
             <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
           {% endif %}
@@ -346,6 +346,18 @@
     </div>
     {% endif %}
 
+    {% if caracteristicas_home %}
+    <div class="home-seo__bloque anim">
+      <h2 class="home-seo__h2">Parcelas por característica</h2>
+      <p class="home-seo__p">Busca según lo que más te importa de tu próxima parcela:</p>
+      <div class="home-seo__regiones">
+        {% for c in caracteristicas_home %}
+        <a class="home-seo__region" href="/catalogo/{{ c.slug }}/">{{ c.nombre }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
     {% if preguntas %}
     <div class="home-seo__bloque anim">
       <h2 class="home-seo__h2">Preguntas frecuentes</h2>
@@ -412,5 +424,37 @@
     </div>
   </div>
 </section>
+
+{% comment %} PREFOOTER (punto 7 de Jorge, referencia parcelasrutachile.cl): todo el catalogo
+   vigente, agrupado por region, a un clic de la portada. Sale de los datos:
+   una parcela nueva aparece sola y una vendida sale sola. {% endcomment %}
+{% if catalogo_prefooter %}
+<section class="prefooter" aria-label="Catálogo completo">
+  <div class="container">
+    <h2 class="prefooter__h2">Nuestro catálogo de parcelas</h2>
+    <div class="prefooter__grid">
+      {% for g in catalogo_prefooter %}
+      <div class="prefooter__grupo">
+        <h3 class="prefooter__h3">{% if g.ruta %}<a href="{{ g.ruta }}">{{ g.h1 }}</a>{% else %}{{ g.h1 }}{% endif %}</h3>
+        <ul class="prefooter__lista">
+          {% for p in g.parcelas %}<li><a href="{{ p.ruta }}">{{ p.nombre }}</a></li>{% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<style>
+  .prefooter { border-top: 1px solid var(--pp-border); padding: 3rem 0 2.5rem; }
+  .prefooter__h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 1.6rem; }
+  .prefooter__grid { display: grid; gap: 1.8rem 2rem; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .prefooter__h3 { font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 .7rem; }
+  .prefooter__h3 a { color: var(--pp-gold); text-decoration: none; }
+  .prefooter__lista { list-style: none; margin: 0; padding: 0; font-size: .82rem; line-height: 1.5; }
+  .prefooter__lista li + li { margin-top: .35rem; }
+  .prefooter__lista a { color: var(--pp-muted); text-decoration: none; }
+  .prefooter__lista a:hover { color: var(--pp-gold); }
+</style>
+{% endif %}
 
 {% endblock %}

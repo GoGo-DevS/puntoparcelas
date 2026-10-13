@@ -1,0 +1,17 @@
+{% comment %} Tarjeta chica de una parcela, para las filas al pie de la ficha. Recibe `r`. {% endcomment %}
+<div class="col-md-4">
+  <a href="{% url 'core:parcela_detail' r.slug %}" style="text-decoration:none;">
+    <div class="parcela-card">
+      {% if r.foto_principal_url %}
+        <img src="{{ r.foto_principal_url }}" class="parcela-card-img" alt="{{ r.seo_h1|default:r.nombre }}" loading="lazy">
+      {% else %}
+        <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
+      {% endif %}
+      <div class="parcela-card-body">
+        <div class="parcela-card-nombre">{{ r.nombre }}</div>
+        <div class="parcela-card-precio">{{ r.precio_clp }}</div>
+        <div class="superficie-badge">{{ r.superficie_display }}{% if r.ciudad %} · {{ r.ciudad }}{% endif %}</div>
+      </div>
+    </div>
+  </a>
+</div>

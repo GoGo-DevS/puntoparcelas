@@ -448,30 +448,34 @@
     {% endif %}
     {% endwith %}
 
-    <!-- RELACIONADAS -->
+    {% comment %} Punto 9 de Jorge: cada ficha enlaza hacia ARRIBA (su comuna y su region)
+       y hacia el LADO (la misma zona, y parcelas parecidas de otras regiones).
+       Antes solo habia "Otras parcelas en la region", sin mirar la comuna. {% endcomment %}
     {% if relacionadas %}
     <div class="mt-5 pt-4" style="border-top:1px solid var(--pp-border);">
-      <h3 style="margin-bottom:1.5rem;">Otras parcelas en {{ parcela.get_region_display }}</h3>
+      <h2 style="font-size:1.35rem; margin-bottom:1.5rem;">Parcelas en la misma zona</h2>
       <div class="row g-3">
-        {% for r in relacionadas %}
-        <div class="col-md-4">
-          <a href="{% url 'core:parcela_detail' r.slug %}" style="text-decoration:none;">
-            <div class="parcela-card">
-              {% if r.foto_principal_url %}
-                <img src="{{ r.foto_principal_url }}" class="parcela-card-img" alt="{{ r.seo_h1|default:r.nombre }}" loading="lazy">
-              {% else %}
-                <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
-              {% endif %}
-              <div class="parcela-card-body">
-                <div class="parcela-card-nombre">{{ r.nombre }}</div>
-                <div class="parcela-card-precio">{{ r.precio_clp }}</div>
-                <div class="superficie-badge">{{ r.superficie_display }}</div>
-              </div>
-            </div>
-          </a>
-        </div>
-        {% endfor %}
+        {% for r in relacionadas %}{% include "core/_parcela_mini.html" %}{% endfor %}
       </div>
+    </div>
+    {% endif %}
+
+    {% if similares %}
+    <div class="mt-5 pt-4" style="border-top:1px solid var(--pp-border);">
+      <h2 style="font-size:1.35rem; margin-bottom:1.5rem;">Parcelas similares en otras regiones</h2>
+      <div class="row g-3">
+        {% for r in similares %}{% include "core/_parcela_mini.html" %}{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if enlaces_arriba %}
+    <div class="mt-4 d-flex flex-wrap gap-2">
+      {% for texto, ruta in enlaces_arriba %}
+      <a href="{{ ruta }}" class="btn-outline-gold" style="font-size:.8rem; padding:.5rem 1rem;">
+        {{ texto }} <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+      {% endfor %}
     </div>
     {% endif %}
 

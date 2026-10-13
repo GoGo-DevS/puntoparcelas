@@ -70,15 +70,22 @@ def home(request):
         if key in con_parcelas
     ]
 
+    caracteristicas = _caracteristicas_con_parcelas()
+
     return render(request, 'core/home.html', {
         'destacadas': destacadas,
         'testimonios': testimonios,
         'regiones_home': regiones,
+        # Punto 1 de Jorge: la home enlaza a cada pagina por caracteristica.
+        # Hasta hoy la unica que recibia enlace desde la portada era "parcelas
+        # baratas", y solo porque el texto la nombraba.
+        'caracteristicas_home': caracteristicas,
+        'catalogo_prefooter': _catalogo_por_region(),
         # Las caracteristicas que HOY tienen parcelas. El texto de la home
         # enlaza a "parcelas baratas", y esa pagina es 404 cuando ninguna
         # parcela cumple el filtro -- justo lo que se vino a evitar con las
         # regiones. Lo cazo el barrido de enlaces de tests_home_seo.
-        'bloques_seo': _ch.bloques_visibles(_caracteristicas_con_parcelas()),
+        'bloques_seo': _ch.bloques_visibles(caracteristicas),
         'vinetas_seo': _ch.VINETAS,
         'preguntas': _ch.preguntas_visibles(),
         # El negocio se declara SOLO aca (punto 2.2 de Jorge). Hasta el 17-09
@@ -90,6 +97,34 @@ def home(request):
             _seo.schema_preguntas(_ch.preguntas_planas()),
         ]),
     })
+
+
+def _catalogo_por_region():
+    """Todo el catalogo vigente agrupado por region, para el prefooter de la home.
+
+    Punto 7 de Jorge (05-10-2026), con parcelasrutachile.cl de referencia:
+    cada ficha queda a UN clic de la portada, que es la pagina con mas
+    autoridad del sitio. Las vendidas no entran: el bloque es "lo que hay".
+    Una sola consulta; el agrupado se hace aca.
+    """
+    etiquetas = {key: (slug, h1) for slug, (key, _t, h1) in REGIONES_SEO.items()}
+    orden = {key: i for i, (key, _l) in enumerate(REGIONES)}
+    filas = (Parcela.objects.exclude(estado='vendida')
+             .values('slug', 'nombre', 'seo_h1', 'region'))
+    grupos = {}
+    for f in filas:
+        grupos.setdefault(f['region'], []).append(
+            {'ruta': f"/catalogo/{f['slug']}/", 'nombre': f['nombre']})
+    salida = []
+    for key in sorted(grupos, key=lambda k: orden.get(k, 99)):
+        slug, h1 = etiquetas.get(key, (None, None))
+        salida.append({
+            'h1': h1 or dict(REGIONES).get(key, key),
+            # 'otro' no tiene pagina de region: va sin enlace en el titulo.
+            'ruta': f'/catalogo/{slug}/' if slug else None,
+            'parcelas': sorted(grupos[key], key=lambda p: p['nombre'].lower()),
+        })
+    return salida
 
 
 def _caracteristicas_con_parcelas():
@@ -291,21 +326,70 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
 def parcela_detail(request, slug):
     parcela = get_object_or_404(Parcela, slug=slug)
     form = ConsultaForm(initial={'parcela': parcela.pk})
-    relacionadas = (
-        Parcela.objects
-        .filter(region=parcela.region, estado='disponible')
-        .exclude(pk=parcela.pk)[:3]
-    )
+    zona, similares = _relacionadas(parcela)
     return render(request, 'core/parcela_detail.html', {
         'parcela': parcela,
         'form': form,
-        'relacionadas': relacionadas,
+        'relacionadas': zona,
+        'similares': similares,
+        'enlaces_arriba': _enlaces_arriba(parcela),
         # Punto 5 de Jorge: las migas que se VEN son las mismas que declara el
         # schema. Antes la pantalla decia Inicio / Catalogo / Parcela y el
         # BreadcrumbList pasaba por region y ciudad: dos versiones de lo mismo.
         'migas': _migas_parcela(parcela),
         'schema_json': _parcela_schema(request, parcela),
     })
+
+
+def _relacionadas(parcela, cuantas=3):
+    """Las dos filas de fichas al pie de una ficha (punto 9 de Jorge).
+
+    `zona`: la misma region, y dentro de ella primero las de la MISMA comuna.
+    Antes eran tres cualquiera de la region, sin mirar la comuna.
+    `similares`: de OTRAS regiones y con el precio mas parecido, en la misma
+    moneda (comparar pesos con UF no dice nada). Nunca repiten una de `zona`.
+    Solo disponibles: recomendar algo que no se puede comprar es un clic perdido.
+    """
+    from django.db.models import Case, F, IntegerField, Value, When
+    from django.db.models.functions import Abs
+
+    vivas = Parcela.objects.filter(estado='disponible').exclude(pk=parcela.pk)
+    ciudad = (parcela.ciudad or '').strip()
+    # Sin comuna no hay nada que priorizar: `__iexact=''` calzaria con todas
+    # las que tampoco tienen, que no son "de la misma comuna".
+    misma_comuna = (Case(When(ciudad__iexact=ciudad, then=Value(0)),
+                         default=Value(1), output_field=IntegerField())
+                    if ciudad else Value(1, output_field=IntegerField()))
+    zona = list(
+        vivas.filter(region=parcela.region)
+        .annotate(misma_comuna=misma_comuna)
+        .order_by('misma_comuna', '-destacada', 'precio')[:cuantas]
+    )
+    similares = []
+    if parcela.precio:
+        similares = list(
+            vivas.exclude(region=parcela.region)
+            .filter(moneda=parcela.moneda, precio__gt=0)
+            .annotate(distancia=Abs(F('precio') - parcela.precio))
+            .order_by('distancia')[:cuantas]
+        )
+    return zona, similares
+
+
+def _enlaces_arriba(parcela):
+    """Los enlaces de la ficha HACIA ARRIBA: su comuna y su region."""
+    from . import seo as _seo
+
+    slug_region = REGION_KEY_A_SLUG.get(parcela.region)
+    if not slug_region:
+        return []
+    enlaces = []
+    slug_c = _seo.slug_ciudad(parcela.ciudad)
+    if slug_c:
+        enlaces.append((f'Parcelas en {parcela.ciudad.strip()}',
+                        _seo.ruta_ciudad(slug_region, slug_c)))
+    enlaces.append((REGIONES_SEO[slug_region][2], _seo.ruta_region(slug_region)))
+    return enlaces
 
 
 def _migas_parcela(parcela):
