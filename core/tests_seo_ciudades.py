@@ -103,8 +103,9 @@ class CiudadesYSchemas(TestCase):
         migas = [s for s in _schemas(self.client.get(self.frutillar.get_absolute_url()))
                  if s['@type'] == 'BreadcrumbList'][0]
         nombres = [i['name'] for i in migas['itemListElement']]
-        self.assertEqual(nombres, ['Inicio', 'Catálogo', 'Los Lagos', 'Frutillar',
-                                   'Parcela junto al lago'])
+        # 13-10-2026, Jorge: cada tramo es el H1 de la pagina a la que lleva.
+        self.assertEqual(nombres, ['Inicio', 'Catálogo', 'Parcelas en Los Lagos',
+                                   'Parcelas en Frutillar', 'Parcela junto al lago'])
 
     # --- punto 2.2: el negocio SOLO en la home -----------------------------
     def test_el_negocio_se_declara_en_la_home(self):

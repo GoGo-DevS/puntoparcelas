@@ -54,6 +54,12 @@ def ciudades_de_region(region, solo_disponibles=False):
     return sorted(cuenta.values(), key=lambda c: (-c['total'], c['nombre']))
 
 
+def h1_ciudad(nombre):
+    """El H1 de la pagina de una ciudad. Unica fuente: la pagina y las migas
+    que apuntan a ella lo leen de aca (Jorge, 13-10-2026: la miga es el H1)."""
+    return f'Parcelas en {nombre}'
+
+
 def ciudad_por_slug(region, slug):
     """El nombre real de la ciudad a partir del slug de la URL, o None.
 

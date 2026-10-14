@@ -213,7 +213,7 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
         qs = qs.filter(ciudad__iexact=ciudad_nombre)
         etiqueta_region = _seo.REGION_LABEL.get(region, region)
         seo_title = f'Parcelas en venta en {ciudad_nombre}, {etiqueta_region} | Punto Parcelas'
-        seo_h1 = f'Parcelas en {ciudad_nombre}'
+        seo_h1 = _seo.h1_ciudad(ciudad_nombre)
 
     if q:
         qs = qs.filter(Q(nombre__icontains=q) | Q(sector__icontains=q) | Q(descripcion__icontains=q))
@@ -254,14 +254,17 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
     ciudades = _seo.ciudades_de_region(region) if (region_url and not ciudad_url) else []
 
     etiqueta_region = _seo.REGION_LABEL.get(region, region) if region else None
+    # Cada miga es el H1 de la pagina a la que lleva (Jorge, 13-10-2026):
+    # "Parcelas en Los Lagos", no "Los Lagos". Sale de la misma fuente que el
+    # H1, asi que si un H1 cambia la miga lo sigue sola.
     tramos = [('Catálogo', '/catalogo/')]
     ruta_actual = '/catalogo/'
     if region_url:
         ruta_actual = _seo.ruta_region(region_url)
-        tramos.append((etiqueta_region, ruta_actual))
+        tramos.append((REGIONES_SEO[region_url][2], ruta_actual))
     if ciudad_url:
         ruta_actual = _seo.ruta_ciudad(region_url, ciudad_url)
-        tramos.append((ciudad_nombre, ruta_actual))
+        tramos.append((_seo.h1_ciudad(ciudad_nombre), ruta_actual))
     if caracteristica_url:
         ruta_actual = f'/catalogo/{caracteristica_url}/'
         tramos.append((seo_h1, ruta_actual))
@@ -403,21 +406,23 @@ def _migas_parcela(parcela):
     """[(nombre, ruta)] de la ficha, sin Inicio: Catalogo > Region > Ciudad > H1.
 
     17/09-2026: la miga pasa por REGION y CIUDAD (antes saltaba justo los dos
-    niveles a los que Jorge quiere traspasar autoridad). 13-10: el ultimo tramo
-    es el H1 de la ficha, la keyword que Jorge trabaja, y no el nombre corto.
+    niveles a los que Jorge quiere traspasar autoridad).
+    13-10, feedback de Jorge: CADA tramo es el H1 de la pagina a la que lleva
+    ("Parcelas en Los Lagos / Parcelas en Frutillar / <H1 de la ficha>"), no
+    el nombre suelto. Sale de la misma fuente que esos H1, asi que se mantiene solo.
     """
     from . import seo as _seo
 
     tramos = [('Catálogo', '/catalogo/')]
     slug_region = REGION_KEY_A_SLUG.get(parcela.region)
     if slug_region:
-        tramos.append((_seo.REGION_LABEL.get(parcela.region, parcela.region),
-                       _seo.ruta_region(slug_region)))
+        tramos.append((REGIONES_SEO[slug_region][2], _seo.ruta_region(slug_region)))
         # La pagina de la ciudad existe siempre que la ficha tenga ciudad: la
         # propia parcela es la que la mantiene viva (vendidas incluidas).
         slug_c = _seo.slug_ciudad(parcela.ciudad)
         if slug_c:
-            tramos.append((parcela.ciudad.strip(), _seo.ruta_ciudad(slug_region, slug_c)))
+            tramos.append((_seo.h1_ciudad(parcela.ciudad.strip()),
+                           _seo.ruta_ciudad(slug_region, slug_c)))
     tramos.append((parcela.seo_h1 or parcela.nombre, parcela.get_absolute_url()))
     return tramos
 

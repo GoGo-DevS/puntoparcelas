@@ -83,13 +83,24 @@ class MigasVisibles(TestCase):
         self.assertIn('href="/catalogo/valparaiso/santo-domingo/"', nav)
         self.assertIn('Parcela en Santo Domingo con vista al mar', nav)
 
+    def test_cada_miga_es_el_h1_de_su_pagina(self):
+        # Feedback de Jorge del 13-10: "Parcelas en Valparaíso", no "Valparaíso".
+        # Se compara contra el H1 SERVIDO de cada pagina, no contra un texto fijo.
+        html = self.client.get(self.p.get_absolute_url()).content.decode('utf8')
+        nav = html[html.index('aria-label="Migas"'):]
+        nav = nav[:nav.index('</nav>')]
+        for ruta in ('/catalogo/valparaiso/', '/catalogo/valparaiso/santo-domingo/'):
+            pagina = self.client.get(ruta).content.decode('utf8')
+            h1 = pagina.split('<h1', 1)[1].split('>', 1)[1].split('<', 1)[0].strip()
+            self.assertIn(f'href="{ruta}" style="color:var(--pp-muted); text-decoration:none;">{h1}</a>', nav)
+
     def test_los_enlaces_de_las_migas_no_dan_404(self):
         for ruta in ('/catalogo/valparaiso/', '/catalogo/valparaiso/santo-domingo/'):
             self.assertEqual(self.client.get(ruta).status_code, 200, ruta)
 
     def test_el_schema_dice_lo_mismo_que_la_pantalla(self):
         html = self.client.get(self.p.get_absolute_url()).content.decode('utf8')
-        self.assertIn('"name": "Santo Domingo"', html)
+        self.assertIn('"name": "Parcelas en Santo Domingo"', html)
         self.assertIn('"name": "Parcela en Santo Domingo con vista al mar"', html)
 
     def test_una_ficha_sin_ciudad_salta_ese_tramo(self):
