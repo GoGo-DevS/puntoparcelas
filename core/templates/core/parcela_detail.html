@@ -41,7 +41,12 @@
   .gallery-thumb { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:6px; cursor:pointer; opacity:.6; transition:opacity var(--pp-tr); }
   .gallery-thumb:hover, .gallery-thumb.active { opacity:1; }
   .pp-faq__item { padding:.9rem 0; border-top:1px solid var(--pp-border); }
-  .pp-faq__q { font-size:.95rem; font-weight:700; margin:0 0 .35rem; color:var(--pp-text); line-height:1.4; }
+  .pp-faq__item summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+  .pp-faq__item summary::-webkit-details-marker { display:none; }
+  .pp-faq__item summary::after { content:'+'; color:var(--pp-gold); font-size:1.3rem; font-weight:700; line-height:1; flex-shrink:0; }
+  .pp-faq__item[open] summary::after { content:'\2212'; }
+  .pp-faq__item[open] .pp-faq__q { margin-bottom:.5rem; }
+  .pp-faq__q { font-size:.95rem; font-weight:700; margin:0; color:var(--pp-text); line-height:1.4; }
   .pp-faq__r { margin:0; color:var(--pp-muted); line-height:1.7; font-size:.92rem; }
   .info-card { background:var(--pp-surface); border:1px solid var(--pp-border); border-radius:var(--pp-radius); padding:1.5rem; }
   .attr-badge {
@@ -102,6 +107,28 @@
     border-radius: 8px; padding: .6rem 1.1rem;
     font-family: 'Montserrat', sans-serif; font-weight: 800;
     font-size: 1rem; color: var(--pp-gold); margin-bottom: 1.2rem;
+  }
+  .pp-btn-agendar {
+    display:flex; align-items:center; justify-content:center; gap:.55rem;
+    width:100%; padding:.85rem 1rem; border-radius:10px;
+    background:#25D366; color:#fff; text-decoration:none;
+    font-family:'Montserrat',sans-serif; font-weight:800; font-size:.95rem;
+    box-shadow:0 4px 18px rgba(37,211,102,.3); transition:transform var(--pp-tr);
+  }
+  .pp-btn-agendar:hover { color:#fff; transform:translateY(-1px); }
+  .pp-btn-agendar i { font-size:1.2rem; }
+  /* En el celular la barra lateral queda al final de la ficha: el boton de
+     agendar se fija abajo para que este siempre a mano. Reemplaza al boton
+     redondo general de WhatsApp en esta pagina, que quedaba encima. */
+  .pp-agendar-movil { display:none; }
+  @media (max-width: 991.98px) {
+    .pp-agendar-movil {
+      display:block; position:fixed; left:0; right:0; bottom:0; z-index:998;
+      padding:.65rem 1rem calc(.65rem + env(safe-area-inset-bottom));
+      background:rgba(10,10,10,.94); border-top:1px solid var(--pp-border);
+    }
+    .wa-float { display:none !important; }
+    body { padding-bottom:4.6rem; }
   }
   .contado-badge span { font-size: .75rem; font-weight: 500; color: var(--pp-muted); text-transform: uppercase; letter-spacing: .05em; }
 </style>
@@ -170,19 +197,6 @@
             panel. Sin esto el HTML colapsa los saltos y sale todo pegado.
           {% endcomment %}
           <div class="pp-descripcion" style="color:var(--pp-muted); line-height:1.75;">{{ desc_arriba|linebreaks }}</div>
-          {% if preguntas %}
-          {% comment %} Punto 10 de Jorge: las preguntas que Leonardo escribe en la descripcion,
-             cada una como H3, y declaradas en el FAQPage de esta misma pagina. {% endcomment %}
-          <div class="pp-faq mt-4">
-            <h2 style="font-size:1.1rem; margin-bottom:1rem;">Preguntas frecuentes</h2>
-            {% for pregunta, respuesta in preguntas %}
-            <div class="pp-faq__item">
-              <h3 class="pp-faq__q">{{ pregunta }}</h3>
-              <p class="pp-faq__r">{{ respuesta }}</p>
-            </div>
-            {% endfor %}
-          </div>
-          {% endif %}
           {% if desc_abajo %}
           <div class="pp-descripcion mt-3" style="color:var(--pp-muted); line-height:1.75;">{{ desc_abajo|linebreaks }}</div>
           {% endif %}
@@ -251,6 +265,22 @@
           }
         })();
         </script>
+        {% endif %}
+
+        {% if preguntas %}
+        {% comment %} Punto 10 de Jorge (05-10): cada pregunta es un H3 y va declarada en el
+           FAQPage de esta pagina. Minuta del 27-10: debajo del video y en desplegable,
+           en todas las fichas. El texto esta en el HTML aunque este cerrado, asi que
+           Google lo sigue leyendo y el FAQPage sigue calzando con lo visible. {% endcomment %}
+        <div class="pp-faq mt-4">
+          <h2 style="font-size:1.1rem; margin-bottom:1rem;">Preguntas frecuentes</h2>
+          {% for pregunta, respuesta in preguntas %}
+          <details class="pp-faq__item">
+            <summary><h3 class="pp-faq__q">{{ pregunta }}</h3></summary>
+            <p class="pp-faq__r">{{ respuesta }}</p>
+          </details>
+          {% endfor %}
+        </div>
         {% endif %}
 
         {% if parcela.mapa_embed_url or parcela.mapa_url %}
@@ -377,8 +407,16 @@
           </table>
         </div>
 
-        <div class="info-card">
-          <h4 style="font-size:1rem; margin-bottom:1rem;">Consultar por esta parcela</h4>
+        {% comment %} Minuta 27-10 y Leonardo 30-10: lo que mas importa es que agenden
+           visita. El boton va primero y el mensaje llega con la parcela escrita
+           (views._wa_visita); el formulario queda para quien prefiere que lo llamen. {% endcomment %}
+        <div class="info-card pp-agendar">
+          <h4 style="font-size:1.05rem; margin-bottom:.4rem;"><i class="bi bi-calendar-check me-2" style="color:var(--pp-gold);"></i>Agenda tu visita</h4>
+          <p style="font-size:.86rem; color:var(--pp-muted); margin-bottom:1rem;">Conoce {{ parcela.nombre }} en terreno. Escríbenos y coordinamos el día.</p>
+          <a href="{{ wa_visita }}" target="_blank" rel="noopener" class="pp-btn-agendar">
+            <i class="bi bi-whatsapp"></i>Agendar visita por WhatsApp
+          </a>
+          <div style="font-size:.8rem; color:var(--pp-muted); text-align:center; margin:1.1rem 0 .8rem;">¿Prefieres que te llamemos? Déjanos tus datos</div>
           <form method="post" action="{% url 'core:reserva' %}">
             {% csrf_token %}
             <input type="hidden" name="parcela" value="{{ parcela.pk }}">
@@ -391,20 +429,13 @@
                      style="background:var(--pp-surface2); border-color:var(--pp-border); color:var(--pp-text);">
             </div>
             <div class="mb-3">
-              <textarea name="mensaje" class="form-control" rows="3" placeholder="¿Qué te interesa saber de esta parcela?"
+              <textarea name="mensaje" class="form-control" rows="3" placeholder="¿Qué día te acomoda visitar? ¿Alguna duda de la parcela?"
                         style="background:var(--pp-surface2); border-color:var(--pp-border); color:var(--pp-text);"></textarea>
             </div>
             <button type="submit" class="btn-gold w-100" style="padding:.75rem;">
-              <i class="bi bi-send me-2"></i>Enviar consulta
+              <i class="bi bi-telephone me-2"></i>Quiero que me llamen
             </button>
           </form>
-          <div class="text-center mt-3">
-            <span style="font-size:.8rem; color:var(--pp-muted);">o contacta directo</span>
-            <br>
-            <a href="{{ WA_LINK }}" target="_blank" class="btn-outline-gold mt-2 w-100 text-center" style="padding:.65rem;">
-              <i class="bi bi-whatsapp me-2"></i>WhatsApp a Leonardo
-            </a>
-          </div>
         </div>
         </div>{# /detail-sidebar #}
       </div>
@@ -508,4 +539,10 @@
 
   </div>
 </section>
+
+<div class="pp-agendar-movil">
+  <a href="{{ wa_visita }}" target="_blank" rel="noopener" class="pp-btn-agendar">
+    <i class="bi bi-whatsapp"></i>Agendar visita
+  </a>
+</div>
 {% endblock %}

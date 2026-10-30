@@ -64,6 +64,11 @@ def _regiones_footer():
             for slug, (key, _t, h1) in REGIONES_SEO.items() if key in con_parcelas]
 
 
+# El WhatsApp de Leonardo, en un solo lugar: lo usan el boton general y el
+# de agendar visita de cada ficha (views._wa_visita).
+WA_NUMERO = '56964090173'
+
+
 def site_globals(request):
     # La config se lee una vez por request. Si la tabla todavia no existe
     # (primer deploy, antes de migrar) se devuelve None y las plantillas
@@ -73,8 +78,8 @@ def site_globals(request):
     except Exception:
         cfg = None
     return {
-        'WA_NUMERO': '56964090173',
-        'WA_LINK': 'https://wa.me/56964090173?text=Hola%20Leonardo%2C%20quiero%20consultar%20por%20una%20parcela.',
+        'WA_NUMERO': WA_NUMERO,
+        'WA_LINK': f'https://wa.me/{WA_NUMERO}?text=Hola%20Leonardo%2C%20quiero%20consultar%20por%20una%20parcela.',
         'EMAIL_CONTACTO': 'Contacto@puntoparcelas.cl',
         'SLOGAN': 'Tu inversión hoy, tu patrimonio mañana.',
         'SITE_CONFIG': cfg,

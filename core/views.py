@@ -216,7 +216,9 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
         seo_h1 = _seo.h1_ciudad(ciudad_nombre)
 
     if q:
-        qs = qs.filter(Q(nombre__icontains=q) | Q(sector__icontains=q) | Q(descripcion__icontains=q))
+        # Sin tildes, sin puntuacion y con errores de tipeo (Leo, 30-10-2026).
+        from . import busqueda
+        qs = busqueda.filtrar(qs, q)
 
     paginator = Paginator(qs, 15)
     page_obj = paginator.get_page(request.GET.get('page'))
@@ -348,7 +350,24 @@ def parcela_detail(request, slug):
         # BreadcrumbList pasaba por region y ciudad: dos versiones de lo mismo.
         'migas': _migas_parcela(parcela),
         'schema_json': _parcela_schema(request, parcela, preguntas),
+        'wa_visita': _wa_visita(request, parcela),
     })
+
+
+def _wa_visita(request, parcela):
+    """WhatsApp a Leonardo con la parcela ya escrita.
+
+    Minuta del 27-10-2026 y Leonardo el 30-10: "lo que mas me interesa es
+    promover el agendamiento de visitas". El boton general decia "quiero
+    consultar por una parcela" sin decir cual, y la primera pregunta de
+    Leonardo era siempre esa. Ahora el mensaje llega con el nombre y el link.
+    """
+    from urllib.parse import quote
+
+    from .context_processors import WA_NUMERO
+    texto = (f'Hola Leonardo, quiero agendar una visita a {parcela.nombre}. '
+             f'{request.build_absolute_uri(parcela.get_absolute_url())}')
+    return f'https://wa.me/{WA_NUMERO}?text={quote(texto)}'
 
 
 def _relacionadas(parcela, cuantas=3):
