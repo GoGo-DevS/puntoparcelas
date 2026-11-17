@@ -1,5 +1,9 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from django.conf import settings
 from django.templatetags.static import static
+from django.utils import timezone
 
 from .models import SiteConfig
 
@@ -86,4 +90,29 @@ def site_globals(request):
         'OG_IMAGE': _og_image(request, cfg),
         'GA4_IDS': _ga4_ids(cfg),
         'REGIONES_FOOTER': _regiones_footer(),
+    }
+
+
+# ── NAVIDAD 2026 (v2, 17-11-2026) ────────────────────────────────────────────
+# La decoracion de Navidad la decide el SERVIDOR, no un script: asi la franja
+# de saludo es parte del HTML desde el primer pintado (no mueve el contenido)
+# y funciona sin JS. Fuera de la ventana no se manda ni una linea de ella.
+# Regalo de la mantencion, aceptado por Leonardo; sin precios ni ofertas.
+_SANTIAGO = ZoneInfo('America/Santiago')
+NAVIDAD_INICIO = datetime(2026, 11, 16, 0, 0, 0, tzinfo=_SANTIAGO)
+NAVIDAD_FIN = datetime(2026, 12, 26, 23, 59, 59, tzinfo=_SANTIAGO)
+
+
+def _ahora():
+    return timezone.now()
+
+
+def navidad(request):
+    ahora = _ahora()
+    activa = NAVIDAD_INICIO <= ahora <= NAVIDAD_FIN
+    return {
+        'NAVIDAD': activa,
+        # Cuanto falta para que termine, para que una pestana abierta se apague
+        # sola sin depender del reloj del computador de la persona.
+        'NAVIDAD_FALTA_MS': int((NAVIDAD_FIN - ahora).total_seconds() * 1000) if activa else 0,
     }

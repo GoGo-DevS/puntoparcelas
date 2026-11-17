@@ -1,0 +1,256 @@
+/* ===========================================================================
+   NAVIDAD 2026 (v2, 17-11-2026) -- Punto Parcelas
+   ---------------------------------------------------------------------------
+   Este archivo SOLO se carga entre el 16-11-2026 00:00 y el 26-12-2026
+   23:59:59 (hora de Chile): lo decide el servidor (core.context_processors.
+   navidad) y lo enlaza core/templates/core/_navidad.html. Fuera de fecha no
+   llega ni una linea. Ademas todo cuelga de html.pp-navidad, para que el
+   script pueda apagarla con la pestana abierta al terminar.
+
+   Lo FIJO (franja, guirnalda con esferas, nieve acumulada, gorros, mono) se
+   ve tambien con "reducir movimiento". Lo ANIMADO (nieve que cae, titileo de
+   las luces) se apaga con prefers-reduced-motion.
+
+   Reglas: nada recibe clics (pointer-events:none) y nada mueve el contenido
+   despues del primer pintado. La guirnalda cuelga bajo el menu SOLO arriba
+   de la pagina (donde se le reservo espacio); al bajar se cambia por una
+   tira fina dentro del menu, para no tapar las fotos ni el buscador.
+
+   Colores: verde pino del logo, dorado de la marca, rojo y blanco calido.
+   Los dibujos son SVG en linea (sin imagenes ni librerias).
+   =========================================================================== */
+
+html.pp-navidad {
+  --pp-franja-h: 36px;   /* alto de la franja de saludo */
+  --pp-cuelga: 56px;     /* cuanto cuelga la guirnalda bajo el menu */
+}
+@media (min-width: 1200px) {
+  html.pp-navidad { --pp-franja-h: 40px; --pp-cuelga: 67px; }
+}
+@media (max-width: 767.98px) {
+  html.pp-navidad { --pp-franja-h: 32px; --pp-cuelga: 43px; }
+}
+
+/* --- Franja de saludo (la pone el servidor arriba del todo) ----------------- */
+.pp-franja-navidad { display: none; }
+html.pp-navidad .pp-franja-navidad {
+  display: flex; align-items: center; justify-content: center; gap: .7rem;
+  position: relative; z-index: 1;
+  height: var(--pp-franja-h);
+  padding: 0 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 36' width='120' height='36'%3E%3Cpath d='M14.0 9.0L18.0 9.0M14.0 9.0L16.0 12.5M14.0 9.0L12.0 12.5M14.0 9.0L10.0 9.0M14.0 9.0L12.0 5.5M14.0 9.0L16.0 5.5' stroke='%23F0EDE4' stroke-width='1.0' stroke-linecap='round' opacity='0.22'/%3E%3Cpolygon points='44.0,22.8 44.8,24.8 47.0,25.0 45.4,26.4 45.9,28.6 44.0,27.4 42.1,28.6 42.6,26.4 41.0,25.0 43.2,24.8' fill='%23E9C75A' opacity='0.35'/%3E%3Cpath d='M78.0 12.0L81.0 12.0M78.0 12.0L79.5 14.6M78.0 12.0L76.5 14.6M78.0 12.0L75.0 12.0M78.0 12.0L76.5 9.4M78.0 12.0L79.5 9.4' stroke='%23F0EDE4' stroke-width='1.0' stroke-linecap='round' opacity='0.18'/%3E%3Cpolygon points='104.0,5.6 104.6,7.1 106.3,7.3 105.0,8.3 105.4,9.9 104.0,9.1 102.6,9.9 103.0,8.3 101.7,7.3 103.4,7.1' fill='%23E9C75A' opacity='0.3'/%3E%3Cpath d='M96.0 27.0L99.6 27.0M96.0 27.0L97.8 30.1M96.0 27.0L94.2 30.1M96.0 27.0L92.4 27.0M96.0 27.0L94.2 23.9M96.0 27.0L97.8 23.9' stroke='%23F0EDE4' stroke-width='1.0' stroke-linecap='round' opacity='0.2'/%3E%3C/svg%3E") repeat-x center / 120px 36px,
+    linear-gradient(90deg, #08301E 0%, #135437 50%, #08301E 100%);
+  border-bottom: 1px solid rgba(212,175,55,.6);
+  pointer-events: none;
+}
+html.pp-navidad .pp-franja-navidad__texto {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500; font-size: 14px; line-height: 1;
+  letter-spacing: .02em;
+  color: #F0EDE4;
+  overflow: hidden; text-overflow: ellipsis;
+}
+html.pp-navidad .pp-franja-navidad__texto strong { color: #F2D16B; font-weight: 800; letter-spacing: .03em; }
+html.pp-navidad .pp-franja-navidad__acebo {
+  flex: none; width: 31px; height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 26'%3E%3Cpath d='M20 14C14 4 6 3 2 6c3 1 4 4 3 6 3-1 5 1 5 4 3-2 6-1 10-2z' fill='%232E9A5C'/%3E%3Cpath d='M20 14C26 4 34 3 38 6c-3 1-4 4-3 6-3-1-5 1-5 4-3-2-6-1-10-2z' fill='%231E7A47'/%3E%3Cpath d='M20 14C15 8 9 6 5 7M20 14c5-6 11-8 15-7' stroke='%230B3F25' stroke-width='.8' fill='none'/%3E%3Ccircle cx='17' cy='16' r='3.6' fill='%23D7263D'/%3E%3Ccircle cx='23' cy='16' r='3.6' fill='%23C8303C'/%3E%3Ccircle cx='20' cy='11.5' r='3.6' fill='%23E04A52'/%3E%3Ccircle cx='16' cy='15' r='1' fill='%23fff' opacity='.7'/%3E%3Ccircle cx='22' cy='15' r='1' fill='%23fff' opacity='.7'/%3E%3Ccircle cx='19' cy='10.5' r='1' fill='%23fff' opacity='.7'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+html.pp-navidad .pp-franja-navidad__acebo--der { transform: scaleX(-1); }
+@media (min-width: 1200px) {
+  html.pp-navidad .pp-franja-navidad__texto { font-size: 15.5px; }
+  html.pp-navidad .pp-franja-navidad__acebo { width: 36px; height: 23px; }
+}
+@media (max-width: 767.98px) {
+  html.pp-navidad .pp-franja-navidad { gap: .45rem; }
+  html.pp-navidad .pp-franja-navidad__texto { font-size: 12px; }
+  html.pp-navidad .pp-franja-navidad__acebo { width: 25px; height: 16px; }
+}
+@media (max-width: 350px) {
+  html.pp-navidad .pp-franja-navidad__acebo { display: none; }
+}
+
+/* --- El menu fijo baja lo que mide la franja y sube al primer scroll ---------
+   transform y no top: moverlo con transform no cuenta como corrimiento. */
+html.pp-navidad .pp-nav {
+  transform: translateY(var(--pp-franja-h));
+  transition: background .22s ease, padding .22s ease, backdrop-filter .22s ease, transform .35s ease;
+}
+html.pp-navidad .pp-nav.scrolled { transform: none; }
+
+/* --- Espacio para la guirnalda arriba de cada pagina -------------------------
+   Cada pagina ya dejaba libre el alto del menu; aca se suma lo que cuelga la
+   guirnalda para que no tape ningun titulo. Solo mientras dure la Navidad. */
+html.pp-navidad .hero-content { padding-top: calc(8rem + var(--pp-cuelga)); }
+html.pp-navidad .catalog-hero-content,
+html.pp-navidad .reserva-hero-content { padding-top: calc(6rem + var(--pp-cuelga)); }
+html.pp-navidad .detail-hero { padding-top: calc(7rem + var(--pp-cuelga)); }
+html.pp-navidad .guia,
+html.pp-navidad .guias-ix { padding-top: calc(8rem + var(--pp-cuelga)); }
+@media (max-width: 480px) {
+  html.pp-navidad .guia,
+  html.pp-navidad .guias-ix { padding-top: calc(6.5rem + var(--pp-cuelga)); }
+}
+
+/* --- Guirnalda de pino con nieve, esferas y luces ---------------------------- */
+.pp-guirnalda { display: none; }
+html.pp-navidad .pp-guirnalda {
+  display: block;
+  position: absolute; left: 0; right: 0;
+  top: calc(100% - 14px);
+  height: 70px;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 40' width='160' height='40'%3E%3Cpath d='M0 24H160' stroke='%238A6D12' stroke-width='1.2' opacity='.6'/%3E%3Cpath d='M72.4 24.3L73.5 37.3M94.0 22.4L89.4 36.4M15.1 23.0L24.8 12.7M6.7 26.4L1.7 39.2M25.2 21.6L35.1 26.9M38.7 21.7L40.9 36.5M83.1 24.7L78.1 36.5M44.5 26.5L34.0 36.1M50.4 22.6L37.8 15.4M64.1 25.7L77.6 19.2M0.1 22.5L1.2 38.3M63.6 21.9L56.2 31.0M13.9 23.2L7.6 31.9M39.4 22.0L46.8 13.6M89.5 23.7L95.3 14.5M103.0 22.1L95.4 13.1M-4.7 25.5L4.5 18.8M155.3 25.5L164.5 18.8M63.1 25.8L76.2 34.7M34.1 22.8L38.9 33.6M11.7 22.0L19.8 33.0M59.5 23.8L60.0 37.2M138.6 22.4L151.2 14.3M39.9 22.4L30.0 27.8M152.0 25.9L154.1 36.5M6.2 26.3L11.8 16.1M131.8 24.5L121.6 14.4M11.0 22.6L0.6 31.6M44.8 26.1L34.0 21.6M71.3 21.8L67.1 9.0M21.1 23.3L8.2 28.7M110.6 24.4L101.3 20.1M145.6 25.0L158.4 30.4M77.2 25.2L87.1 21.5M87.4 25.2L79.6 37.1M126.9 26.1L133.6 12.2M139.4 23.6L128.9 32.1M100.0 23.4L97.2 33.7M102.3 26.5L95.7 37.0M117.6 24.4L125.4 17.2M120.0 21.6L120.6 33.1M111.7 24.0L101.8 30.0M1.8 23.0L9.2 31.3M144.9 24.8L154.8 17.9M106.5 22.5L117.1 11.2' stroke='%230A3A22' stroke-width='2.6' stroke-linecap='round' fill='none'/%3E%3Cpath d='M140.8 23.4L145.1 32.3M79.4 25.7L72.5 37.9M44.3 22.3L49.6 31.1M66.2 24.6L72.1 36.7M157.1 23.8L144.7 18.1M6.6 25.0L12.6 36.8M3.1 22.2L15.4 27.5M38.0 22.2L41.5 11.3M100.8 24.8L89.4 30.3M31.9 23.9L21.1 19.6M114.3 22.4L109.6 10.6M83.3 24.6L86.7 37.3M145.0 21.9L139.9 30.3M72.6 24.6L76.1 36.1M140.7 25.5L141.8 37.9M32.8 25.1L28.4 37.2M34.1 26.0L23.2 30.7M126.5 23.1L118.2 30.1M13.2 23.7L6.2 32.9M4.5 25.5L11.2 18.1M53.6 25.4L44.7 17.7M115.8 25.7L105.4 31.1M151.9 21.9L152.6 11.3M116.6 24.7L107.7 32.7M49.9 23.4L41.4 29.1M136.1 26.3L134.3 36.3M85.7 24.0L98.7 29.7M82.6 23.5L80.8 35.0M110.6 21.8L113.5 35.6M147.7 22.8L156.7 29.8M130.5 26.0L134.9 35.1M98.9 26.1L104.7 19.0M31.1 22.6L35.7 32.6M99.2 22.0L108.5 29.1M40.1 22.5L41.8 33.4M66.1 24.1L58.0 14.9M102.2 24.1L98.5 37.2M37.2 25.2L28.3 31.2M50.4 26.1L63.3 21.4M21.4 22.7L26.8 30.7M133.1 23.6L142.0 30.4M109.6 21.6L115.6 9.1M154.9 22.1L148.0 31.5M109.7 22.4L102.1 17.1' stroke='%23125A34' stroke-width='2.3' stroke-linecap='round' fill='none'/%3E%3Cpath d='M88.3 24.1L94.7 29.6M32.6 25.7L25.6 29.8M9.9 26.3L4.4 33.5M74.7 24.1L76.6 16.6M112.2 25.7L110.9 14.8M64.8 22.5L65.1 14.7M142.9 25.5L134.8 32.2M64.7 24.5L54.3 28.8M41.3 26.1L34.2 34.8M64.9 26.0L59.8 35.8M122.4 23.5L130.4 28.1M75.0 21.6L78.5 11.7M37.1 26.2L41.2 36.0M91.1 24.2L101.0 20.6M112.2 25.3L121.8 29.4M118.2 22.8L110.6 18.9M60.1 22.0L68.6 16.4M81.3 26.3L71.4 30.0M129.5 21.9L124.8 28.2M148.8 22.3L156.0 29.1M97.8 21.8L99.7 31.6M95.7 23.3L99.4 13.9M45.4 25.1L37.2 21.8M6.8 22.3L9.9 33.5M119.7 21.8L112.6 25.5M144.9 23.6L136.9 27.2M83.7 26.2L84.7 38.2M130.7 24.5L133.6 15.3M32.6 21.8L40.2 27.6M106.9 23.8L108.8 14.4M124.5 24.2L114.7 29.1M38.1 22.1L31.5 30.1M57.5 22.9L55.8 33.0M101.3 25.3L94.4 15.4M146.5 25.9L138.7 21.6M68.0 24.6L68.8 16.6' stroke='%231C7745' stroke-width='2.0' stroke-linecap='round' fill='none'/%3E%3Cpath d='M13.8 24.9L11.6 31.7M76.6 22.6L81.5 15.3M11.9 22.1L9.3 30.3M34.1 23.6L39.1 18.4M104.6 26.4L105.6 18.0M147.3 23.6L139.9 18.7M12.6 21.9L12.9 30.2M47.8 25.4L42.5 19.1M13.1 23.0L9.9 29.2M22.9 23.3L24.9 29.3M113.5 24.3L105.5 28.7M70.1 25.5L66.9 18.9M149.5 26.0L147.2 19.2M58.1 23.5L52.8 17.7M127.5 24.2L126.5 30.7M121.4 25.9L114.3 22.9M87.1 24.3L83.9 32.4M10.2 24.2L15.5 27.5M117.9 26.0L120.0 19.9M119.3 24.7L113.9 18.1M83.4 25.3L79.9 16.8M107.6 24.0L103.3 31.1M146.4 23.6L142.9 31.7M128.9 25.7L121.6 29.2M83.8 25.1L85.2 32.3M23.4 25.2L25.3 31.4' stroke='%232E9A5C' stroke-width='1.7' stroke-linecap='round' fill='none'/%3E%3Cpath d='M0 10.4 Q10.0 6.0 20.0 12.8 Q30.0 6.0 40.0 10.4 Q50.0 6.0 60.0 12.8 Q70.0 6.0 80.0 10.4 Q90.0 6.0 100.0 12.8 Q110.0 6.0 120.0 10.4 Q130.0 6.0 140.0 12.8 Q150.0 6.0 160.0 10.4 L160 15.2 Q148.0 15.0 140.0 19.0 Q134.0 14.8 129.0 15.4 Q126.0 15.0 118.0 16.0 Q112.0 14.8 107.0 15.4 Q104.0 15.0 96.0 19.6 Q90.0 14.8 85.0 15.4 Q82.0 15.0 74.0 16.2 Q68.0 14.8 63.0 15.4 Q60.0 15.0 52.0 18.4 Q46.0 14.8 41.0 15.4 Q38.0 15.0 30.0 16.4 Q24.0 14.8 19.0 15.4 Q18.0 15.0 10.0 19.2 Q4.0 14.8 -1.0 15.4 L0 15.2 Z' fill='%23B9C9D8' transform='translate(0 1.5)' opacity='.85'/%3E%3Cpath d='M0 10.4 Q10.0 6.0 20.0 12.8 Q30.0 6.0 40.0 10.4 Q50.0 6.0 60.0 12.8 Q70.0 6.0 80.0 10.4 Q90.0 6.0 100.0 12.8 Q110.0 6.0 120.0 10.4 Q130.0 6.0 140.0 12.8 Q150.0 6.0 160.0 10.4 L160 15.2 Q148.0 15.0 140.0 19.0 Q134.0 14.8 129.0 15.4 Q126.0 15.0 118.0 16.0 Q112.0 14.8 107.0 15.4 Q104.0 15.0 96.0 19.6 Q90.0 14.8 85.0 15.4 Q82.0 15.0 74.0 16.2 Q68.0 14.8 63.0 15.4 Q60.0 15.0 52.0 18.4 Q46.0 14.8 41.0 15.4 Q38.0 15.0 30.0 16.4 Q24.0 14.8 19.0 15.4 Q18.0 15.0 10.0 19.2 Q4.0 14.8 -1.0 15.4 L0 15.2 Z' fill='%23FFFFFF'/%3E%3Ccircle cx='22' cy='30' r='1.7' fill='%23FFFFFF' opacity='.9'/%3E%3Ccircle cx='64' cy='32' r='1.4' fill='%23FFFFFF' opacity='.9'/%3E%3Ccircle cx='105' cy='29' r='1.6' fill='%23FFFFFF' opacity='.9'/%3E%3Ccircle cx='147' cy='31' r='1.3' fill='%23FFFFFF' opacity='.9'/%3E%3Ccircle cx='84' cy='35' r='1.1' fill='%23FFFFFF' opacity='.9'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 210 70' width='210' height='70'%3E%3Cdefs%3E%3CradialGradient id='r' cx='.35' cy='.32' r='.75'%3E%3Cstop offset='0' stop-color='%23F27A80'/%3E%3Cstop offset='.45' stop-color='%23C8303C'/%3E%3Cstop offset='1' stop-color='%236E1019'/%3E%3C/radialGradient%3E%3CradialGradient id='o' cx='.35' cy='.32' r='.75'%3E%3Cstop offset='0' stop-color='%23FBE7A1'/%3E%3Cstop offset='.45' stop-color='%23D4AF37'/%3E%3Cstop offset='1' stop-color='%237D6110'/%3E%3C/radialGradient%3E%3CradialGradient id='c' cx='.35' cy='.32' r='.75'%3E%3Cstop offset='0' stop-color='%23FFFFFF'/%3E%3Cstop offset='.45' stop-color='%23EDE6D4'/%3E%3Cstop offset='1' stop-color='%23A9A08A'/%3E%3C/radialGradient%3E%3CradialGradient id='p' cx='.35' cy='.32' r='.75'%3E%3Cstop offset='0' stop-color='%237FD3A0'/%3E%3Cstop offset='.45' stop-color='%232E8B57'/%3E%3Cstop offset='1' stop-color='%230F4428'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M18 24V35.3' stroke='%23D4AF37' stroke-width='.9' opacity='.85'/%3E%3Crect x='15.6' y='34.1' width='4.8' height='3.6' rx='1' fill='%23B8941E'/%3E%3Ccircle cx='18' cy='45' r='7.5' fill='url(%23r)'/%3E%3Cellipse cx='15.4' cy='42.0' rx='2.1' ry='1.3' fill='%23fff' opacity='.7' transform='rotate(-30 15.4 42.0)'/%3E%3Cpath d='M58 24V43.3' stroke='%23D4AF37' stroke-width='.9' opacity='.85'/%3E%3Crect x='55.6' y='42.1' width='4.8' height='3.6' rx='1' fill='%23B8941E'/%3E%3Ccircle cx='58' cy='55' r='9.5' fill='url(%23o)'/%3E%3Cellipse cx='54.7' cy='51.2' rx='2.7' ry='1.7' fill='%23fff' opacity='.7' transform='rotate(-30 54.7 51.2)'/%3E%3Cpath d='M97 24V32.3' stroke='%23D4AF37' stroke-width='.9' opacity='.85'/%3E%3Crect x='94.6' y='31.1' width='4.8' height='3.6' rx='1' fill='%23B8941E'/%3E%3Ccircle cx='97' cy='41' r='6.5' fill='url(%23c)'/%3E%3Cellipse cx='94.7' cy='38.4' rx='1.8' ry='1.2' fill='%23fff' opacity='.7' transform='rotate(-30 94.7 38.4)'/%3E%3Cpath d='M136 24V41.3' stroke='%23D4AF37' stroke-width='.9' opacity='.85'/%3E%3Crect x='133.6' y='40.1' width='4.8' height='3.6' rx='1' fill='%23B8941E'/%3E%3Ccircle cx='136' cy='52' r='8.5' fill='url(%23r)'/%3E%3Cellipse cx='133.0' cy='48.6' rx='2.4' ry='1.5' fill='%23fff' opacity='.7' transform='rotate(-30 133.0 48.6)'/%3E%3Cpath d='M176 24V34.3' stroke='%23D4AF37' stroke-width='.9' opacity='.85'/%3E%3Crect x='173.6' y='33.1' width='4.8' height='3.6' rx='1' fill='%23B8941E'/%3E%3Ccircle cx='176' cy='44' r='7.5' fill='url(%23p)'/%3E%3Cellipse cx='173.4' cy='41.0' rx='2.1' ry='1.3' fill='%23fff' opacity='.7' transform='rotate(-30 173.4 41.0)'/%3E%3C/svg%3E");
+  background-repeat: repeat-x, repeat-x;
+  background-size: 160px 40px, 210px 70px;
+  background-position: 0 0, 37px 0;
+  /* Vuelve recien cuando el menu termino de agrandarse (.25 s): si apareciera
+     mientras el menu cambia de alto, se moveria a la vista (corrimiento). */
+  transition: opacity .3s ease .25s, visibility 0s linear .25s;
+}
+html.pp-navidad .pp-guirnalda__luces {
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 40px;
+  background-image:
+    radial-gradient(circle, #FFF3C4 0 2.8px, #F2C744 3.9px, rgba(242,199,68,.6) 6px, rgba(242,199,68,0) 15px),
+    radial-gradient(circle, #FFC2C5 0 2.8px, #E8414B 3.9px, rgba(232,65,75,.55) 6px, rgba(232,65,75,0) 15px);
+  background-size: 180px 40px, 180px 40px;
+  background-repeat: repeat-x, repeat-x;
+  background-position: 10px 2px, 100px 6px;
+  animation: ppNavidadTitila 1.7s ease-in-out infinite alternate;
+}
+html.pp-navidad .pp-guirnalda__luces--b {
+  background-image:
+    radial-gradient(circle, #FFFFFF 0 2.8px, #FFF1CF 3.9px, rgba(255,241,207,.6) 6px, rgba(255,241,207,0) 15px),
+    radial-gradient(circle, #D6FFE2 0 2.8px, #3FC27A 3.9px, rgba(63,194,122,.55) 6px, rgba(63,194,122,0) 15px);
+  background-position: 55px 5px, 145px 1px;
+  animation-delay: -.85s;
+}
+@keyframes ppNavidadTitila {
+  from { opacity: 1; }
+  to   { opacity: .28; }
+}
+/* PC grande: todo un 20% mas grande, que en 1920 px se lea de lejos. */
+@media (min-width: 1200px) {
+  html.pp-navidad .pp-guirnalda {
+    top: calc(100% - 17px);
+    height: 84px;
+    background-size: 192px 48px, 252px 84px;
+    background-position: 0 0, 44px 0;
+  }
+  html.pp-navidad .pp-guirnalda__luces {
+    height: 48px;
+    background-size: 216px 48px, 216px 48px;
+    background-position: 12px 2px, 120px 7px;
+    background-image:
+      radial-gradient(circle, #FFF3C4 0 3.4px, #F2C744 4.7px, rgba(242,199,68,.6) 7px, rgba(242,199,68,0) 18px),
+      radial-gradient(circle, #FFC2C5 0 3.4px, #E8414B 4.7px, rgba(232,65,75,.55) 7px, rgba(232,65,75,0) 18px);
+  }
+  html.pp-navidad .pp-guirnalda__luces--b {
+    background-position: 66px 6px, 174px 1px;
+    background-image:
+      radial-gradient(circle, #FFFFFF 0 3.4px, #FFF1CF 4.7px, rgba(255,241,207,.6) 7px, rgba(255,241,207,0) 18px),
+      radial-gradient(circle, #D6FFE2 0 3.4px, #3FC27A 4.7px, rgba(63,194,122,.55) 7px, rgba(63,194,122,0) 18px);
+  }
+}
+@media (max-width: 767.98px) {
+  html.pp-navidad .pp-guirnalda {
+    top: calc(100% - 10px);
+    height: 53px;
+    background-size: 120px 30px, 158px 53px;
+    background-position: 0 0, 28px 0;
+  }
+  html.pp-navidad .pp-guirnalda__luces {
+    height: 30px;
+    background-size: 135px 30px, 135px 30px;
+    background-position: 8px 2px, 75px 4px;
+  }
+  html.pp-navidad .pp-guirnalda__luces--b { background-position: 41px 4px, 109px 1px; }
+}
+
+/* Al bajar: la guirnalda grande se va en el acto y queda una tira fina DENTRO
+   del menu, que aparece cuando el menu ya se achico. */
+html.pp-navidad .pp-nav.scrolled .pp-guirnalda { opacity: 0; visibility: hidden; transition: none; }
+html.pp-navidad .pp-nav::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 16px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  background-image:
+    radial-gradient(circle, #FFE9A3 0 2px, rgba(242,199,68,.6) 3.2px, rgba(242,199,68,0) 8px),
+    radial-gradient(circle, #FF8A90 0 2px, rgba(232,65,75,.55) 3.2px, rgba(232,65,75,0) 8px),
+    radial-gradient(circle, #FFFFFF 0 2px, rgba(255,241,207,.6) 3.2px, rgba(255,241,207,0) 8px),
+    radial-gradient(circle, #A8F5C4 0 2px, rgba(63,194,122,.55) 3.2px, rgba(63,194,122,0) 8px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 40' width='160' height='40'%3E%3Cpath d='M0 24H160' stroke='%238A6D12' stroke-width='1.2' opacity='.6'/%3E%3Cpath d='M72.4 24.3L73.5 37.3M94.0 22.4L89.4 36.4M15.1 23.0L24.8 12.7M6.7 26.4L1.7 39.2M25.2 21.6L35.1 26.9M38.7 21.7L40.9 36.5M83.1 24.7L78.1 36.5M44.5 26.5L34.0 36.1M50.4 22.6L37.8 15.4M64.1 25.7L77.6 19.2M0.1 22.5L1.2 38.3M63.6 21.9L56.2 31.0M13.9 23.2L7.6 31.9M39.4 22.0L46.8 13.6M89.5 23.7L95.3 14.5M103.0 22.1L95.4 13.1M-4.7 25.5L4.5 18.8M155.3 25.5L164.5 18.8M63.1 25.8L76.2 34.7M34.1 22.8L38.9 33.6M11.7 22.0L19.8 33.0M59.5 23.8L60.0 37.2M138.6 22.4L151.2 14.3M39.9 22.4L30.0 27.8M152.0 25.9L154.1 36.5M6.2 26.3L11.8 16.1M131.8 24.5L121.6 14.4M11.0 22.6L0.6 31.6M44.8 26.1L34.0 21.6M71.3 21.8L67.1 9.0M21.1 23.3L8.2 28.7M110.6 24.4L101.3 20.1M145.6 25.0L158.4 30.4M77.2 25.2L87.1 21.5M87.4 25.2L79.6 37.1M126.9 26.1L133.6 12.2M139.4 23.6L128.9 32.1M100.0 23.4L97.2 33.7M102.3 26.5L95.7 37.0M117.6 24.4L125.4 17.2M120.0 21.6L120.6 33.1M111.7 24.0L101.8 30.0M1.8 23.0L9.2 31.3M144.9 24.8L154.8 17.9M106.5 22.5L117.1 11.2' stroke='%230A3A22' stroke-width='2.6' stroke-linecap='round' fill='none'/%3E%3Cpath d='M140.8 23.4L145.1 32.3M79.4 25.7L72.5 37.9M44.3 22.3L49.6 31.1M66.2 24.6L72.1 36.7M157.1 23.8L144.7 18.1M6.6 25.0L12.6 36.8M3.1 22.2L15.4 27.5M38.0 22.2L41.5 11.3M100.8 24.8L89.4 30.3M31.9 23.9L21.1 19.6M114.3 22.4L109.6 10.6M83.3 24.6L86.7 37.3M145.0 21.9L139.9 30.3M72.6 24.6L76.1 36.1M140.7 25.5L141.8 37.9M32.8 25.1L28.4 37.2M34.1 26.0L23.2 30.7M126.5 23.1L118.2 30.1M13.2 23.7L6.2 32.9M4.5 25.5L11.2 18.1M53.6 25.4L44.7 17.7M115.8 25.7L105.4 31.1M151.9 21.9L152.6 11.3M116.6 24.7L107.7 32.7M49.9 23.4L41.4 29.1M136.1 26.3L134.3 36.3M85.7 24.0L98.7 29.7M82.6 23.5L80.8 35.0M110.6 21.8L113.5 35.6M147.7 22.8L156.7 29.8M130.5 26.0L134.9 35.1M98.9 26.1L104.7 19.0M31.1 22.6L35.7 32.6M99.2 22.0L108.5 29.1M40.1 22.5L41.8 33.4M66.1 24.1L58.0 14.9M102.2 24.1L98.5 37.2M37.2 25.2L28.3 31.2M50.4 26.1L63.3 21.4M21.4 22.7L26.8 30.7M133.1 23.6L142.0 30.4M109.6 21.6L115.6 9.1M154.9 22.1L148.0 31.5M109.7 22.4L102.1 17.1' stroke='%23125A34' stroke-width='2.3' stroke-linecap='round' fill='none'/%3E%3Cpath d='M88.3 24.1L94.7 29.6M32.6 25.7L25.6 29.8M9.9 26.3L4.4 33.5M74.7 24.1L76.6 16.6M112.2 25.7L110.9 14.8M64.8 22.5L65.1 14.7M142.9 25.5L134.8 32.2M64.7 24.5L54.3 28.8M41.3 26.1L34.2 34.8M64.9 26.0L59.8 35.8M122.4 23.5L130.4 28.1M75.0 21.6L78.5 11.7M37.1 26.2L41.2 36.0M91.1 24.2L101.0 20.6M112.2 25.3L121.8 29.4M118.2 22.8L110.6 18.9M60.1 22.0L68.6 16.4M81.3 26.3L71.4 30.0M129.5 21.9L124.8 28.2M148.8 22.3L156.0 29.1M97.8 21.8L99.7 31.6M95.7 23.3L99.4 13.9M45.4 25.1L37.2 21.8M6.8 22.3L9.9 33.5M119.7 21.8L112.6 25.5M144.9 23.6L136.9 27.2M83.7 26.2L84.7 38.2M130.7 24.5L133.6 15.3M32.6 21.8L40.2 27.6M106.9 23.8L108.8 14.4M124.5 24.2L114.7 29.1M38.1 22.1L31.5 30.1M57.5 22.9L55.8 33.0M101.3 25.3L94.4 15.4M146.5 25.9L138.7 21.6M68.0 24.6L68.8 16.6' stroke='%231C7745' stroke-width='2.0' stroke-linecap='round' fill='none'/%3E%3Cpath d='M13.8 24.9L11.6 31.7M76.6 22.6L81.5 15.3M11.9 22.1L9.3 30.3M34.1 23.6L39.1 18.4M104.6 26.4L105.6 18.0M147.3 23.6L139.9 18.7M12.6 21.9L12.9 30.2M47.8 25.4L42.5 19.1M13.1 23.0L9.9 29.2M22.9 23.3L24.9 29.3M113.5 24.3L105.5 28.7M70.1 25.5L66.9 18.9M149.5 26.0L147.2 19.2M58.1 23.5L52.8 17.7M127.5 24.2L126.5 30.7M121.4 25.9L114.3 22.9M87.1 24.3L83.9 32.4M10.2 24.2L15.5 27.5M117.9 26.0L120.0 19.9M119.3 24.7L113.9 18.1M83.4 25.3L79.9 16.8M107.6 24.0L103.3 31.1M146.4 23.6L142.9 31.7M128.9 25.7L121.6 29.2M83.8 25.1L85.2 32.3M23.4 25.2L25.3 31.4' stroke='%232E9A5C' stroke-width='1.7' stroke-linecap='round' fill='none'/%3E%3Cpath d='M0 10.4 Q10.0 6.0 20.0 12.8 Q30.0 6.0 40.0 10.4 Q50.0 6.0 60.0 12.8 Q70.0 6.0 80.0 10.4 Q90.0 6.0 100.0 12.8 Q110.0 6.0 120.0 10.4 Q130.0 6.0 140.0 12.8 Q150.0 6.0 160.0 10.4 L160 15.2 Q148.0 15.0 140.0 19.0 Q134.0 14.8 129.0 15.4 Q126.0 15.0 118.0 16.0 Q112.0 14.8 107.0 15.4 Q104.0 15.0 96.0 19.6 Q90.0 14.8 85.0 15.4 Q82.0 15.0 74.0 16.2 Q68.0 14.8 63.0 15.4 Q60.0 15.0 52.0 18.4 Q46.0 14.8 41.0 15.4 Q38.0 15.0 30.0 16.4 Q24.0 14.8 19.0 15.4 Q18.0 15.0 10.0 19.2 Q4.0 14.8 -1.0 15.4 L0 15.2 Z' fill='%23B9C9D8' transform='translate(0 1.5)' opacity='.85'/%3E%3Cpath d='M0 10.4 Q10.0 6.0 20.0 12.8 Q30.0 6.0 40.0 10.4 Q50.0 6.0 60.0 12.8 Q70.0 6.0 80.0 10.4 Q90.0 6.0 100.0 12.8 Q110.0 6.0 120.0 10.4 Q130.0 6.0 140.0 12.8 Q150.0 6.0 160.0 10.4 L160 15.2 Q148.0 15.0 140.0 19.0 Q134.0 14.8 129.0 15.4 Q126.0 15.0 118.0 16.0 Q112.0 14.8 107.0 15.4 Q104.0 15.0 96.0 19.6 Q90.0 14.8 85.0 15.4 Q82.0 15.0 74.0 16.2 Q68.0 14.8 63.0 15.4 Q60.0 15.0 52.0 18.4 Q46.0 14.8 41.0 15.4 Q38.0 15.0 30.0 16.4 Q24.0 14.8 19.0 15.4 Q18.0 15.0 10.0 19.2 Q4.0 14.8 -1.0 15.4 L0 15.2 Z' fill='%23FFFFFF'/%3E%3Ccircle cx='22' cy='30' r='1.7' fill='%23FFFFFF' opacity='.9'/%3E%3Ccircle cx='64' cy='32' r='1.4' fill='%23FFFFFF' opacity='.9'/%3E%3Ccircle cx='105' cy='29' r='1.6' fill='%23FFFFFF' opacity='.9'/%3E%3Ccircle cx='147' cy='31' r='1.3' fill='%23FFFFFF' opacity='.9'/%3E%3Ccircle cx='84' cy='35' r='1.1' fill='%23FFFFFF' opacity='.9'/%3E%3C/svg%3E");
+  background-size: 160px 16px, 160px 16px, 160px 16px, 160px 16px, 64px 16px;
+  background-position: 0 1px, 40px 1px, 80px 1px, 120px 1px, 0 0;
+  background-repeat: repeat-x;
+}
+html.pp-navidad .pp-nav.scrolled::after { opacity: 1; visibility: visible; transition: opacity .3s ease .25s, visibility 0s linear .25s; }
+
+/* --- Gorro grande sobre el isotipo (sin tapar el nombre) --------------------- */
+html.pp-navidad .pp-nav .pp-logo-wrap { position: relative; }
+html.pp-navidad .pp-nav .pp-logo-wrap::before {
+  content: "";
+  position: absolute; z-index: 1;
+  left: -13px; top: -18px;
+  width: 48px; height: 42px;
+  pointer-events: none;
+  transform: rotate(-30deg);
+  transition: transform .3s ease;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 56'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23E04A52'/%3E%3Cstop offset='1' stop-color='%23A8222D'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M8 42C10 26 22 10 38 8c10-1 17 5 19 16-5-6-10-8-14-6 3 8 3 16 3 24z' fill='url(%23g)'/%3E%3Cpath d='M38 8c10-1 17 5 19 16-5-6-10-8-14-6-1-4-3-7-5-10z' fill='%236E1019' opacity='.55'/%3E%3Crect x='3' y='36' width='48' height='13' rx='6.5' fill='%23F7F3EA'/%3E%3Cpath d='M7 41c6 2 12-1 18 1s12-1 18 0' stroke='%23D9D2C2' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='56' cy='26' r='6.5' fill='%23F7F3EA'/%3E%3Ccircle cx='54' cy='24' r='2.2' fill='%23fff'/%3E%3C/svg%3E") no-repeat center / contain;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.5));
+}
+@media (min-width: 1200px) {
+  html.pp-navidad .pp-nav .pp-logo-wrap::before { left: -15px; top: -21px; width: 54px; height: 47px; }
+}
+/* Con el menu compacto el gorro baja un poco para no cortarse arriba. */
+html.pp-navidad .pp-nav.scrolled .pp-logo-wrap::before { transform: translate(2px, 6px) rotate(-30deg) scale(.88); }
+
+/* --- Gorrito en el WhatsApp flotante ----------------------------------------- */
+html.pp-navidad .wa-float::before {
+  content: "";
+  position: absolute;
+  left: -10px; top: -19px;
+  width: 40px; height: 35px;
+  pointer-events: none;
+  transform: rotate(-28deg);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 56'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23E04A52'/%3E%3Cstop offset='1' stop-color='%23A8222D'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M8 42C10 26 22 10 38 8c10-1 17 5 19 16-5-6-10-8-14-6 3 8 3 16 3 24z' fill='url(%23g)'/%3E%3Cpath d='M38 8c10-1 17 5 19 16-5-6-10-8-14-6-1-4-3-7-5-10z' fill='%236E1019' opacity='.55'/%3E%3Crect x='3' y='36' width='48' height='13' rx='6.5' fill='%23F7F3EA'/%3E%3Cpath d='M7 41c6 2 12-1 18 1s12-1 18 0' stroke='%23D9D2C2' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='56' cy='26' r='6.5' fill='%23F7F3EA'/%3E%3Ccircle cx='54' cy='24' r='2.2' fill='%23fff'/%3E%3C/svg%3E") no-repeat center / contain;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.4));
+}
+
+/* --- Mono en el boton principal de la portada -------------------------------- */
+html.pp-navidad .hero-ctas .btn-gold { position: relative; }
+html.pp-navidad .hero-ctas .btn-gold::after {
+  content: "";
+  position: absolute;
+  right: -16px; top: -19px;
+  width: 44px; height: 33px;
+  pointer-events: none;
+  transform: rotate(14deg);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 48'%3E%3Cpath d='M30 22c-4 8-9 15-13 21l7-1 2 4c4-7 6-14 6-23zM34 22c4 8 9 15 13 21l-7-1-2 4c-4-7-6-14-6-23z' fill='%23A8222D'/%3E%3Cpath d='M32 20C22 2 4 2 6 14c1 8 14 10 26 6z' fill='%23C8303C'/%3E%3Cpath d='M32 20C42 2 60 2 58 14c-1 8-14 10-26 6z' fill='%23C8303C'/%3E%3Cpath d='M32 20C24 8 12 7 12 13c0 4 9 6 20 7zM32 20c8-12 20-13 20-7 0 4-9 6-20 7z' fill='%237E1820' opacity='.55'/%3E%3Ccircle cx='32' cy='20' r='5.5' fill='%23E04A52'/%3E%3Ccircle cx='30.5' cy='18.5' r='1.6' fill='%23fff' opacity='.6'/%3E%3C/svg%3E") no-repeat center / contain;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.45));
+}
+@media (min-width: 1200px) {
+  html.pp-navidad .hero-ctas .btn-gold::after { right: -21px; top: -25px; width: 56px; height: 42px; }
+}
+
+/* --- Nieve que cae (el lienzo lo crea navidad-2026.js en las portadas) -------- */
+html.pp-navidad .pp-nieve { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* --- Menos movimiento: queda lo fijo, se apaga lo animado --------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html.pp-navidad .pp-guirnalda__luces { animation: none; }
+  html.pp-navidad .pp-nav { transition: background .22s ease, padding .22s ease, backdrop-filter .22s ease; }
+  html.pp-navidad .pp-nav .pp-logo-wrap::before { transition: none; }
+  /* Sin fundido, pero con la misma espera: que nada aparezca mientras el menu
+     cambia de alto. */
+  html.pp-navidad .pp-guirnalda { transition: visibility 0s linear .25s; }
+  html.pp-navidad .pp-nav.scrolled::after { transition: visibility 0s linear .25s; }
+  html.pp-navidad .pp-nieve { display: none; }
+}

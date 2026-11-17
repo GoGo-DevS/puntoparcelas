@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es"{% if NAVIDAD %} class="pp-navidad" data-navidad-falta="{{ NAVIDAD_FALTA_MS }}"{% endif %}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -455,8 +455,8 @@
     .pp-descripcion p{ margin:0 0 1rem; }
     .pp-descripcion p:last-child{ margin-bottom:0; }
   </style>
-  {# Navidad 2026: se enciende y se apaga sola (16-11 al 26-12). Para sacarla antes, borrar el include. #}
-  {% include 'core/_navidad.html' %}
+  {# Navidad 2026 (v2): la decide el servidor por fecha (core.context_processors.navidad, 16-11 al 26-12). Para sacarla antes, borrar los 3 includes. #}
+  {% if NAVIDAD %}{% include 'core/_navidad.html' with parte='cabeza' %}{% endif %}
   {% block extra_head %}{% endblock %}
 
   {% comment %}
@@ -487,6 +487,7 @@
   {% endif %}
 </head>
 <body>
+{% if NAVIDAD %}{% include 'core/_navidad.html' with parte='franja' %}{% endif %}
 
 <!-- NAVBAR -->
 <nav class="pp-nav" id="ppNav">
@@ -526,6 +527,7 @@
       <a href="{% url 'core:reserva' %}"  class="btn-outline-gold mt-2 text-center">Hablemos tu inversión</a>
     </div>
   </div>
+  {% if NAVIDAD %}{% include 'core/_navidad.html' with parte='guirnalda' %}{% endif %}
 </nav>
 
 <!-- MESSAGES -->
