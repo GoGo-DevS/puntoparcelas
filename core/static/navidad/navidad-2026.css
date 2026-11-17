@@ -77,9 +77,12 @@ html.pp-navidad .pp-franja-navidad__acebo--der { transform: scaleX(-1); }
    transform y no top: moverlo con transform no cuenta como corrimiento. */
 html.pp-navidad .pp-nav {
   transform: translateY(var(--pp-franja-h));
-  transition: background .22s ease, padding .22s ease, backdrop-filter .22s ease, transform .35s ease;
+  transition: background .22s ease, padding .22s ease, transform .35s ease;
 }
-html.pp-navidad .pp-nav.scrolled { transform: none; }
+/* Sin desenfoque detras del menu compacto mientras dure la Navidad (liviana,
+   17-11-2026): su fondo es negro al 94%, asi que el desenfoque casi no se
+   veia, y con la nieve cayendo debajo el navegador lo rehacia en cada cuadro. */
+html.pp-navidad .pp-nav.scrolled { transform: none; backdrop-filter: none; }
 
 /* --- Espacio para la guirnalda arriba de cada pagina -------------------------
    Cada pagina ya dejaba libre el alto del menu; aca se suma lo que cuelga la
@@ -174,6 +177,9 @@ html.pp-navidad .pp-guirnalda__luces--b {
 /* Al bajar: la guirnalda grande se va en el acto y queda una tira fina DENTRO
    del menu, que aparece cuando el menu ya se achico. */
 html.pp-navidad .pp-nav.scrolled .pp-guirnalda { opacity: 0; visibility: hidden; transition: none; }
+/* Escondidas, las luces no titilan (liviana, 17-11-2026): antes la animacion
+   seguia corriendo todo el rato que la persona leia la pagina mas abajo. */
+html.pp-navidad .pp-nav.scrolled .pp-guirnalda__luces { animation-play-state: paused; }
 html.pp-navidad .pp-nav::after {
   content: "";
   position: absolute; left: 0; right: 0; bottom: 0;
@@ -246,7 +252,7 @@ html.pp-navidad .pp-nieve { position: absolute; left: 0; top: 0; width: 100%; he
 /* --- Menos movimiento: queda lo fijo, se apaga lo animado --------------------- */
 @media (prefers-reduced-motion: reduce) {
   html.pp-navidad .pp-guirnalda__luces { animation: none; }
-  html.pp-navidad .pp-nav { transition: background .22s ease, padding .22s ease, backdrop-filter .22s ease; }
+  html.pp-navidad .pp-nav { transition: background .22s ease, padding .22s ease; }
   html.pp-navidad .pp-nav .pp-logo-wrap::before { transition: none; }
   /* Sin fundido, pero con la misma espera: que nada aparezca mientras el menu
      cambia de alto. */

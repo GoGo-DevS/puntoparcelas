@@ -13,6 +13,19 @@
       que no depende de que el reloj del computador este bien.
    3. Si la pagina abre ya bajada (recarga a media pagina), deja el menu en su
       estado compacto de una vez.
+
+   Liviana (17-11-2026, Diego: "que no queden pesadas ... no vaya a afectar a
+   SEO"). Se ve igual, pero cuesta mucho menos:
+   - el lienzo grande va a 1x (en un celular retina eran 4 veces los pixeles);
+     los moldes chicos de cada copo siguen en alta y la nieve es suave, asi
+     que no se nota;
+   - hasta 90 copos (antes 130) y 30 cuadros por segundo (antes 60);
+   - mientras la persona hace scroll la nieve queda quieta: el navegador solo
+     tiene que mover la pagina;
+   - la barra del celular, que aparece y se esconde al hacer scroll, ya no
+     vuelve a crear el lienzo (eso lo borraba y pedia memoria nueva);
+   - arranca 1,2 s despues de la carga, para no competir con el primer pintado
+     ni con la foto grande de la portada (LCP).
    =========================================================================== */
 (function () {
   "use strict";
@@ -49,7 +62,28 @@
   if (quieto && quieto.matches) return;
 
   var portadas = document.querySelectorAll(".hero, .catalog-hero, .reserva-hero");
-  for (var p = 0; p < portadas.length; p++) nevar(portadas[p]);
+  if (!portadas.length) return;
+
+  // Mientras dura el scroll (y 160 ms despues) no se redibuja: la nieve queda
+  // congelada ese instante y el scroll no compite con el lienzo.
+  var scrollHasta = 0;
+  window.addEventListener("scroll", function () {
+    scrollHasta = performance.now() + 160;
+  }, { passive: true });
+
+  function empezar() {
+    if (!raiz.classList.contains("pp-navidad")) return;   // se apago mientras esperaba
+    for (var p = 0; p < portadas.length; p++) nevar(portadas[p]);
+  }
+  // 1,2 s despues de la carga, cuando el navegador queda libre.
+  function despuesDeCargar() {
+    setTimeout(function () {
+      if (window.requestIdleCallback) window.requestIdleCallback(empezar, { timeout: 1000 });
+      else empezar();
+    }, 1200);
+  }
+  if (document.readyState === "complete") despuesDeCargar();
+  else window.addEventListener("load", despuesDeCargar);
 
   function nevar(portada) {
     var lienzo = document.createElement("canvas");
@@ -67,9 +101,13 @@
     }
     portada.insertBefore(lienzo, contenido);
 
+    // Solo los moldes chicos de los copos se dibujan en alta; el lienzo
+    // grande va a 1x (su ancho en pixeles es su ancho en pantalla).
     var escala = Math.min(window.devicePixelRatio || 1, 2);
-    var ancho = 0, alto = 0, copos = [];
-    var visible = true, corriendo = false, parado = false, ultimo = 0;
+    var ancho = 0, alto = 0, arriba = 0, copos = [];
+    var anchoLienzo = 0, altoLienzo = 0;
+    var visible = true, corriendo = false, parado = false, ultimo = 0, acumulado = 0;
+    var PASO = 1 / 30 - 0.004;   // 30 cuadros por segundo, con holgura para el reloj de la pantalla
 
     // Copos dibujados una vez y reutilizados: cristales de seis brazos de
     // varios tamanos (algunos dorados, como la marca) y puntos suaves.
@@ -137,25 +175,50 @@
     }
 
     function medir() {
-      var arriba = techo();
-      var w = portada.clientWidth, h = Math.max(0, portada.clientHeight - arriba);
-      if (w === ancho && h === alto) return;    // la barra del celular no obliga a redibujar
+      var w = portada.clientWidth;
+      // El menu y la guirnalda solo cambian de alto con el ancho (y el menu
+      // compacto del scroll no debe mover la nieve): el techo se mide solo ahi.
+      if (w !== ancho) arriba = techo();
+      var h = Math.max(0, portada.clientHeight - arriba);
+      if (w === ancho && h === alto) return;
+      // La barra del celular cambia solo el alto: si el lienzo que ya existe
+      // alcanza, no se toca (asignar width/height lo borra y pide memoria
+      // nueva en pleno scroll). Se crea de nuevo solo si cambia el ancho o si
+      // la portada crece; lo que sobra abajo lo recorta la portada.
+      if (w !== ancho || h > altoLienzo) {
+        anchoLienzo = w; altoLienzo = h;
+        lienzo.style.top = arriba + "px";
+        lienzo.style.height = h + "px";
+        lienzo.width = w;
+        lienzo.height = h;
+      }
       ancho = w; alto = h;
-      lienzo.style.top = arriba + "px";
-      lienzo.style.height = alto + "px";
-      lienzo.width = Math.round(ancho * escala);
-      lienzo.height = Math.round(alto * escala);
-      ctx.setTransform(escala, 0, 0, escala, 0, 0);
-      var cuantos = Math.round(Math.min(130, Math.max(30, ancho / 14)));
+      var cuantos = Math.round(Math.min(90, Math.max(28, ancho / 18)));
       while (copos.length < cuantos) copos.push(nuevo(true));
       copos.length = cuantos;
     }
 
+    // Un solo cuadro pedido a la vez: si la portada sale y vuelve a la vista
+    // entre dos cuadros, no quedan dos bucles dibujando.
+    var pedido = false;
+    function pedir() {
+      if (pedido) return;
+      pedido = true;
+      window.requestAnimationFrame(cuadro);
+    }
+
     function cuadro(t) {
+      pedido = false;
       if (!corriendo) return;
-      var dt = Math.min(0.05, ((t - ultimo) / 1000) || 0);
+      pedir();
+      var dt = Math.max(0, Math.min(0.05, ((t - ultimo) / 1000) || 0));
       ultimo = t;
-      ctx.clearRect(0, 0, ancho, alto);
+      if (t < scrollHasta) { acumulado = 0; return; }   // quieta durante el scroll
+      acumulado += dt;
+      if (acumulado < PASO) return;                      // un cuadro si y uno no
+      dt = acumulado;
+      acumulado = 0;
+      ctx.clearRect(0, 0, anchoLienzo, altoLienzo);
       for (var i = 0; i < copos.length; i++) {
         var f = copos[i];
         f.y += f.v * dt;
@@ -175,14 +238,14 @@
         }
       }
       ctx.globalAlpha = 1;
-      window.requestAnimationFrame(cuadro);
     }
 
     function arrancar() {
       if (parado || corriendo || !visible || document.hidden) return;
       corriendo = true;
       ultimo = performance.now();
-      window.requestAnimationFrame(cuadro);
+      acumulado = 0;
+      pedir();
     }
     function parar() {
       parado = true;
