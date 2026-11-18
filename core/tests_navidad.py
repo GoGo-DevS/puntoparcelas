@@ -9,16 +9,22 @@ Lo que se cuida:
   - El panel de Leonardo y el Tree (/links/) no la cargan.
   - El CSS solo actua bajo html.pp-navidad (para que el script la pueda apagar
     con la pestana abierta) y lo animado se apaga con reducir movimiento.
+  - El CSS sale intacto del collectstatic de produccion (Manifest): los SVG en
+    linea no pueden traer url(#id) que Django confunda con un archivo.
 Que se vea bien, no tape nada y responda al toque se probo con Playwright.
 """
 import re
+import shutil
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from unittest import mock
 from zoneinfo import ZoneInfo
 
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.core.files.base import ContentFile
+from django.test import SimpleTestCase, TestCase, override_settings
+from django.utils.module_loading import import_string
 
 from . import context_processors as cp
 
@@ -143,3 +149,37 @@ class ElCssYElJs(TestCase):
             with self.subTest(regla=regla):
                 cuerpo = css[css.index('html.pp-navidad ' + regla):]
                 self.assertIn('pointer-events: none', cuerpo[:cuerpo.index('}')])
+
+
+class ElCssSaleIntactoDelBuild(SimpleTestCase):
+    """El build de Render corre collectstatic con el storage de produccion
+    (CompressedManifestStaticFilesStorage). Ese storage toma cada url(...) del
+    CSS como un archivo, tambien los url(%23id) que van DENTRO de un SVG en
+    linea, y los reescribe como url("#id#id"). Esas comillas cortan el texto
+    del data-URI y el navegador bota la regla entera: el 17-11-2026, en vivo,
+    la guirnalda (pino, nieve y esferas) no se dibujaba, y en local con DEBUG
+    no se notaba. Por eso las referencias internas van como url%28%23id%29:
+    el navegador lo lee igual y Django no ve un url(...).
+
+    Se corre el mismo post_process que en el build, sobre una carpeta
+    temporal, sin tocar staticfiles/ ni la base."""
+
+    def test_los_svg_en_linea_no_se_rompen_en_el_collectstatic(self):
+        clase = import_string(settings.STORAGES['staticfiles']['BACKEND'])
+        carpeta = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, carpeta, True)
+        storage = clase(location=carpeta, base_url=settings.STATIC_URL)
+        nombre = 'navidad/navidad-2026.css'
+        fuente = (ESTATICOS / 'navidad-2026.css').read_text(encoding='utf8')
+        storage.save(nombre, ContentFile(fuente.encode('utf8')))
+        for _original, _procesado, resultado in storage.post_process({nombre: (storage, nombre)}):
+            if isinstance(resultado, Exception):
+                raise resultado
+        servido = storage.open(storage.stored_name(nombre)).read().decode('utf8')
+
+        rotas = sorted(set(re.findall(r'#([A-Za-z][\w-]*)#\1\b', servido)))
+        self.assertEqual(rotas, [], 'referencias rotas por el Manifest: %s' % rotas)
+        # Este CSS no enlaza ningun archivo: lo que se sirve tiene que ser
+        # identico al fuente. Si algun dia enlaza uno (una imagen), cambiar
+        # esta linea por una que compare todo menos ese enlace.
+        self.assertEqual(servido, fuente)
