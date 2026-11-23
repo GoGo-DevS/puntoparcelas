@@ -47,7 +47,7 @@ def _regiones_con_parcelas():
     Las vendidas cuentan: una region con solo vendidas muestra lo vendido, y
     eso tambien es contenido (trayectoria).
     """
-    return set(Parcela.objects.values_list('region', flat=True).distinct())
+    return set(Parcela.publicas.values_list('region', flat=True).distinct())
 
 
 logger = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ def home(request):
     from . import contenido_home as _ch
     from . import seo as _seo
 
-    destacadas = Parcela.objects.filter(destacada=True, estado='disponible')[:6]
+    destacadas = Parcela.publicas.filter(destacada=True, estado='disponible')[:6]
     testimonios = Testimonio.objects.filter(activo=True)[:3]
 
     # El bloque de regiones sale de los DATOS, no de la lista de 11 del
@@ -81,6 +81,9 @@ def home(request):
         # baratas", y solo porque el texto la nombraba.
         'caracteristicas_home': caracteristicas,
         'catalogo_prefooter': _catalogo_por_region(),
+        # Fila 58 de Jorge (23-11-2026): "parcelas en <comuna>" hacia la ficha
+        # que posiciona cada comuna. Ver contenido_home.PARCELAS_POR_COMUNA.
+        'comunas_home': _ch.parcelas_por_comuna(),
         # Las caracteristicas que HOY tienen parcelas. El texto de la home
         # enlaza a "parcelas baratas", y esa pagina es 404 cuando ninguna
         # parcela cumple el filtro -- justo lo que se vino a evitar con las
@@ -109,7 +112,7 @@ def _catalogo_por_region():
     """
     etiquetas = {key: (slug, h1) for slug, (key, _t, h1) in REGIONES_SEO.items()}
     orden = {key: i for i, (key, _l) in enumerate(REGIONES)}
-    filas = (Parcela.objects.exclude(estado='vendida')
+    filas = (Parcela.publicas.exclude(estado='vendida')
              .values('slug', 'nombre', 'seo_h1', 'region'))
     grupos = {}
     for f in filas:
@@ -127,6 +130,18 @@ def _catalogo_por_region():
     return salida
 
 
+def _intro_con_enlaces(caracteristica):
+    """La intro de una pagina por caracteristica, con sus [[anchor|ruta]] resueltos."""
+    from . import caracteristicas as _car
+    from . import guias as _guias
+
+    contenido = _car.contenido(caracteristica) if caracteristica else None
+    if not contenido:
+        return []
+    cache = {}
+    return [_guias.con_enlaces(p, cache) for p in contenido.get('intro', [])]
+
+
 def _caracteristicas_con_parcelas():
     """Las caracteristicas que HOY tienen al menos una parcela, con su conteo.
 
@@ -136,7 +151,7 @@ def _caracteristicas_con_parcelas():
     """
     from . import caracteristicas as _car
 
-    vivas = Parcela.objects.exclude(estado='vendida')
+    vivas = Parcela.publicas.exclude(estado='vendida')
     salida = []
     for slug in _car.SLUGS:
         n = vivas.filter(_car.filtro(slug)).count()
@@ -190,7 +205,7 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
         When(estado='vendida',    then=Value(2)),
         default=Value(3), output_field=IntegerField(),
     )
-    qs = Parcela.objects.annotate(estado_order=estado_order).order_by('-destacada', 'estado_order', 'precio')
+    qs = Parcela.publicas.annotate(estado_order=estado_order).order_by('-destacada', 'estado_order', 'precio')
     if region:
         qs = qs.filter(region=region)
     if caracteristica:
@@ -324,11 +339,19 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
         # El contenido largo del documento del 05-10: intro y "que considerar
         # antes de comprar". None para los slugs que el documento no cubre.
         'contenido_caracteristica': _car.contenido(caracteristica) if caracteristica else None,
+        # La intro admite enlaces internos desde el 23-11 (fila 49 de Jorge).
+        'intro_caracteristica': _intro_con_enlaces(caracteristica),
         'caracteristicas': _caracteristicas_con_parcelas(),
     })
 
 
 def parcela_detail(request, slug):
+    # Fichas duplicadas: 301 directa a la canonica (Jorge, 23-11-2026). Va
+    # ANTES de buscar la fila: la duplicada sigue en la base hasta que
+    # Leonardo la borre, y no puede volver a responder 200.
+    from .redirecciones import REDIRECCIONES_301
+    if slug in REDIRECCIONES_301:
+        return redirect(f'/catalogo/{REDIRECCIONES_301[slug]}/', permanent=True)
     parcela = get_object_or_404(Parcela, slug=slug)
     form = ConsultaForm(initial={'parcela': parcela.pk})
     zona, similares = _relacionadas(parcela)
@@ -370,7 +393,7 @@ def _wa_visita(request, parcela):
     return f'https://wa.me/{WA_NUMERO}?text={quote(texto)}'
 
 
-def _relacionadas(parcela, cuantas=3):
+def _relacionadas(parcela, cuantas=3, cuantas_zona=6):
     """Las dos filas de fichas al pie de una ficha (punto 9 de Jorge).
 
     `zona`: la misma region, y dentro de ella primero las de la MISMA comuna.
@@ -378,11 +401,17 @@ def _relacionadas(parcela, cuantas=3):
     `similares`: de OTRAS regiones y con el precio mas parecido, en la misma
     moneda (comparar pesos con UF no dice nada). Nunca repiten una de `zona`.
     Solo disponibles: recomendar algo que no se puede comprar es un clic perdido.
+
+    23-11-2026, fila 59 de la planilla de Jorge: el bloque "debe mostrar fichas
+    de la misma comuna o region"; la fila de otras regiones se leia como fichas
+    al azar. Ahora la zona muestra hasta 6 (comuna primero, despues region) y
+    `similares` solo RELLENA cuando la region no alcanza a 3: una ficha sola en
+    su region (Vive Ovalle en Coquimbo) no se queda sin enlaces laterales.
     """
     from django.db.models import Case, F, IntegerField, Value, When
     from django.db.models.functions import Abs
 
-    vivas = Parcela.objects.filter(estado='disponible').exclude(pk=parcela.pk)
+    vivas = Parcela.publicas.filter(estado='disponible').exclude(pk=parcela.pk)
     ciudad = (parcela.ciudad or '').strip()
     # Sin comuna no hay nada que priorizar: `__iexact=''` calzaria con todas
     # las que tampoco tienen, que no son "de la misma comuna".
@@ -392,15 +421,16 @@ def _relacionadas(parcela, cuantas=3):
     zona = list(
         vivas.filter(region=parcela.region)
         .annotate(misma_comuna=misma_comuna)
-        .order_by('misma_comuna', '-destacada', 'precio')[:cuantas]
+        .order_by('misma_comuna', '-destacada', 'precio')[:cuantas_zona]
     )
     similares = []
-    if parcela.precio:
+    faltan = cuantas - len(zona)
+    if parcela.precio and faltan > 0:
         similares = list(
             vivas.exclude(region=parcela.region)
             .filter(moneda=parcela.moneda, precio__gt=0)
             .annotate(distancia=Abs(F('precio') - parcela.precio))
-            .order_by('distancia')[:cuantas]
+            .order_by('distancia')[:faltan]
         )
     return zona, similares
 
@@ -415,7 +445,11 @@ def _enlaces_arriba(parcela):
     enlaces = []
     slug_c = _seo.slug_ciudad(parcela.ciudad)
     if slug_c:
-        enlaces.append((f'Parcelas en {parcela.ciudad.strip()}',
+        # Fila 60 de Jorge (23-11-2026): este enlace del final ya no usa el
+        # anchor "Parcelas en <comuna>", que ahora apunta a la FICHA que
+        # posiciona esa keyword desde guias y fichas (un anchor = una URL por
+        # pagina). La miga de arriba conserva "Parcelas en <comuna>": no se toca.
+        enlaces.append((f'Ver todas las parcelas disponibles en {parcela.ciudad.strip()}',
                         _seo.ruta_ciudad(slug_region, slug_c)))
     enlaces.append((REGIONES_SEO[slug_region][2], _seo.ruta_region(slug_region)))
     return enlaces
@@ -640,7 +674,7 @@ def sitemap_xml(request):
     """
     from . import seo as _seo
 
-    parcelas = Parcela.objects.filter(estado='disponible').values_list('slug', flat=True)
+    parcelas = Parcela.publicas.filter(estado='disponible').values_list('slug', flat=True)
     base = "https://puntoparcelas.cl"
     urls = [
         f"  <url><loc>{base}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>",
@@ -666,7 +700,7 @@ def sitemap_xml(request):
     # cuando quedan vacias, asi que publicarlas igual seria mandarle a Google
     # una URL muerta -- el mismo error que tenia /reserva/.
     from . import caracteristicas as _car
-    vivas = Parcela.objects.exclude(estado='vendida')
+    vivas = Parcela.publicas.exclude(estado='vendida')
     for slug_car in _car.SLUGS:
         if vivas.filter(_car.filtro(slug_car)).exists():
             urls.append(f"  <url><loc>{base}/catalogo/{slug_car}/</loc>"

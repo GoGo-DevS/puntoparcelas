@@ -141,3 +141,37 @@ def bloques_visibles(caracteristicas_vivas=None):
         return _guias.con_enlaces(texto)
 
     return [(t, [arreglar(p) for p in parrafos]) for t, parrafos in BLOQUES]
+
+
+# ---------------------------------------------------------------------------
+# "Parcelas por comuna" (Jorge Urzua, planilla de enlazado del 23-11-2026, fila 58)
+# ---------------------------------------------------------------------------
+# Cada keyword "parcelas en <comuna>" enlaza a la FICHA que hoy la posiciona
+# en Google (pos. 3 a 15), no a la categoria de la comuna (pos. 20 a 50). El
+# orden es el de la planilla.
+PARCELAS_POR_COMUNA = [
+    ('Frutillar',     'prados-de-frutillar'),
+    ('Santo Domingo', 'vive-santo-domingo'),
+    ('Cauquenes',     'praderas-de-cauquenes'),
+    ('Matanzas',      'parcelas-cerca-del-mar-matanzas-3'),
+    ('Chillán',       'vive-chillan'),
+    ('Osorno',        'vive-osorno'),
+    ('Ovalle',        'vive-ovalle'),
+    ('Constitución',  'lomas-de-constitucion'),
+]
+
+
+def parcelas_por_comuna():
+    """[{comuna, ruta}] solo con las fichas que HOY existen y no estan vendidas.
+
+    Los slugs van escritos a mano (son los que eligio Jorge), asi que se
+    comprueban contra la base: si Leonardo borra o vende una, su enlace sale
+    solo en vez de quedar apuntando a un 404 o a algo que ya no se puede
+    comprar. Una sola consulta.
+    """
+    from .models import Parcela
+
+    vivas = set(Parcela.publicas.exclude(estado='vendida')
+                .filter(slug__in=[s for _c, s in PARCELAS_POR_COMUNA])
+                .values_list('slug', flat=True))
+    return [{'comuna': c, 'ruta': f'/catalogo/{s}/'} for c, s in PARCELAS_POR_COMUNA if s in vivas]

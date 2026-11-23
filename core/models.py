@@ -53,7 +53,22 @@ REGIONES = [
 ]
 
 
+class ParcelasPublicas(models.Manager):
+    """Las fichas que el sitio publico puede listar: todas menos las que
+    responden 301 (core/redirecciones.py). Sin esto, la home, el catalogo y el
+    sitemap seguirian enlazando a una URL que redirige (23-11-2026)."""
+
+    def get_queryset(self):
+        from .redirecciones import REDIRECCIONES_301
+        return super().get_queryset().exclude(slug__in=list(REDIRECCIONES_301))
+
+
 class Parcela(models.Model):
+    # `objects` va PRIMERO y explicito: es el manager por defecto (panel,
+    # admin, get_or_create). `publicas` es solo para los listados del sitio.
+    objects  = models.Manager()
+    publicas = ParcelasPublicas()
+
     ESTADO_CHOICES = [
         ('disponible', 'Disponible'),
         ('reservada',  'Reservada'),

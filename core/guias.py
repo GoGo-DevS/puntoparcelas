@@ -125,6 +125,12 @@ GUIAS = {
              'Llanquihue o hacia Puerto Octay.'),
             ('p', 'Si estás mirando la zona completa, el catálogo de [[Parcelas en Los '
              'Lagos|/catalogo/los-lagos/]] reúne todas las comunas con proyectos disponibles.'),
+            # Jorge 23-11, filas 24 y 25. La ficha de Prados dice "Puerto Varas: 45 minutos".
+            ('p', 'A 45 minutos de Puerto Varas hay [[parcelas en '
+             'Frutillar|/catalogo/prados-de-frutillar/]] con vista a los volcanes, como Prados de '
+             'Frutillar.'),
+            ('p', 'Si te gusta la zona pero quieres comparar alternativas, revisa más [[parcelas en '
+             'el sur de Chile|/catalogo/parcelas-sur-de-chile/]].'),
             ('p', 'Para comparar con la localidad vecina, revisa también [[qué hacer en '
              'Osorno|/guias/que-hacer-en-osorno/]].'),
             ('p', 'Cuando ya tengas clara la zona, revisa todos los [[terrenos en venta|/]] '
@@ -149,8 +155,11 @@ GUIAS = {
              'conocidos del país por su cocina y su artesanía en mimbre.'),
             ('p', 'Hacia la cordillera está el complejo de los Nevados de Chillán, que funciona '
              'como centro de esquí en invierno y como zona de termas y senderos el resto del '
-             'año. Los proyectos de la comuna están en [[Parcelas en '
-             'Chillán|/catalogo/nuble/chillan/]].'),
+             'año.'),
+            # Jorge 23-11, fila 8: la keyword va a la ficha que posiciona (pos 6,3).
+            ('p', 'Si buscas [[parcelas en Chillán|/catalogo/vive-chillan/]], Vive Chillán tiene '
+             'parcelas 100% planas a 30 minutos de la ciudad. También puedes [[ver todas las '
+             'parcelas disponibles en Chillán|/catalogo/nuble/chillan/]].'),
             ('h2', 'Panoramas en Chillán durante todo el año'),
             ('p', 'El Mercado de Chillán es el punto de partida obligado: longaniza, queso de '
              'Chanco y mimbre de Chimbarongo en un mismo lugar, con cocinerías abiertas al '
@@ -188,7 +197,8 @@ GUIAS = {
             ('p', 'El valor del suelo es bastante más bajo que en el litoral central o la zona de '
              'los lagos, y por eso aparece seguido en las búsquedas de terreno con superficie '
              'grande.'),
-            ('p', 'El catálogo completo de la zona está en [[parcelas chillan|/catalogo/nuble/]].'),
+            # Fila 9: "parcelas chillan" chocaba con el anchor de la fila 8.
+            ('p', 'El catálogo completo de la zona está en [[parcelas en Ñuble|/catalogo/nuble/]].'),
             ('p', 'Para comparar con otra localidad de la misma región, revisa también [[qué hacer '
              'en Puerto Varas|/guias/que-hacer-en-puerto-varas/]].'),
             ('p', 'Si Chillán entra en tus opciones, mira el resto de [[terrenos en venta|/]] '
@@ -212,8 +222,11 @@ GUIAS = {
             ('p', 'Desde acá salen los caminos al lago Rupanco, al lago Puyehue y al Parque '
              'Nacional Puyehue, además de la ruta internacional al paso Cardenal Samoré.'),
             ('p', 'Esa posición es la que explica su interés inmobiliario: permite vivir con todos '
-             'los servicios y tener terreno a media hora del agua. Los proyectos están en '
-             '[[Parcelas en Osorno|/catalogo/los-lagos/osorno/]].'),
+             'los servicios y tener terreno a media hora del agua.'),
+            # Jorge 23-11, fila 16.
+            ('p', 'Si buscas [[parcelas en Osorno|/catalogo/vive-osorno/]], Vive Osorno tiene '
+             'parcelas 100% planas de 5.000 m² a 13 minutos de la Plaza de Osorno. También '
+             'puedes [[ver todas las parcelas disponibles en Osorno|/catalogo/los-lagos/osorno/]].'),
             ('h2', 'Panoramas en Osorno y sus alrededores'),
             ('p', 'Las Termas de Puyehue, a unos 75 kilómetros, son el panorama más pedido: '
              'piscinas termales al aire libre en medio del bosque, abiertas todo el año.'),
@@ -250,6 +263,11 @@ GUIAS = {
              'Llanquihue.'),
             ('p', 'El catálogo de [[Parcelas en Los Lagos|/catalogo/los-lagos/]] muestra todas las '
              'comunas de la región.'),
+            # Filas 17 y 18.
+            ('p', 'Otra opción en la Región de Los Lagos es comprar una [[parcela en '
+             'Frutillar|/catalogo/prados-de-frutillar/]].'),
+            ('p', 'Si buscas algo similar en otras comunas, revisa también otros [[terrenos en el '
+             'sur de Chile|/catalogo/parcelas-sur-de-chile/]].'),
             ('p', 'Para comparar con la ciudad vecina, revisa también [[qué hacer en Puerto '
              'Varas|/guias/que-hacer-en-puerto-varas/]].'),
             ('p', 'Para seguir comparando, revisa todos los [[terrenos en venta|/]] del portal y '
@@ -312,6 +330,9 @@ GUIAS = {
              'pero a pocos kilómetros hacia el interior el panorama cambia por completo.'),
             ('p', 'El catálogo de [[Parcelas en Araucanía|/catalogo/araucania/]] reúne los '
              'proyectos de la zona.'),
+            # Jorge 23-11, fila 33.
+            ('p', 'Si buscas lagos y bosques, revisa nuestras [[parcelas en el sur de '
+             'Chile|/catalogo/parcelas-sur-de-chile/]].'),
             ('p', 'Para comparar con otra localidad del sur, revisa también [[qué hacer en Puerto '
              'Varas|/guias/que-hacer-en-puerto-varas/]].'),
             ('p', 'Cuando ya tengas clara la zona, revisa todos los [[terrenos en venta|/]] '
@@ -335,7 +356,10 @@ GUIAS = {
             ('p', 'Su ola izquierda de Punta de Lobos recibe competencias internacionales y es '
              'reserva mundial de surf, lo que le dio proyección más allá del turismo local.'),
             ('p', 'Esa demanda sostenida explica por qué el suelo de la zona se movió tanto en la '
-             'última década. Los proyectos están en [[Parcelas en '
+             'última década.'),
+            # Jorge 23-11, fila 19.
+            ('p', 'Si quieres una [[parcela en Pichilemu|/catalogo/alto-pichilemu-ii/]], revisa '
+             'Alto Pichilemu II. También puedes [[ver todas las parcelas disponibles en '
              'Pichilemu|/catalogo/ohiggins/pichilemu/]].'),
             ('h2', 'Panoramas en Pichilemu más allá de la playa'),
             ('p', 'Punta de Lobos es la parada obligada: el mirador sobre los farellones y las dos '
@@ -367,6 +391,10 @@ GUIAS = {
              'pavimentado en todo el trayecto.'),
             ('p', 'En bus hay servicios directos desde el Terminal San Borja de Santiago, con '
              'varias salidas diarias y más frecuencia en temporada alta.'),
+            # Fila 23.
+            ('p', 'En la ruta desde San Fernando hay [[parcelas en San '
+             'Fernando|/catalogo/mirador-de-puente-negro-parcelas-desde-16990000-a-25-min-de-san-fernando/]], '
+             'en el sector Puente Negro.'),
             ('h2', 'Vivir en Pichilemu'),
             ('p', 'Tiene colegios, consultorio, supermercados y comercio estable, aunque la '
              'población se multiplica en enero y febrero y eso se siente en los servicios.'),
@@ -375,6 +403,13 @@ GUIAS = {
              'playa.'),
             ('p', 'El catálogo de [[parcelas cerca de santiago|/catalogo/ohiggins/]] muestra todas '
              'las localidades del secano costero.'),
+            # Filas 20, 21 y 22: comunas cercanas que no tienen guia propia.
+            ('p', 'Si buscas costa con menos gente, hay [[terrenos en '
+             'Matanzas|/catalogo/parcelas-cerca-del-mar-matanzas-3/]], en la comuna de Navidad.'),
+            ('p', 'Al norte de Pichilemu está Puertecillo, playa de surf donde también hay '
+             '[[terrenos en Puertecillo|/catalogo/lomas-de-puertecillo/]].'),
+            ('p', 'Más al sur, en el secano costero, también hay [[parcelas en '
+             'Paredones|/catalogo/estancia-paredones/]].'),
             ('p', 'Para comparar con otra de la misma región, revisa también [[qué hacer en '
              'Litueche|/guias/que-hacer-en-litueche/]].'),
             ('p', 'Si Pichilemu entra en tus opciones, mira el resto de [[terrenos en venta|/]] '
@@ -399,7 +434,12 @@ GUIAS = {
             ('p', 'Se divide en Frutillar Alto, junto a la carretera, y Frutillar Bajo, el sector '
              'histórico a orillas del lago, que es el que se visita.'),
             ('p', 'Cada verano, las Semanas Musicales llenan el pueblo de conciertos desde hace '
-             'más de cincuenta años. Los terrenos disponibles están en [[Parcelas en '
+             'más de cincuenta años.'),
+            # Jorge 23-11, fila 12. Ficha en vivo: desde $16.990.000, vista a los
+            # volcanes Osorno y Calbuco (verificado 23-11).
+            ('p', 'Si buscas [[parcelas en Frutillar|/catalogo/prados-de-frutillar/]], Prados de '
+             'Frutillar tiene parcelas de 5.000 m² desde $16.990.000, con vista a los volcanes '
+             'Osorno y Calbuco. También puedes [[ver todas las parcelas disponibles en '
              'Frutillar|/catalogo/los-lagos/frutillar/]].'),
             ('h2', 'Panoramas en Frutillar durante el año'),
             ('p', 'El Teatro del Lago mantiene temporada estable de conciertos y ópera, y su '
@@ -460,9 +500,12 @@ GUIAS = {
             ('p', 'Es conocido por el club de yates, por la piscina más grande del mundo en San '
              'Alfonso del Mar y por la Isla de los Pájaros Niños, con su colonia de pingüinos '
              'de Humboldt.'),
+            # Jorge 23-11, fila 4: la intro enlaza a la FICHA que posiciona, no a la
+            # categoria (Algarrobo no tiene comuna propia: caia en la region).
             ('p', 'La cercanía a la capital lo mantiene activo todo el año, no solo en temporada. '
-             'Los proyectos de la comuna están en [[Parcelas en '
-             'Algarrobo|/catalogo/valparaiso/algarrobo/]].'),
+             'Si buscas [[terrenos en Algarrobo|/catalogo/parque-algarrobo/]], Parque Algarrobo '
+             'tiene macrolotes desde 5 hectáreas. También puedes [[ver todas las parcelas en la '
+             'Región de Valparaíso|/catalogo/valparaiso/]].'),
             ('h2', 'Panoramas en Algarrobo para el fin de semana'),
             ('p', 'La playa San Pedro y la playa Las Cadenas son las de mar más calmo, aptas para '
              'baño y para navegar a vela desde el club de yates.'),
@@ -496,8 +539,12 @@ GUIAS = {
              'Antonio cubriendo lo mayor a media hora.'),
             ('p', 'La población estable creció fuerte con el trabajo remoto, y eso presionó el '
              'valor del suelo cerca del borde costero.'),
-            ('p', 'El catálogo de [[terrenos en viña del mar|/catalogo/valparaiso/]] muestra las '
-             'comunas disponibles.'),
+            # Fila 5: "terrenos en viña del mar" no tenia relacion con la guia.
+            ('p', 'El catálogo de [[parcelas en la Región de Valparaíso|/catalogo/valparaiso/]] '
+             'muestra las comunas disponibles.'),
+            # Fila 6.
+            ('p', 'Más al sur, en la misma costa central, también hay [[parcelas en Santo '
+             'Domingo|/catalogo/vive-santo-domingo/]].'),
             ('p', 'Para comparar con otra localidad del mismo litoral, revisa también [[qué hacer '
              'en Santo Domingo|/guias/que-hacer-en-santo-domingo/]].'),
             ('p', 'Cuando ya tengas clara la zona, revisa todos los [[terrenos en venta|/]] '
@@ -522,8 +569,13 @@ GUIAS = {
             ('p', 'Su atractivo principal son las formaciones rocosas de la playa, con la Piedra '
              'de la Iglesia como la más conocida, accesible a pie cuando baja la marea.'),
             ('p', 'Se reconstruyó después del terremoto y tsunami de 2010, y hoy su costanera es '
-             'uno de los paseos mejor habilitados de la zona. Los proyectos están en '
-             '[[Parcelas en Constitución|/catalogo/maule/constitucion/]].'),
+             'uno de los paseos mejor habilitados de la zona.'),
+            # Jorge 23-11, fila 10. Ficha en vivo: desde $6.500.000, credito directo
+            # desde pie $0 hasta 48 cuotas (verificado 23-11).
+            ('p', 'Si buscas [[parcelas en Constitución|/catalogo/lomas-de-constitucion/]], Lomas '
+             'de Constitución tiene parcelas de 5.000 m² desde $6.500.000, con crédito directo '
+             'pie $0 hasta 48 cuotas. También puedes [[ver todas las parcelas disponibles en '
+             'Constitución|/catalogo/maule/constitucion/]].'),
             ('h2', 'Panoramas en Constitución junto al río y el mar'),
             ('p', 'La playa Piedras Blancas y el sector de la Piedra de la Iglesia concentran las '
              'formaciones rocosas que dan identidad al lugar. Conviene revisar la tabla de '
@@ -561,6 +613,9 @@ GUIAS = {
              'costero.'),
             ('p', 'El catálogo de [[parcelas en maule|/catalogo/maule/]] reúne las comunas de la '
              'región.'),
+            # Fila 11.
+            ('p', 'En la misma Región del Maule, hacia el interior, también hay [[parcelas en '
+             'Cauquenes|/catalogo/praderas-de-cauquenes/]] con crédito directo.'),
             ('p', 'Para comparar con otra localidad cercana, revisa también [[qué hacer en '
              'Cauquenes|/guias/que-hacer-en-cauquenes/]].'),
             ('p', 'Si Constitución entra en tus opciones, mira el resto de [[terrenos en venta|/]] '
@@ -584,8 +639,13 @@ GUIAS = {
             ('p', 'Es una de las zonas donde todavía se trabaja la cepa país en secano, sin riego, '
              'y eso le dio un lugar propio en el mapa del vino chileno.'),
             ('p', 'Su atractivo para quien busca terreno es la superficie: acá las hectáreas '
-             'rinden bastante más por presupuesto que en la costa. Los proyectos están en '
-             '[[Parcelas en Cauquenes|/catalogo/maule/cauquenes/]].'),
+             'rinden bastante más por presupuesto que en la costa.'),
+            # Jorge 23-11, fila 7. Ficha en vivo: desde $8.990.000 (contado), credito
+            # directo desde pie $0 hasta 48 cuotas (verificado 23-11).
+            ('p', 'Si buscas [[parcelas en Cauquenes|/catalogo/praderas-de-cauquenes/]], Praderas '
+             'de Cauquenes tiene parcelas de 5.000 m² desde $8.990.000, con crédito directo pie '
+             '$0 hasta 48 cuotas. También puedes [[ver todas las parcelas disponibles en '
+             'Cauquenes|/catalogo/maule/cauquenes/]].'),
             ('h2', 'Panoramas en Cauquenes y el secano'),
             ('p', 'Las Termas de Cauquenes, a unos 25 kilómetros, son el panorama tradicional de '
              'la zona: piscinas de agua termal en un entorno de cerros.'),
@@ -644,7 +704,12 @@ GUIAS = {
             ('p', 'El sector de Rocas de Santo Domingo se trazó a mediados del siglo XX como '
              'balneario residencial, con pinos, calles curvas y baja densidad.'),
             ('p', 'Esa decisión urbana se mantiene y es la razón de su carácter: nada de torres '
-             'frente al mar. Los proyectos de la comuna están en [[Parcelas en Santo '
+             'frente al mar.'),
+            # Jorge 23-11, fila 26. Ficha en vivo: sector El Yali, 5.000 m² desde
+            # $14.990.000 (verificado 23-11).
+            ('p', 'Si buscas [[parcelas en Santo Domingo|/catalogo/vive-santo-domingo/]], Vive '
+             'Santo Domingo está en el sector El Yali, con parcelas de 5.000 m² desde '
+             '$14.990.000. También puedes [[ver todas las parcelas disponibles en Santo '
              'Domingo|/catalogo/valparaiso/santo-domingo/]].'),
             ('h2', 'Panoramas en Santo Domingo y su entorno'),
             ('p', 'La playa es el panorama central: extensa, abierta y con oleaje fuerte, más apta '
@@ -679,8 +744,15 @@ GUIAS = {
              'Antonio cubriendo salud, comercio y educación a quince minutos.'),
             ('p', 'La población estable es pequeña y creció con el trabajo remoto, lo que mantiene '
              'el interés por terrenos en el sector residencial y en el camino interior.'),
-            ('p', 'El catálogo de [[terrenos en viña del mar|/catalogo/valparaiso/]] reúne las '
-             'comunas disponibles.'),
+            # Fila 27: "terrenos en viña del mar" no tenia relacion con la guia.
+            ('p', 'El catálogo de [[parcelas en la Región de Valparaíso|/catalogo/valparaiso/]] '
+             'reúne las comunas disponibles.'),
+            # Filas 28 y 29.
+            ('p', 'Al norte de Santo Domingo, en la misma costa, también hay [[terrenos en '
+             'Algarrobo|/catalogo/parque-algarrobo/]].'),
+            ('p', 'Para quienes buscan más superficie, hay [[macrolotes en la Región de '
+             'Valparaíso|/catalogo/fundo-la-turquesa-macrolotes-desde-11-hectareas-en-leyda-desde-95000000/]] '
+             'desde 11 hectáreas, en Leyda.'),
             ('p', 'Para comparar con otro balneario del mismo litoral, revisa también [[qué hacer '
              'en Algarrobo|/guias/que-hacer-en-algarrobo/]].'),
             ('p', 'Cuando ya tengas clara la zona, revisa todos los [[terrenos en venta|/]] '
@@ -741,6 +813,17 @@ GUIAS = {
              'certificado de pozo y caudal medido antes de firmar.'),
             ('p', 'El catálogo de [[parcelas cerca de santiago|/catalogo/ohiggins/]] muestra todas '
              'las localidades de la región.'),
+            # Jorge 23-11, filas 13, 14 y 15: comunas cercanas sin guia propia.
+            # Matanzas: la ficha dice "cerca del mar" (la planilla decia "a pocos
+            # minutos del mar", sin cifra en la ficha). La Puntilla: "Litueche: 20
+            # minutos" y tranque de "aproximadamente 9 hectareas" (verificado 23-11).
+            ('p', 'Hacia la costa, cerca de Litueche, también hay [[parcelas en '
+             'Matanzas|/catalogo/parcelas-cerca-del-mar-matanzas-3/]], cerca del mar.'),
+            ('p', 'Desde Litueche también se llega a la costa de Puertecillo, donde puedes '
+             'encontrar un [[terreno en Puertecillo|/catalogo/lomas-de-puertecillo/]].'),
+            ('p', 'A 20 minutos de Litueche hay [[parcelas en La '
+             'Estrella|/catalogo/fundo-la-puntilla/]] con un tranque navegable de aproximadamente '
+             '9 hectáreas, como Fundo La Puntilla.'),
             ('p', 'Para comparar con la costa cercana, revisa también [[qué hacer en '
              'Pichilemu|/guias/que-hacer-en-pichilemu/]].'),
             ('p', 'Si Litueche entra en tus opciones, mira el resto de [[terrenos en venta|/]] '
@@ -787,6 +870,9 @@ GUIAS = {
             ('p', 'Sin rol propio, la parcela comparte el del predio madre, y eso complica desde '
              'pedir un crédito hipotecario hasta solicitar factibilidad eléctrica.'),
             ('p', 'Es, junto con la escritura inscrita, el documento que no se negocia.'),
+            # Jorge 23-11, fila 2: "parcelas con rol propio" (pos 3,2).
+            ('p', 'Si quieres comparar opciones que ya cumplen este requisito, revisa las '
+             '[[parcelas con rol propio|/catalogo/parcela-con-rol-propio/]] disponibles.'),
             ('h2', 'Cómo comprar una parcela en Chile, paso a paso'),
             ('p', 'El proceso tiene una secuencia que conviene respetar y no apurar.'),
             ('li', 'Visitar el terreno en persona, idealmente después de una lluvia fuerte.'),
@@ -798,6 +884,9 @@ GUIAS = {
             ('li', 'Confirmar la factibilidad eléctrica y quién mantiene el camino de acceso.'),
             ('li', 'Firmar promesa de compraventa y después escritura, con inscripción en el '
              'Conservador.'),
+            # Fila 3: "parcelas en cuotas" (pos 3,7) y la familia de "credito directo".
+            ('p', 'Si no tienes el total al contado, existen [[parcelas en '
+             'cuotas|/catalogo/parcela-con-credito-directo/]] con crédito directo del vendedor.'),
             ('h2', 'Conviene invertir en parcelas: qué mirar antes de decidir'),
             ('p', 'La pregunta de si conviene invertir en parcelas no tiene respuesta única, pero '
              'sí tres factores que explican casi toda la diferencia de rentabilidad.'),
@@ -811,6 +900,10 @@ GUIAS = {
              'muestra lo que hay disponible hoy.'),
             ('p', 'Con la figura legal clara, el paso siguiente es mirar la oferta: revisa todos '
              'los [[terrenos en venta|/]] disponibles y compara por región.'),
+            # Fila 1: "parcelas en venta" hacia la home. El boton final hacia
+            # /catalogo/ ("Ver todas las parcelas en venta") se mantiene, como pide la fila.
+            ('p', 'Si ya tienes claro qué buscar, revisa nuestras [[parcelas en venta|/]] en '
+             'todo Chile.'),
         ],
     },
     'que-hacer-en-vichuquen': {
@@ -830,7 +923,10 @@ GUIAS = {
             ('p', 'El pueblo de Vichuquén conserva casas de adobe y teja colonial, y está '
              'declarado zona típica.'),
             ('p', 'Junto al lago está la Reserva Nacional Laguna Torca, refugio de cisnes de '
-             'cuello negro. Los proyectos de la comuna están en [[Parcelas en '
+             'cuello negro.'),
+            # Jorge 23-11, fila 30.
+            ('p', 'Si buscas [[parcelas en Vichuquén|/catalogo/hacienda-vichuquen-3/]], revisa '
+             'Hacienda Vichuquén. También puedes [[ver todas las parcelas disponibles en '
              'Vichuquén|/catalogo/maule/vichuquen/]].'),
             ('h2', 'Panoramas en Vichuquén sobre el agua'),
             ('p', 'El lago concentra la actividad: esquí acuático, vela, kayak y wakeboard, con '
@@ -866,6 +962,12 @@ GUIAS = {
              'interior y en el camino a Llico el panorama cambia.'),
             ('p', 'El catálogo de [[parcelas en maule|/catalogo/maule/]] reúne las comunas de la '
              'región.'),
+            # Filas 31 y 32. Valles del Maule: "Lago Vichuquén: 1 hora 10 minutos",
+            # comuna de Hualañé cerca de Lolol, con crédito directo (verificado 23-11).
+            ('p', 'A 1 hora 10 minutos del Lago Vichuquén hay [[parcelas en Hualañé y '
+             'Lolol|/catalogo/valles-del-maule/]] con crédito directo, como Valles del Maule.'),
+            ('p', 'En la costa entre O\'Higgins y el Maule también hay [[parcelas en '
+             'Paredones|/catalogo/estancia-paredones/]].'),
             ('p', 'Para comparar con otra localidad del Maule, revisa también [[qué hacer en '
              'Constitución|/guias/que-hacer-en-constitucion/]].'),
             ('p', 'Para seguir comparando, revisa todos los [[terrenos en venta|/]] del portal y '
@@ -898,6 +1000,9 @@ GUIAS = {
             ('li', 'Plano de subdivisión aprobado por el SAG y su resolución.'),
             ('li', 'Rol de avalúo propio del lote en el Servicio de Impuestos Internos.'),
             ('li', 'Certificado de deuda de contribuciones al día.'),
+            # Jorge 23-11, fila 35: "terrenos con rol propio" (pos 9,8).
+            ('p', 'Por eso conviene buscar [[terrenos con rol '
+             'propio|/catalogo/parcela-con-rol-propio/]] y documentación al día.'),
             ('h2', 'Cómo saber si una parcela tiene agua'),
             ('p', 'Esta es la revisión que más dinero ahorra y la que más se omite. Quien pregunta '
              'cómo saber si una parcela tiene agua suele recibir como respuesta que "hay napa '
@@ -909,6 +1014,10 @@ GUIAS = {
              'sin garantía de caudal puede costar varios millones y no dar agua suficiente.'),
             ('p', 'En zonas de secano, como el interior del Maule o de O\'Higgins, este punto '
              'define el valor del terreno más que la superficie.'),
+            # Fila 36: "parcelas en Ovalle". La ficha de Vive Ovalle dice "sin agua y
+            # sin luz, cada propietario implementa su propia solución" (verificado 23-11).
+            ('p', 'Por ejemplo, en las [[parcelas en Ovalle|/catalogo/vive-ovalle/]] frente al '
+             'mar cada propietario implementa su propia solución de agua y luz.'),
             ('h2', 'El acceso, la servidumbre y el camino'),
             ('p', 'Un terreno sin acceso legal garantizado vale mucho menos de lo que parece, '
              'aunque hoy se llegue sin problema.'),
@@ -928,6 +1037,10 @@ GUIAS = {
              'nombre. Esa diferencia es la que distingue un crédito directo serio de uno que '
              'no lo es.'),
             ('p', 'El catálogo por región indica qué proyectos trabajan con esta modalidad.'),
+            # Fila 34: las dos keywords de pago, mismo destino (max. 2 enlaces por parrafo).
+            ('p', 'Algunos proyectos ofrecen [[parcelas sin pie en '
+             'cuotas|/catalogo/parcela-con-credito-directo/]]. Revisa todas las [[parcelas con '
+             'crédito directo|/catalogo/parcela-con-credito-directo/]] disponibles.'),
             ('h2', 'Lo que solo se ve en terreno'),
             ('p', 'Tres cosas no aparecen en ningún certificado y hay que ir a verlas.'),
             ('p', 'El drenaje después de una lluvia fuerte, porque un sector que acumula agua en '
@@ -957,7 +1070,56 @@ from django.utils.safestring import mark_safe
 _ENLACE = re.compile(r'\[\[([^|\]]+)\|([^\]]+)\]\]')
 
 
-def _ruta_viva(ruta):
+def _ficha_o_caracteristica_viva(slug, ruta, cache):
+    """/catalogo/<slug>/ que no es region: una pagina por caracteristica o una ficha.
+
+    23-11-2026: la planilla de enlazado de Jorge manda las keywords de comuna a
+    la FICHA que posiciona (vive-chillan, prados-de-frutillar...) y las de pago
+    a las paginas por caracteristica. Las dos pueden dejar de existir sin que
+    nadie toque este archivo: Leonardo borra una ficha, o una caracteristica
+    queda sin parcelas y responde 404 a proposito. En ambos casos el enlace
+    baja al catalogo en vez de publicarse roto, igual que las comunas.
+
+    Una ficha que redirige (core/redirecciones.py) se enlaza DIRECTO a su
+    destino: enlazar a una 301 desde el propio sitio es una cadena gratuita.
+    """
+    from . import caracteristicas as _car
+    from .models import Parcela
+    from .redirecciones import REDIRECCIONES_301
+
+    if slug in _car.SLUGS:
+        clave = ('car', slug)
+        if clave not in cache:
+            # La misma regla que la vista: 404 solo si NINGUNA parcela calza.
+            cache[clave] = Parcela.publicas.filter(_car.filtro(slug)).exists()
+        return ruta if cache[clave] else '/catalogo/'
+
+    slug = REDIRECCIONES_301.get(slug, slug)
+    if 'fichas' in cache:                 # precargadas por cuerpo_renderizado
+        existe = slug in cache['fichas']
+    else:
+        existe = Parcela.publicas.filter(slug=slug).exists()
+    return '/catalogo/%s/' % slug if existe else '/catalogo/'
+
+
+def _slugs_de_fichas(textos):
+    """Los slugs de ficha que citan esos textos, para buscarlos en UNA consulta."""
+    from . import caracteristicas as _car
+    from .redirecciones import REDIRECCIONES_301
+    from .views import REGION_KEY_A_SLUG
+
+    regiones = set(REGION_KEY_A_SLUG.values())
+    slugs = set()
+    for texto in textos:
+        for m in _ENLACE.finditer(texto):
+            tramos = [t for t in m.group(2).strip('/').split('/') if t]
+            if (len(tramos) == 2 and tramos[0] == 'catalogo' and tramos[1] not in regiones
+                    and tramos[1] not in _car.SLUGS):
+                slugs.add(REDIRECCIONES_301.get(tramos[1], tramos[1]))
+    return slugs
+
+
+def _ruta_viva(ruta, cache=None):
     """La mejor ruta REAL para ese destino, bajando de comuna a region a catalogo.
 
     El documento da por hecho que las 12 comunas existen y tres no (medido el
@@ -978,7 +1140,9 @@ def _ruta_viva(ruta):
 
     slug_a_key = {slug: key for key, slug in REGION_KEY_A_SLUG.items()}
     key = slug_a_key.get(tramos[1])
-    if key is None:                       # no es una region: caracteristica u otra
+    if key is None:                       # no es una region: caracteristica o ficha
+        if len(tramos) == 2:
+            return _ficha_o_caracteristica_viva(tramos[1], ruta, {} if cache is None else cache)
         return ruta
 
     vivas = _regiones_con_parcelas()
@@ -995,16 +1159,18 @@ def _ruta_viva(ruta):
     return ruta_region
 
 
-def con_enlaces(texto):
+def con_enlaces(texto, cache=None):
     """El texto con [[anchor|ruta]] convertido en <a>, con la ruta ya resuelta.
 
     Se escapa el texto ANTES de meter el HTML: el contenido viene de un .docx y
     cualquier `<` o `&` suelto rompe la pagina o, peor, inyecta marcado.
+    `cache` se comparte entre los parrafos de una misma pagina (ver
+    cuerpo_renderizado): las consultas son por pagina, no por enlace.
     """
     partes, fin = [], 0
     for m in _ENLACE.finditer(texto):
         partes.append(escape(texto[fin:m.start()]))
-        anchor, ruta = m.group(1), _ruta_viva(m.group(2))
+        anchor, ruta = m.group(1), _ruta_viva(m.group(2), cache)
         partes.append('<a href="%s">%s</a>' % (escape(ruta), escape(anchor)))
         fin = m.end()
     partes.append(escape(texto[fin:]))
@@ -1016,7 +1182,13 @@ def cuerpo_renderizado(slug):
     guia = GUIAS.get(slug)
     if not guia:
         return []
-    return [(tipo, con_enlaces(txt)) for tipo, txt in guia['cuerpo']]
+    from .models import Parcela
+
+    textos = [txt for _tipo, txt in guia['cuerpo']]
+    citadas = _slugs_de_fichas(textos)
+    cache = {'fichas': set(Parcela.publicas.filter(slug__in=citadas)
+                           .values_list('slug', flat=True)) if citadas else set()}
+    return [(tipo, con_enlaces(txt, cache)) for tipo, txt in guia['cuerpo']]
 
 
 def sin_marcadores(texto):

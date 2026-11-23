@@ -82,6 +82,10 @@ CONTENIDO = {
             'En Punto Parcelas reunimos terrenos en el sur de Chile en regiones como Los '
              'Lagos, Los Ríos y La Araucanía. Compara ubicación, superficie, vistas y '
              'financiamiento, y elige la parcela que mejor se adapta a tu proyecto.',
+            # Jorge 23-11-2026, fila 49: "terrenos en Ovalle" (pos 5,5). La ficha de
+            # Vive Ovalle dice "Ubicación frente al mar" (verificado 23-11).
+            'Si prefieres el norte chico, revisa los [[terrenos en '
+             'Ovalle|/catalogo/vive-ovalle/]] frente al mar.',
         ],
         'considerar': [
             'Clima y suelo: el sur es lluvioso; revisa drenaje y accesos en invierno.',

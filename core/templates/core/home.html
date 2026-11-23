@@ -425,6 +425,27 @@
   </div>
 </section>
 
+{% comment %} PARCELAS POR COMUNA (fila 58 de la planilla de Jorge, 23-11-2026): cada
+   "parcelas en <comuna>" va a la FICHA que posiciona esa keyword, no a la categoria.
+   Sale de contenido_home.parcelas_por_comuna: una ficha borrada o vendida sale sola. {% endcomment %}
+{% if comunas_home %}
+<section class="home-comunas" aria-label="Parcelas por comuna">
+  <div class="container">
+    <h2 class="home-comunas__h2">Parcelas por comuna</h2>
+    <ul class="home-comunas__lista">
+      {% for c in comunas_home %}<li><a href="{{ c.ruta }}">Parcelas en {{ c.comuna }}</a></li>{% endfor %}
+    </ul>
+  </div>
+</section>
+<style>
+  .home-comunas { border-top: 1px solid var(--pp-border); padding: 2.5rem 0 1rem; }
+  .home-comunas__h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 1.2rem; }
+  .home-comunas__lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; }
+  .home-comunas__lista a { display: inline-block; padding: .45rem .95rem; border: 1px solid var(--pp-border); border-radius: 999px; color: var(--pp-muted); font-size: .85rem; text-decoration: none; }
+  .home-comunas__lista a:hover { color: var(--pp-gold); border-color: var(--pp-gold); }
+</style>
+{% endif %}
+
 {% comment %} PREFOOTER (punto 7 de Jorge, referencia parcelasrutachile.cl): todo el catalogo
    vigente, agrupado por region, a un clic de la portada. Sale de los datos:
    una parcela nueva aparece sola y una vendida sale sola. {% endcomment %}

@@ -324,7 +324,9 @@
 {% endcomment %}
 <section class="car-intro">
   <div class="container">
-    {% for parrafo in contenido_caracteristica.intro %}
+    {% comment %} intro_caracteristica: los mismos parrafos con [[anchor|ruta]] resuelto y
+       el resto escapado (guias.con_enlaces). Antes eran texto plano sin enlaces. {% endcomment %}
+    {% for parrafo in intro_caracteristica %}
     <p class="car-intro__p">{{ parrafo }}</p>
     {% endfor %}
     {% if contenido_caracteristica.considerar %}

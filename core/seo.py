@@ -36,7 +36,7 @@ def ciudades_de_region(region, solo_disponibles=False):
 
     Devuelve [{nombre, slug, total}], ordenado de mas a menos parcelas.
     """
-    qs = Parcela.objects.filter(region=region).exclude(ciudad='')
+    qs = Parcela.publicas.filter(region=region).exclude(ciudad='')
     if solo_disponibles:
         qs = qs.filter(estado='disponible')
 
