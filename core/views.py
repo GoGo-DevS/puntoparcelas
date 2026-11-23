@@ -356,7 +356,14 @@ def parcela_detail(request, slug):
     form = ConsultaForm(initial={'parcela': parcela.pk})
     zona, similares = _relacionadas(parcela)
     from . import faq as _faq
+    from . import guias as _guias
     desc_arriba, preguntas, desc_abajo = _faq.partir(parcela.descripcion)
+    # 23-11-2026: la descripcion admite el marcador de las guias,
+    # [[anchor|/ruta/]] (filas de fichas de la planilla de Jorge). El cuerpo lo
+    # dibuja como enlace; TODO lo demas (preguntas, meta, schema) lo recibe
+    # sin marcadores, solo con el anchor: nunca se publica un "[[".
+    cache = _guias.precargar([desc_arriba, desc_abajo])
+    preguntas = [(_guias.sin_marcadores(p), _guias.sin_marcadores(r)) for p, r in preguntas]
     return render(request, 'core/parcela_detail.html', {
         'parcela': parcela,
         'form': form,
@@ -365,6 +372,10 @@ def parcela_detail(request, slug):
         'desc_arriba': desc_arriba,
         'preguntas': preguntas,
         'desc_abajo': desc_abajo,
+        'desc_arriba_html': _guias.descripcion_html(desc_arriba, cache),
+        'desc_abajo_html': _guias.descripcion_html(desc_abajo, cache) if desc_abajo else '',
+        # Para la meta description: el texto sin los [[...]].
+        'desc_plana': _guias.sin_marcadores(parcela.descripcion),
         'relacionadas': zona,
         'similares': similares,
         'enlaces_arriba': _enlaces_arriba(parcela),
@@ -505,7 +516,9 @@ def _parcela_schema(request, parcela, preguntas=()):
         'vendida':    'https://schema.org/SoldOut',
     }.get(parcela.estado, 'https://schema.org/InStock')
 
-    descripcion = (parcela.descripcion or
+    from . import guias as _guias
+    # Sin los [[...]] de los enlaces internos: en el JSON-LD va solo el anchor.
+    descripcion = (_guias.sin_marcadores(parcela.descripcion) or
                    f'Parcela de {parcela.superficie_display} en '
                    f'{parcela.get_region_display()}.').strip()
 

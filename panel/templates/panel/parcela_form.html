@@ -84,6 +84,9 @@
           <div class="col-12">
             <label class="form-label">Descripción</label>
             {{ form.descripcion }}
+            {% comment %} 23-11-2026: el texto se guarda tal cual; el sitio dibuja el marcador como
+               enlace en el cuerpo de la ficha y lo quita (deja el texto) en Google y WhatsApp. {% endcomment %}
+            <div class="form-text">Para enlazar otra página escribe <code>[[texto del enlace|/catalogo/nombre-de-la-ficha/]]</code>.</div>
           </div>
         </div>
       </div>

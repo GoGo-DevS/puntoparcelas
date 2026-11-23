@@ -1145,7 +1145,15 @@ def _ruta_viva(ruta, cache=None):
             return _ficha_o_caracteristica_viva(tramos[1], ruta, {} if cache is None else cache)
         return ruta
 
-    vivas = _regiones_con_parcelas()
+    # Con `cache` (una pagina completa) las regiones y las comunas se consultan
+    # UNA vez por pagina y no una por enlace (G-04). Sigue siendo por render:
+    # una parcela nueva aparece el mismo dia.
+    if cache is None:
+        vivas = _regiones_con_parcelas()
+    else:
+        if 'regiones' not in cache:
+            cache['regiones'] = _regiones_con_parcelas()
+        vivas = cache['regiones']
     if key not in vivas:                  # ni la region existe -> catalogo completo
         return '/catalogo/'
 
@@ -1154,7 +1162,14 @@ def _ruta_viva(ruta, cache=None):
         return ruta_region
 
     # Pedia una comuna: solo vale si HOY tiene parcelas.
-    if any(c['slug'] == tramos[2] for c in ciudades_de_region(key)):
+    if cache is None:
+        ciudades = ciudades_de_region(key)
+    else:
+        clave = ('ciudades', key)
+        if clave not in cache:
+            cache[clave] = ciudades_de_region(key)
+        ciudades = cache[clave]
+    if any(c['slug'] == tramos[2] for c in ciudades):
         return '/catalogo/%s/%s/' % (tramos[1], tramos[2])
     return ruta_region
 
@@ -1182,15 +1197,47 @@ def cuerpo_renderizado(slug):
     guia = GUIAS.get(slug)
     if not guia:
         return []
-    from .models import Parcela
-
-    textos = [txt for _tipo, txt in guia['cuerpo']]
-    citadas = _slugs_de_fichas(textos)
-    cache = {'fichas': set(Parcela.publicas.filter(slug__in=citadas)
-                           .values_list('slug', flat=True)) if citadas else set()}
+    cache = precargar([txt for _tipo, txt in guia['cuerpo']])
     return [(tipo, con_enlaces(txt, cache)) for tipo, txt in guia['cuerpo']]
 
 
+def precargar(textos):
+    """El cache de una pagina: las fichas que citan sus textos, en UNA consulta.
+
+    Se le pasa a con_enlaces / descripcion_html de todos los textos de la pagina.
+    """
+    from .models import Parcela
+
+    citadas = _slugs_de_fichas(textos)
+    return {'fichas': set(Parcela.publicas.filter(slug__in=citadas)
+                          .values_list('slug', flat=True)) if citadas else set()}
+
+
+def descripcion_html(texto, cache=None):
+    """La descripcion de una ficha como la dibujaba `{{ x|linebreaks }}`, con enlaces.
+
+    23-11-2026: las filas de la planilla de Jorge que van en fichas (enlaces en
+    "Descripcion breve", "Modalidad de pago" y "Cercanias") se escriben en el
+    panel con el MISMO marcador de las guias, [[anchor|/ruta/]]. La plantilla
+    usaba `linebreaks`, que escapa todo: un <a> pegado en el panel saldria
+    como texto.
+
+    Es `django.utils.html.linebreaks(texto, autoescape=True)` paso por paso
+    (normalizar saltos, partir en parrafos por 2+ saltos, escapar, salto -> <br>,
+    envolver en <p>, unir con 2 saltos) cambiando solo el escape por
+    con_enlaces, que escapa con la MISMA funcion lo que no es marcador. Sin
+    marcadores el resultado es identico byte por byte al de antes (lo prueba
+    tests_enlazado_23_11).
+    """
+    from django.utils.text import normalize_newlines
+
+    if cache is None:
+        cache = precargar([texto or ''])
+    parrafos = re.split(r'\n{2,}', str(normalize_newlines(texto or '')))
+    html = ['<p>%s</p>' % con_enlaces(p, cache).replace('\n', '<br>') for p in parrafos]
+    return mark_safe('\n\n'.join(html))
+
+
 def sin_marcadores(texto):
-    """El texto plano, sin los [[...]]. Para la meta y el schema."""
-    return _ENLACE.sub(lambda m: m.group(1), texto)
+    """El texto plano, sin los [[...]]. Para la meta, el schema y la busqueda."""
+    return _ENLACE.sub(lambda m: m.group(1), texto or '')

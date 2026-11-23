@@ -61,6 +61,10 @@ def filtrar(qs, q):
     """El mismo queryset, solo con las parcelas que calzan, en el mismo orden."""
     if not normalizar(q):
         return qs
+    from .guias import sin_marcadores
+
+    # Sin los [[anchor|/ruta/]]: la ruta de un enlace interno no es contenido
+    # de la ficha ("praderas" no debe traer cada ficha que enlaza a Praderas).
     ids = [p.pk for p in qs.only('pk', 'nombre', 'sector', 'ciudad', 'descripcion')
-           if coincide(q, p.nombre, p.sector, p.ciudad, p.descripcion)]
+           if coincide(q, p.nombre, p.sector, p.ciudad, sin_marcadores(p.descripcion))]
     return qs.filter(pk__in=ids)
