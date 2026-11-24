@@ -1,0 +1,23 @@
+{% comment %} Tarjeta de la grilla "Parcelas en venta" de la home (Jorge, 23-11-2026). Recibe `p`
+   con `foto_url` ya resuelta (views._con_foto): leer p.foto_principal_url aca seria una consulta
+   por tarjeta. width/height reservan el alto de la foto antes de que cargue (sin saltos). {% endcomment %}
+<a href="{{ p.get_absolute_url }}" class="parcela-card venta-card">
+  <div class="parcela-card-img-wrap">
+    {% if p.foto_url %}
+      <img src="{{ p.foto_url }}" class="parcela-card-img" alt="{{ p.seo_h1|default:p.nombre }}" width="480" height="300" loading="lazy" decoding="async">
+    {% else %}
+      <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
+    {% endif %}
+    {% if p.estado == 'reservada' %}
+    <div style="position:absolute;top:.5rem;left:.5rem;padding:.2rem .6rem;border-radius:5px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;z-index:2;background:#EAB308;color:#0D0D0D;">Reservada</div>
+    {% endif %}
+  </div>
+  <div class="parcela-card-body">
+    {% if p.ciudad %}<div class="venta-card__rotulo">Venta Parcela {{ p.ciudad }}</div>{% endif %}
+    <h3 class="venta-card__titulo">{{ p.nombre }}</h3>
+    <div class="venta-card__datos">
+      <span class="venta-card__precio">{{ p.precio_clp }}</span>
+      <span class="venta-card__sup">{{ p.superficie_display }}</span>
+    </div>
+  </div>
+</a>

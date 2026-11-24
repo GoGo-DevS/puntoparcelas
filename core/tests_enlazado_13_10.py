@@ -35,8 +35,10 @@ class HomeEnlazaCaracteristicas(TestCase):
 
 
 @sin_manifiesto
-class Prefooter(TestCase):
-    """Punto 7: todo el catalogo vigente en la home, agrupado por region."""
+class GrillaParcelasEnVenta(TestCase):
+    """Punto 7 (05-10), rehecho el 23-11 por pedido de Jorge: el catalogo vigente
+    ya no va como prefooter de textos por region sino como grilla de tarjetas.
+    Detalle (consultas, orden, tarjeta) en tests_home_grilla."""
 
     def setUp(self):
         self.a = _p('Fundo Santa Rosa')
@@ -44,26 +46,32 @@ class Prefooter(TestCase):
         self.v = _p('Ya vendida', estado='vendida')
         self.r = _p('Reservada', estado='reservada')
 
-    def _prefooter(self):
+    def _grilla(self):
         html = self.client.get('/').content.decode('utf8')
-        return html[html.index('class="prefooter"'):html.index('<footer')]
+        return html[html.index('class="venta"'):html.index('<footer')]
 
     def test_estan_todas_las_vigentes(self):
-        pf = self._prefooter()
+        g = self._grilla()
         for p in (self.a, self.b, self.r):
-            self.assertIn(f'href="{p.get_absolute_url()}"', pf, p.nombre)
+            self.assertIn(f'href="{p.get_absolute_url()}" class="parcela-card venta-card"', g, p.nombre)
 
     def test_la_vendida_no_entra(self):
-        self.assertNotIn(self.v.get_absolute_url(), self._prefooter())
+        self.assertNotIn(self.v.get_absolute_url(), self._grilla())
 
-    def test_cada_grupo_enlaza_a_su_region_con_su_h1(self):
-        pf = self._prefooter()
-        self.assertIn('<a href="/catalogo/valparaiso/">Parcelas en Valparaíso</a>', pf)
-        self.assertIn('<a href="/catalogo/los-lagos/">Parcelas en Los Lagos</a>', pf)
+    def test_el_prefooter_ya_no_existe(self):
+        html = self.client.get('/').content.decode('utf8')
+        self.assertNotIn('class="prefooter"', html)
+        self.assertNotIn('Nuestro catálogo de parcelas', html)
+
+    def test_las_regiones_siguen_enlazadas_desde_la_home(self):
+        # El prefooter las enlazaba con su H1; sigue haciendolo "Parcelas por region".
+        html = self.client.get('/').content.decode('utf8')
+        self.assertIn('href="/catalogo/valparaiso/"', html)
+        self.assertIn('href="/catalogo/los-lagos/"', html)
 
     def test_una_parcela_nueva_aparece_sola(self):
         n = _p('Recien cargada', region='maule', ciudad='Rauco')
-        self.assertIn(n.get_absolute_url(), self._prefooter())
+        self.assertIn(n.get_absolute_url(), self._grilla())
 
 
 @sin_manifiesto

@@ -56,7 +56,9 @@ def home(request):
     from . import contenido_home as _ch
     from . import seo as _seo
 
-    destacadas = Parcela.publicas.filter(destacada=True, estado='disponible')[:6]
+    # Con la foto en la misma consulta: la plantilla leia foto_principal_url
+    # dos veces por tarjeta (12 consultas solo en este bloque).
+    destacadas = _con_foto(Parcela.publicas.filter(destacada=True, estado='disponible'), limite=6)
     testimonios = Testimonio.objects.filter(activo=True)[:3]
 
     # El bloque de regiones sale de los DATOS, no de la lista de 11 del
@@ -80,7 +82,9 @@ def home(request):
         # Hasta hoy la unica que recibia enlace desde la portada era "parcelas
         # baratas", y solo porque el texto la nombraba.
         'caracteristicas_home': caracteristicas,
-        'catalogo_prefooter': _catalogo_por_region(),
+        # La grilla de todas las parcelas vigentes (Jorge, 23-11-2026). Reemplaza
+        # al prefooter de enlaces de texto, en el mismo lugar (antes del footer).
+        'parcelas_en_venta': _parcelas_en_venta(),
         # Fila 58 de Jorge (23-11-2026): "parcelas en <comuna>" hacia la ficha
         # que posiciona cada comuna. Ver contenido_home.PARCELAS_POR_COMUNA.
         'comunas_home': _ch.parcelas_por_comuna(),
@@ -102,32 +106,61 @@ def home(request):
     })
 
 
-def _catalogo_por_region():
-    """Todo el catalogo vigente agrupado por region, para el prefooter de la home.
+def _orden_catalogo(qs):
+    """El orden del catalogo: destacadas, despues disponible > reservada >
+    vendida, y por precio. Una sola definicion para el catalogo y la grilla de
+    la home (Jorge, 23-11: "el mismo orden del catalogo")."""
+    from django.db.models import Case, IntegerField, Value, When
 
-    Punto 7 de Jorge (05-10-2026), con parcelasrutachile.cl de referencia:
-    cada ficha queda a UN clic de la portada, que es la pagina con mas
-    autoridad del sitio. Las vendidas no entran: el bloque es "lo que hay".
-    Una sola consulta; el agrupado se hace aca.
+    estado_order = Case(
+        When(estado='disponible', then=Value(0)),
+        When(estado='reservada',  then=Value(1)),
+        When(estado='vendida',    then=Value(2)),
+        default=Value(3), output_field=IntegerField(),
+    )
+    return qs.annotate(estado_order=estado_order).order_by('-destacada', 'estado_order', 'precio')
+
+
+def _con_foto(qs, limite=None):
+    """Las parcelas del queryset con `foto_url` ya resuelta, en UNA consulta.
+
+    `Parcela.foto_principal_url` consulta las fotos CADA vez que se lee (y la
+    plantilla de destacadas la leia dos veces por tarjeta). Con 64 tarjetas en
+    la portada eso son 64-128 consultas. Aca la ruta de la foto principal viene
+    en la misma consulta (subconsulta: principal primero, despues `orden`, el
+    mismo criterio que foto_principal_url) y la URL se arma sin tocar la base.
+
+    No hay version chica de las fotos: desde la mudanza a R2 cada foto se
+    guarda una sola vez, en WebP de menos de 100 KB (core/imagenes.py). La
+    grilla la carga con loading="lazy", asi que solo bajan las que se ven.
     """
-    etiquetas = {key: (slug, h1) for slug, (key, _t, h1) in REGIONES_SEO.items()}
-    orden = {key: i for i, (key, _l) in enumerate(REGIONES)}
-    filas = (Parcela.publicas.exclude(estado='vendida')
-             .values('slug', 'nombre', 'seo_h1', 'region'))
-    grupos = {}
-    for f in filas:
-        grupos.setdefault(f['region'], []).append(
-            {'ruta': f"/catalogo/{f['slug']}/", 'nombre': f['nombre']})
-    salida = []
-    for key in sorted(grupos, key=lambda k: orden.get(k, 99)):
-        slug, h1 = etiquetas.get(key, (None, None))
-        salida.append({
-            'h1': h1 or dict(REGIONES).get(key, key),
-            # 'otro' no tiene pagina de region: va sin enlace en el titulo.
-            'ruta': f'/catalogo/{slug}/' if slug else None,
-            'parcelas': sorted(grupos[key], key=lambda p: p['nombre'].lower()),
-        })
-    return salida
+    from django.db.models import OuterRef, Subquery
+
+    from .models import FotoParcela, _cloudinary_achicada
+
+    foto = (FotoParcela.objects.filter(parcela=OuterRef('pk'))
+            .exclude(imagen='').order_by('-principal', 'orden', 'pk').values('imagen')[:1])
+    storage = FotoParcela._meta.get_field('imagen').storage
+    qs = qs.annotate(foto_ruta=Subquery(foto))
+    parcelas = list(qs[:limite] if limite else qs)   # se anota ANTES de cortar
+    for p in parcelas:
+        p.foto_url = _cloudinary_achicada(storage.url(p.foto_ruta), ancho=600) if p.foto_ruta else ''
+    return parcelas
+
+
+def _parcelas_en_venta():
+    """Todas las parcelas vigentes como tarjetas, para la grilla de la home.
+
+    Jorge Urzua, 23-11-2026 (aceptado por Leonardo y Diego), con
+    parcelasrutachile.cl de referencia: la portada muestra TODO el catalogo
+    vigente en tarjetas (foto, "Venta Parcela <comuna>", nombre, precio y
+    superficie) y reemplaza el prefooter de enlaces de texto del 05-10. Cada
+    ficha sigue a UN clic de la pagina con mas autoridad del sitio.
+
+    Disponibles y reservadas; sin vendidas ni las que responden 301
+    (`Parcela.publicas`). Una sola consulta, foto incluida (G-04).
+    """
+    return _con_foto(_orden_catalogo(Parcela.publicas.exclude(estado='vendida')))
 
 
 def _intro_con_enlaces(caracteristica):
@@ -161,8 +194,6 @@ def _caracteristicas_con_parcelas():
 
 
 def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None):
-    from django.db.models import Case, IntegerField, Q, Value, When
-
     from . import seo as _seo
 
     from . import caracteristicas as _car
@@ -199,13 +230,8 @@ def catalogo(request, region_url=None, ciudad_url=None, caracteristica_url=None)
         region = request.GET.get('region', '').strip()
 
     q = request.GET.get('q', '').strip()
-    estado_order = Case(
-        When(estado='disponible', then=Value(0)),
-        When(estado='reservada',  then=Value(1)),
-        When(estado='vendida',    then=Value(2)),
-        default=Value(3), output_field=IntegerField(),
-    )
-    qs = Parcela.publicas.annotate(estado_order=estado_order).order_by('-destacada', 'estado_order', 'precio')
+    # Mismo orden que la grilla de la home: una sola definicion.
+    qs = _orden_catalogo(Parcela.publicas.all())
     if region:
         qs = qs.filter(region=region)
     if caracteristica:

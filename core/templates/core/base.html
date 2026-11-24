@@ -204,7 +204,10 @@
     }
     .parcela-card-img-wrap { position: relative; }
     .parcela-card-img {
-      width: 100%; aspect-ratio: 16/10; object-fit: cover;
+      /* height:auto: las tarjetas llevan width/height para reservar el alto antes
+         de que cargue la foto; sin esto el height="300" del atributo anula el
+         aspect-ratio y en celular la foto sale altisima (23-11-2026). */
+      width: 100%; height: auto; aspect-ratio: 16/10; object-fit: cover;
       background: var(--pp-surface2); display: block;
     }
     .parcela-card-img-placeholder {

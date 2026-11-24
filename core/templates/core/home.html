@@ -222,8 +222,8 @@
       {% for p in destacadas %}
       <a href="{% url 'core:parcela_detail' p.slug %}" class="parcela-card anim" data-delay="{{ forloop.counter0 }}00">
         <div class="parcela-card-img-wrap" style="position:relative;">
-          {% if p.foto_principal_url %}
-            <img src="{{ p.foto_principal_url }}" class="parcela-card-img" alt="{{ p.seo_h1|default:p.nombre }}" loading="lazy">
+          {% if p.foto_url %}
+            <img src="{{ p.foto_url }}" class="parcela-card-img" alt="{{ p.seo_h1|default:p.nombre }}" loading="lazy" decoding="async" width="480" height="300">
           {% else %}
             <div class="parcela-card-img-placeholder"><i class="bi bi-geo-alt-fill"></i></div>
           {% endif %}
@@ -446,35 +446,42 @@
 </style>
 {% endif %}
 
-{% comment %} PREFOOTER (punto 7 de Jorge, referencia parcelasrutachile.cl): todo el catalogo
-   vigente, agrupado por region, a un clic de la portada. Sale de los datos:
-   una parcela nueva aparece sola y una vendida sale sola. {% endcomment %}
-{% if catalogo_prefooter %}
-<section class="prefooter" aria-label="Catálogo completo">
+{% comment %} PARCELAS EN VENTA (Jorge Urzua, 23-11-2026, aceptado por Leonardo y Diego): TODAS
+   las parcelas vigentes como tarjetas, estilo parcelasrutachile.cl. Reemplaza al prefooter de
+   enlaces de texto del 05-10, en el mismo lugar. Sale de views._parcelas_en_venta: una sola
+   consulta con la foto incluida; una parcela nueva aparece sola y una vendida sale sola. {% endcomment %}
+{% if parcelas_en_venta %}
+<section class="venta" aria-labelledby="venta-h2">
   <div class="container">
-    <h2 class="prefooter__h2">Nuestro catálogo de parcelas</h2>
-    <div class="prefooter__grid">
-      {% for g in catalogo_prefooter %}
-      <div class="prefooter__grupo">
-        <h3 class="prefooter__h3">{% if g.ruta %}<a href="{{ g.ruta }}">{{ g.h1 }}</a>{% else %}{{ g.h1 }}{% endif %}</h3>
-        <ul class="prefooter__lista">
-          {% for p in g.parcelas %}<li><a href="{{ p.ruta }}">{{ p.nombre }}</a></li>{% endfor %}
-        </ul>
-      </div>
-      {% endfor %}
+    <h2 class="venta__h2" id="venta-h2">Parcelas en venta</h2>
+    <div class="venta__grid">
+      {% for p in parcelas_en_venta %}{% include "core/_tarjeta_venta.html" %}{% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{% url 'core:catalogo' %}" class="btn-outline-gold">Ver el catálogo con filtros <i class="bi bi-arrow-right ms-1"></i></a>
     </div>
   </div>
 </section>
 <style>
-  .prefooter { border-top: 1px solid var(--pp-border); padding: 3rem 0 2.5rem; }
-  .prefooter__h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 1.6rem; }
-  .prefooter__grid { display: grid; gap: 1.8rem 2rem; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-  .prefooter__h3 { font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 .7rem; }
-  .prefooter__h3 a { color: var(--pp-gold); text-decoration: none; }
-  .prefooter__lista { list-style: none; margin: 0; padding: 0; font-size: .82rem; line-height: 1.5; }
-  .prefooter__lista li + li { margin-top: .35rem; }
-  .prefooter__lista a { color: var(--pp-muted); text-decoration: none; }
-  .prefooter__lista a:hover { color: var(--pp-gold); }
+  .venta { border-top: 1px solid var(--pp-border); padding: 3rem 0 2.5rem; }
+  .venta__h2 { font-size: 1.35rem; font-weight: 800; margin: 0 0 1.6rem; }
+  /* 2 columnas en celular, 3 en escritorio (pedido de Jorge). */
+  .venta__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+  @media (min-width: 992px) { .venta__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
+  .venta-card .parcela-card-body { padding: .75rem; gap: .25rem; }
+  .venta-card__rotulo { font-size: .66rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--pp-gold); }
+  .venta-card__titulo { font-family: 'Montserrat', sans-serif; font-size: .8rem; font-weight: 800; line-height: 1.3; margin: 0; color: var(--pp-text);
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .venta-card__datos { margin-top: auto; padding-top: .4rem; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .15rem .5rem; }
+  .venta-card__precio { font-weight: 800; color: var(--pp-gold); font-size: .9rem; }
+  .venta-card__sup { font-size: .72rem; color: var(--pp-muted); }
+  @media (min-width: 992px) {
+    .venta-card .parcela-card-body { padding: 1rem; }
+    .venta-card__rotulo { font-size: .7rem; }
+    .venta-card__titulo { font-size: .9rem; }
+    .venta-card__precio { font-size: 1.05rem; }
+    .venta-card__sup { font-size: .8rem; }
+  }
 </style>
 {% endif %}
 
